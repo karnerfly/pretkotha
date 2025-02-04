@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"regexp"
+	"strings"
 
 	"github.com/Pureparadise56b/pretkotha/pkg/logger"
 	"github.com/gin-gonic/gin"
@@ -17,6 +19,10 @@ func SendErrorResponse(c *gin.Context, err string, code int) {
 func SendServerErrorResponse(c *gin.Context, err error) {
 	logger.ERROR(err.Error())
 	SendErrorResponse(c, err.Error(), http.StatusInternalServerError)
+}
+
+func SendNotFoundResponse(c *gin.Context, err string) {
+	SendErrorResponse(c, err, http.StatusNotFound)
 }
 
 func SendSuccessResponse(c *gin.Context, data any, code int) {
@@ -46,4 +52,16 @@ func ValidateJSON(c *gin.Context, data any) error {
 		return err
 	}
 	return nil
+}
+
+func CreateSlug(title string) string {
+	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
+	if err != nil {
+		return ""
+	}
+	ps := reg.ReplaceAllString(title, " ")
+	ps = strings.TrimSpace(ps)
+	slug := strings.ReplaceAll(ps, " ", "-")
+	slug = strings.ToLower(slug)
+	return slug
 }

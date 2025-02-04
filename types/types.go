@@ -6,6 +6,7 @@ type Config struct {
 	Domain        string
 	Version       string
 	JwtSecret     string
+	JwtExpiry     int64
 	ServerAddress string
 }
 
@@ -20,3 +21,5 @@ const (
 	AdminRole Role = "ADMIN"
 	UserRole  Role = "USER"
 )
+
+type MailTypes []string

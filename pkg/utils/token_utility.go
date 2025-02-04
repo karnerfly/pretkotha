@@ -21,7 +21,7 @@ func GenerateJwtToken(sub string) string {
 		"iss": cfg.Domain,
 		"aud": types.UserRole,
 		"iat": time.Now().Unix(),
-		"exp": time.Now().Add(30 * 24 * time.Hour).Unix(),
+		"exp": cfg.JwtExpiry,
 	})
 
 	tokenString, err := claims.SignedString([]byte(cfg.JwtSecret))
