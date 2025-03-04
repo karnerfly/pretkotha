@@ -7,12 +7,11 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/Pureparadise56b/pretkotha/pkg/logger"
 	"github.com/gin-gonic/gin"
+	"github.com/karnerfly/pretkotha/pkg/logger"
 )
 
 func SendErrorResponse(c *gin.Context, err string, code int) {
-	c.Header("Content-Type", "application/json; charset=utf-8")
 	c.JSON(code, gin.H{"error": err})
 }
 
@@ -26,7 +25,6 @@ func SendNotFoundResponse(c *gin.Context, err string) {
 }
 
 func SendSuccessResponse(c *gin.Context, data any, code int) {
-	c.Header("Content-Type", "application/json; charset=utf-8")
 	c.JSON(code, data)
 }
 
@@ -38,13 +36,15 @@ func FromJSON(data []byte, v any) error {
 	return json.Unmarshal(data, v)
 }
 
-func FromJSONRequest(r *http.Request, data any) error {
-	resp, err := io.ReadAll(r.Body)
-	if err != nil {
-		return nil
-	}
+func FromJSONRequest(r io.ReadCloser, data any) error {
+	defer r.Close()
+	decoder := json.NewDecoder(r)
+	return decoder.Decode(data)
+}
 
-	return FromJSON(resp, data)
+func ToJSONResponse(w io.Writer, data any) error {
+	encoder := json.NewEncoder(w)
+	return encoder.Encode(data)
 }
 
 func ValidateJSON(c *gin.Context, data any) error {

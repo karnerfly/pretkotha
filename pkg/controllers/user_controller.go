@@ -3,10 +3,10 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/Pureparadise56b/pretkotha/pkg/models"
-	"github.com/Pureparadise56b/pretkotha/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/karnerfly/pretkotha/pkg/models"
+	"github.com/karnerfly/pretkotha/pkg/utils"
 )
 
 func GetUserHandler(ctx *gin.Context) {
@@ -23,7 +23,7 @@ func GetUserHandler(ctx *gin.Context) {
 func PostUserHandler(ctx *gin.Context) {
 
 	user := &models.User{}
-	utils.FromJSONRequest(ctx.Request, user)
+	utils.FromJSONRequest(ctx.Request.Body, user)
 
 	utils.SendSuccessResponse(ctx, user, http.StatusOK)
 }

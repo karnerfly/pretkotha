@@ -1,4 +1,4 @@
-module github.com/Pureparadise56b/pretkotha
+module github.com/karnerfly/pretkotha
 
 go 1.23.4
 

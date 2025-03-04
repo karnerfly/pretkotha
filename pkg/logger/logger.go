@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/Pureparadise56b/pretkotha/types"
+	"github.com/karnerfly/pretkotha/types"
 )
 
 var logger *types.Logger

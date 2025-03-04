@@ -1,13 +1,19 @@
 package types
 
-import "log"
+import (
+	"log"
+	"time"
+)
 
 type Config struct {
-	Domain        string
-	Version       string
-	JwtSecret     string
-	JwtExpiry     int64
-	ServerAddress string
+	Domain             string
+	Version            string
+	JwtSecret          string
+	JwtExpiry          time.Duration
+	ServerAddress      string
+	ServerReadTimeout  time.Duration
+	ServerWriteTimeout time.Duration
+	ServerIdleTimeout  time.Duration
 }
 
 type Logger struct {

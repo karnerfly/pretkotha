@@ -3,10 +3,10 @@ package utils
 import (
 	"time"
 
-	"github.com/Pureparadise56b/pretkotha/pkg/configs"
-	"github.com/Pureparadise56b/pretkotha/types"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"github.com/karnerfly/pretkotha/pkg/configs"
+	"github.com/karnerfly/pretkotha/types"
 )
 
 func GenerateRandomUUID() string {

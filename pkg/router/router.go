@@ -3,9 +3,9 @@ package router
 import (
 	"net/http"
 
-	"github.com/Pureparadise56b/pretkotha/pkg/controllers"
-	"github.com/Pureparadise56b/pretkotha/pkg/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/karnerfly/pretkotha/pkg/controllers"
+	"github.com/karnerfly/pretkotha/pkg/utils"
 )
 
 func Initialize(router *gin.Engine) {
@@ -14,12 +14,14 @@ func Initialize(router *gin.Engine) {
 	})
 
 	router.POST("/_health", func(ctx *gin.Context) {
-		var data interface{}
-		err := utils.FromJSONRequest(ctx.Request, data)
+		var data any
+
+		err := utils.FromJSONRequest(ctx.Request.Body, &data)
 		if err != nil {
 			utils.SendErrorResponse(ctx, err.Error(), http.StatusBadRequest)
 			return
 		}
+
 		utils.SendSuccessResponse(ctx, data, http.StatusOK)
 	})
 

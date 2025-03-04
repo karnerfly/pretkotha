@@ -1,8 +1,8 @@
 package validators
 
 import (
-	"github.com/Pureparadise56b/pretkotha/pkg/models"
 	"github.com/go-playground/validator/v10"
+	"github.com/karnerfly/pretkotha/pkg/models"
 )
 
 type UserValidatorInterface interface {
