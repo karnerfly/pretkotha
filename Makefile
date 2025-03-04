@@ -1,23 +1,22 @@
-all: compile run
+all: build run
 
-compile:
+build:
 ifeq ($(OS), Windows_NT)
-	@powershell -ExecutionPolicy Bypass -File compile.ps1
-else
-	@chmod +x compile.sh && ./compile.sh
+	@setx GOOS windows
+	@go build -o bin/windows/main.exe cmd/web/main.go
+else ifeq ($(shell uname 2>/dev/null), Linux)
+	@export GOOS=linux
+	@go build -o bin/linux/main cmd/web/main.go
+else ifeq ($(shell uname 2>/dev/null), Darwin)
+	@export GOOS=darwin
+	@go build -o bin/macos/main cmd/web/main.go
 endif
 
-run: compile
+run: build
 ifeq ($(OS), Windows_NT)
-	@powershell -ExecutionPolicy Bypass ./bin/windows/main.exe
-else
-	Dected_OS := $(shell sh -c 'uname 2>/dev/null || echo Unknown')
-	ifeq ($(Dected_OS), Linux)
-		@bash chmod +x bin/linux/main ./bin/linux/main
-	else
-		echo "Unknown Platform, Cannot run the scripts."
-	endif
+	@./bin/windows/main.exe
+else ifeq ($(shell uname 2>/dev/null), Linux)
+	@./bin/linux/main
+else ifeq ($(shell uname 2>/dev/null), Darwin)
+	@./bin/macos/main
 endif
-
-clean:
-	
