@@ -11,8 +11,8 @@ var logger *types.Logger
 
 func Init() {
 	logger = &types.Logger{
-		ErrLogger:  log.New(os.Stderr, "ERROR :: ", 0),
-		InfoLogger: log.New(os.Stdin, "INFO :: ", 0),
+		ErrLogger:  log.New(os.Stderr, "ERROR :: ", log.LstdFlags),
+		InfoLogger: log.New(os.Stdin, "INFO :: ", log.LstdFlags),
 	}
 }
 
