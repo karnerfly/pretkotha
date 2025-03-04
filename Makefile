@@ -1,6 +1,9 @@
-all: build run
+all: migrate build run
 
-build:
+migrate:
+	@dbmate up
+
+build: migrate
 ifeq ($(OS), Windows_NT)
 	@setx GOOS windows
 	@go build -o bin/windows/main.exe cmd/web/main.go
@@ -20,3 +23,7 @@ else ifeq ($(shell uname 2>/dev/null), Linux)
 else ifeq ($(shell uname 2>/dev/null), Darwin)
 	@./bin/macos/main
 endif
+
+clean:
+	@dbmate -e DATABASE_URL drop
+	@rm -rf ./bin
