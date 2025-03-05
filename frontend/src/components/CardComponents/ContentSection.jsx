@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import ContentCard from "./ContentCard";
 import StoryView from "../ToogleComponent/StoryView";
+import DrawingModal from "../ToogleComponent/DrawingModal";
 import cardData from "../../api/cardData.json";
 
 const ContentSection = ({ filter, setTotalItem, viewMode = "grid", sortMode = "newest" }) => {
   const [data, setData] = useState(cardData);
-  const [selectedStory, setSelectedStory] = useState(null); // Track selected story
+  const [selectedStory, setSelectedStory] = useState(null);
+  const [selectedDrawing, setSelectedDrawing] = useState(null);
+  const [relatedStories, setRelatedStories] = useState([]);
 
   // Filter and Sort Logic
   useEffect(() => {
@@ -48,6 +51,17 @@ const ContentSection = ({ filter, setTotalItem, viewMode = "grid", sortMode = "n
     setTotalItem(filteredData.length);
   }, [filter, sortMode]);
 
+  // Function to open StoryView and set related stories
+  const handleReadStory = (story) => {
+    setSelectedStory(story);
+
+    // Show only stories that are not the current one
+    const related = cardData.filter(
+      (item) => item.type === "story" && item.id !== story.id
+    );
+    setRelatedStories(related);
+  };
+
   // Grid classes based on view mode
   const getGridClasses = () => {
     if (viewMode === "grid") {
@@ -58,8 +72,19 @@ const ContentSection = ({ filter, setTotalItem, viewMode = "grid", sortMode = "n
 
   return (
     <div id="contentContainer" className="container mx-auto px-4 py-8">
+      {/* Render StoryView or DrawingModal based on selection */}
       {selectedStory ? (
-        <StoryView story={selectedStory} onBack={() => setSelectedStory(null)} />
+        <StoryView
+          story={selectedStory}
+          onBack={() => setSelectedStory(null)}
+          relatedStories={relatedStories} // Pass only related stories
+        />
+      ) : selectedDrawing ? (
+        <DrawingModal
+          isOpen={!!selectedDrawing}
+          onClose={() => setSelectedDrawing(null)}
+          drawing={selectedDrawing}
+        />
       ) : (
         <div className={getGridClasses()}>
           {data.map((item, index) => (
@@ -67,7 +92,8 @@ const ContentSection = ({ filter, setTotalItem, viewMode = "grid", sortMode = "n
               key={index} 
               {...item} 
               viewMode={viewMode}
-              onReadMore={() => setSelectedStory(item)} // Open story on click
+              onReadMore={() => handleReadStory(item)} // Open StoryView
+              onViewDrawing={() => setSelectedDrawing(item)} // Open DrawingModal
             />
           ))}
         </div>
