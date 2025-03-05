@@ -13,14 +13,12 @@ const Home = () => {
   // Handler for changing view mode (grid/list)
   const handleViewChange = (mode) => {
     setViewMode(mode);
-    // Additional logic if needed when view mode changes
     console.log(`View mode changed to: ${mode}`);
   };
 
   // Handler for changing sort mode
   const handleSortChange = (mode) => {
     setSortMode(mode);
-    // Additional logic for sorting content
     console.log(`Sort mode changed to: ${mode}`);
   };
 
