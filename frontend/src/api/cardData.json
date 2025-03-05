@@ -40,9 +40,9 @@
     "image": "https://cdn.pixabay.com/photo/2024/10/16/16/14/cat-9125207_1280.jpg",
     "views": 555,
     "likes": 356,
-    "tag": "Story",
+    "tag": "Drawing",
     "featured": false,
-    "actionText": "Read Story"
+    "actionText": "View Full Size"
   },
   {
     "type": "other",
@@ -62,9 +62,9 @@
     "image": "https://cdn.pixabay.com/photo/2024/09/19/19/59/food-9059609_640.jpg",
     "views": 890,
     "likes": 543,
-    "tag": "Sci-Fi",
+    "tag": "Drawing",
     "featured": false,
-    "actionText": "Read Story"
+    "actionText": "View Full Size"
   },
     {
     "type": "other",
