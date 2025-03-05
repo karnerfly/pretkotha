@@ -10,6 +10,7 @@ import (
 
 type UserRepositoryInterface interface {
 	GetUserById(ctx context.Context, id string) (*models.User, error)
+	ExistsByEmail(ctx context.Context, email string) (bool, error)
 }
 
 type UserRepo struct {
@@ -57,4 +58,21 @@ func (r *UserRepo) GetUserById(ctx context.Context, id string) (*models.User, er
 	user.Profile.Phone = phone.String
 
 	return user, nil
+}
+
+func (r *UserRepo) ExistsByEmail(ctx context.Context, email string) (bool, error) {
+	stmt, err := r.client.PrepareContext(ctx, `SELECT id FROM users WHERE users.email = $1;`)
+	if err != nil {
+		return false, err
+	}
+	defer stmt.Close()
+
+	row, err := stmt.Query(email)
+	if err != nil {
+		return false, err
+	}
+
+	found := row.Next()
+
+	return found, nil
 }
