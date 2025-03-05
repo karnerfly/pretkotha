@@ -1,9 +1,9 @@
 import HeroSection from "../components/HeroSection";
 import SearchBar from "../components/SearchBar";
 import FilterSection from "../components/FilterSection";
-import ContentSection from "../components/contents/ContentSection";
-import ContentGrid from "../components/contents/ContentGrid";
-import ContentCard from "../components/contents/ContentCard";
+import ContentSection from "../components/CardContents/ContentSection";
+import ContentGrid from "../components/CardContents/ContentGrid";
+import ContentCard from "../components/CardContents/ContentCard";
 
 const Home = () => {
   return (
