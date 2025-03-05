@@ -7,7 +7,7 @@ import ContentSection from "../components/CardComponents/ContentSection";
 const Home = () => {
   const [filter, setFilter] = useState("all");
   const [totalItem, setTotalItem] = useState(0);
-  const [viewMode, setViewMode] = useState("list");
+  const [viewMode, setViewMode] = useState("grid");
 
   return (
     <div>
