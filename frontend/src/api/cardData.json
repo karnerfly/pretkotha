@@ -33,13 +33,68 @@
     "actionText": "Read Story"
   },
   {
-    "type": "other",
+    "type": "drawing",
     "title": "Fantu abcd",
     "description": "lorem lorem lorem lorem lorem lorem...",
     "image": "https://cdn.pixabay.com/photo/2024/10/16/16/14/cat-9125207_1280.jpg",
     "views": 555,
     "likes": 356,
     "tag": "Story",
+    "featured": false,
+    "actionText": "Read Story"
+  },
+  {
+    "type": "other",
+    "title": "The Whispering Willow",
+    "description": "A tale of ancient trees and hidden secrets in the forgotten forest.",
+    "image": "https://cdn.pixabay.com/photo/2024/11/29/04/45/saffron-finch-9232101_640.jpg",
+    "views": 1200,
+    "likes": 876,
+    "tag": "Fantasy",
+    "featured": true,
+    "actionText": "Read Story"
+  },
+  {
+    "type": "drawing",
+    "title": "Robot's Dream",
+    "description": "A lone robot discovers the meaning of humanity in a desolate future.",
+    "image": "https://cdn.pixabay.com/photo/2024/09/19/19/59/food-9059609_640.jpg",
+    "views": 890,
+    "likes": 543,
+    "tag": "Sci-Fi",
+    "featured": false,
+    "actionText": "Read Story"
+  },
+    {
+    "type": "other",
+    "title": "The Lost Treasure",
+    "description": "A thrilling adventure to find a legendary pirate's hidden gold.",
+    "image": "https://cdn.pixabay.com/photo/2024/07/14/14/42/woman-8894656_640.jpg",
+    "views": 1500,
+    "likes": 1100,
+    "tag": "Adventure",
+    "featured": true,
+    "actionText": "Read Story"
+  },
+  {
+    "type": "story",
+    "title": "The Baker's Secret Recipe",
+    "description": "A heartwarming story about a small-town baker and her magical bread.",
+    "image": "https://cdn.pixabay.com/photo/2025/02/21/11/06/woman-9421843_640.jpg",
+    "views": 700,
+    "likes": 450,
+    "tag": "Slice of Life",
+    "featured": false,
+    "actionText": "Read Story"
+  },
+  {
+    "type": "story",
+    "title": "The Detective's Dilemma",
+    "description": "A gripping mystery about a detective solving a complex crime in the city.",
+    "image": "https://cdn.pixabay.com/photo/2023/01/14/17/18/bird-7718653_640.jpg",
+    "views": 950,
+    "likes": 620,
+    "tag": "Mystery",
     "featured": false,
     "actionText": "Read Story"
   }
