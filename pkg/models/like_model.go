@@ -1,9 +1,8 @@
 package models
 
-import "github.com/google/uuid"
-
 type Like struct {
-	ID      uuid.UUID
-	LikerId uuid.UUID
-	StoryId uuid.UUID
+	LikedOn   Post   `json:"liked_on"`
+	LikedBy   User   `json:"liked_by"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }

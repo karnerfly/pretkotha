@@ -1,9 +1,9 @@
-all: migrate build run
+all: build run
 
 migrate:
 	@dbmate up
 
-build: migrate
+build:
 ifeq ($(OS), Windows_NT)
 	@setx GOOS windows
 	@go build -o bin/windows/main.exe cmd/web/main.go

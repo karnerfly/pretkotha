@@ -6,7 +6,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/karnerfly/pretkotha/pkg/configs"
-	"github.com/karnerfly/pretkotha/types"
+	"github.com/karnerfly/pretkotha/pkg/enum"
 )
 
 func GenerateRandomUUID() string {
@@ -19,7 +19,7 @@ func GenerateJwtToken(sub string) string {
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": sub,
 		"iss": cfg.Domain,
-		"aud": types.UserRole,
+		"aud": enum.UserRole,
 		"iat": time.Now().Unix(),
 		"exp": cfg.JwtExpiry,
 	})

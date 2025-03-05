@@ -6,14 +6,29 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	"github.com/karnerfly/pretkotha/types"
 )
 
-func New() *types.Config {
+type Config struct {
+	Domain             string
+	Version            string
+	JwtSecret          string
+	JwtExpiry          time.Duration
+	ServerAddress      string
+	ServerReadTimeout  time.Duration
+	ServerWriteTimeout time.Duration
+	ServerIdleTimeout  time.Duration
+	DatabaseURL        string
+}
+
+func Load() error {
 	if err := godotenv.Load(".env"); err != nil {
-		return nil
+		return err
 	}
-	return &types.Config{
+	return nil
+}
+
+func New() *Config {
+	return &Config{
 		ServerAddress:      getEnv("SERVER_ADDRERSS", ":3000").(string),
 		Version:            getEnv("VERSION", "v0.1-alpha").(string),
 		Domain:             getEnv("DOMAIN", "pretkotha.com").(string),
@@ -22,6 +37,7 @@ func New() *types.Config {
 		ServerReadTimeout:  getEnv("SERVER_READ_TIMEOUT", time.Duration(20)).(time.Duration),
 		ServerWriteTimeout: getEnv("SERVER_WRITE_TIMEOUT", time.Duration(15)).(time.Duration),
 		ServerIdleTimeout:  getEnv("SERVER_IDLE_TIMEOUT", time.Duration(90)).(time.Duration),
+		DatabaseURL:        getEnv("DATABASE_URL", "").(string),
 	}
 }
 
