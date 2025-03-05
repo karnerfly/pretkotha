@@ -31,7 +31,7 @@ func TestExistsByEmail(t *testing.T) {
 	}
 	ur := NewUserRepo(db.Client())
 
-	ok, err := ur.ExistsByEmail(context.TODO(), "jan@example.com")
+	ok, err := ur.ExistsByEmail(context.TODO(), "jane@example.com")
 	if err != nil {
 		t.Fatal(err)
 	}
