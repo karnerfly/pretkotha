@@ -1,17 +1,17 @@
 import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBookOpen, faBars } from "@fortawesome/free-solid-svg-icons";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <nav className="container mx-auto px-4 py-3">
       <div className="flex justify-between items-center">
         {/* Logo */}
-        <a
-          href="#"
-          className="text-2xl font-bold flex items-center space-x-2 group"
-        >
+        <a href="#" className="text-2xl font-bold flex items-center space-x-2 group">
           <div className="bg-white text-primary-600 rounded-full p-2 transform group-hover:rotate-12 transition-transform duration-300">
-            <i className="fas fa-book-open"></i>
+            <FontAwesomeIcon icon={faBookOpen} />
           </div>
           <span className="tracking-tight">CreativeWorld</span>
         </a>
@@ -45,7 +45,7 @@ const Navbar = () => {
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="text-white focus:outline-none"
           >
-            <i className="fas fa-bars text-2xl"></i>
+            <FontAwesomeIcon icon={faBars} className="text-2xl" />
           </button>
         </div>
       </div>

@@ -1,3 +1,6 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencilAlt, faSearch } from "@fortawesome/free-solid-svg-icons";
+
 const HeroSection = () => {
     return (
         <div className="bg-gradient-to-r from-primary-600 to-secondary-600 bg-opacity-90 text-white shadow-lg relative">
@@ -11,11 +14,11 @@ const HeroSection = () => {
                     </p>
                     <div className="flex flex-wrap gap-4">
                         <button className="bg-white text-primary-600 px-6 py-3 rounded-full font-medium hover:bg-primary-50 transition-colors shadow-md hover:shadow-lg flex items-center gap-2">
-                            <i className="fas fa-pencil-alt"></i>
+                            <FontAwesomeIcon icon={faPencilAlt} />
                             Share Your Story
                         </button>
                         <button className="bg-primary-900 bg-opacity-30 text-white border border-white border-opacity-30 px-6 py-3 rounded-full font-medium hover:bg-opacity-50 transition-colors shadow-md hover:shadow-lg flex items-center gap-2">
-                            <i className="fas fa-search"></i>
+                            <FontAwesomeIcon icon={faSearch} />
                             Explore Content
                         </button>
                     </div>
