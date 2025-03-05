@@ -28,7 +28,7 @@ func main() {
 	cfg := configs.New()
 
 	// establish connection with database. (if err then exit)
-	_, err := db.New(cfg.DatabaseURL)
+	db, err := db.New(cfg.DatabaseURL)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -37,7 +37,7 @@ func main() {
 	// create ServeMux with gin
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
-	router.Initialize(r)
+	router.Initialize(r, db.Client())
 
 	// create server
 	server := &http.Server{

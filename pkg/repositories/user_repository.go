@@ -11,7 +11,7 @@ import (
 )
 
 type UserRepositoryInterface interface {
-	CreateUser(ctx context.Context, user *models.User) (string, error)
+	CreateUser(ctx context.Context, user *models.CreateUserRequest) (string, error)
 	GetUserById(ctx context.Context, id string) (*models.User, error)
 	ExistsByEmail(ctx context.Context, email string) (bool, error)
 }
@@ -24,6 +24,7 @@ func NewUserRepo(client *sql.DB) *UserRepo {
 	return &UserRepo{client}
 }
 
+/* Create user with provided req object, returns id and error. return ErrRecordAlreadyExists if any duplicate row found */
 func (r *UserRepo) CreateUser(ctx context.Context, req *models.CreateUserRequest) (string, error) {
 	tx, err := r.client.BeginTx(ctx, nil)
 	if err != nil {

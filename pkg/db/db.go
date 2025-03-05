@@ -1,7 +1,9 @@
 package db
 
 import (
+	"context"
 	"database/sql"
+	"time"
 )
 
 type DB struct {
@@ -27,4 +29,8 @@ func New(url string) (*DB, error) {
 
 func (db *DB) Client() *sql.DB {
 	return db.client
+}
+
+func GetIdleTimeoutContext() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), 5*time.Second)
 }

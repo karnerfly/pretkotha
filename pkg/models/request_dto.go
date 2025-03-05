@@ -9,7 +9,7 @@ type CreateUserRequest struct {
 	Phone     string `json:"phone"`
 }
 
-type LoginUserReques struct {
+type LoginUserRequest struct {
 	Email string `json:"email" validate:"required,email"`
 	Hash  string `json:"password" validate:"required"`
 }

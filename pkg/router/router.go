@@ -1,6 +1,7 @@
 package router
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -8,7 +9,7 @@ import (
 	"github.com/karnerfly/pretkotha/pkg/utils"
 )
 
-func Initialize(router *gin.Engine) {
+func Initialize(router *gin.Engine, client *sql.DB) {
 	router.GET("/_health", func(ctx *gin.Context) {
 		utils.SendSuccessResponse(ctx, gin.H{"message": "OK"}, http.StatusOK)
 	})
@@ -26,9 +27,10 @@ func Initialize(router *gin.Engine) {
 	})
 
 	userRouter := router.Group("/api/user")
+	userHandler := handlers.NewUserHander(client)
 
-	userRouter.GET("", handlers.GetUserHandler)
-	userRouter.POST("", handlers.PostUserHandler)
+	userRouter.GET("/register", userHandler.HandleUserRegister)
+	userRouter.POST("", userHandler.HandleUserLogin)
 
 	router.NoRoute(func(ctx *gin.Context) {
 		utils.SendNotFoundResponse(ctx, "404 not found")
