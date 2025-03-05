@@ -57,7 +57,7 @@ const FilterSection = ({ onViewChange, onSortChange }) => {
       </div>
 
       {/* Grid/List view toggle */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-0">
         <div className="flex items-center gap-4">
           <p className="text-gray-500">
             <span id="itemCount">{itemCount}</span> items found
