@@ -1,3 +1,11 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowLeft,
+  faBookmark,
+  faHeart,
+  faShareAlt,
+  faEye,
+} from "@fortawesome/free-solid-svg-icons";
 import CommentsSection from "./CommentsSection";
 import RelatedStories from "./RelatedStories";
 
@@ -12,18 +20,18 @@ const StoryView = ({ story, onBack }) => {
           onClick={onBack}
           className="flex items-center text-primary-600 hover:text-primary-800 transition-colors"
         >
-          <i className="fas fa-arrow-left mr-2"></i>
+          <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
           Back to list
         </button>
         <div className="flex gap-3">
           <button className="text-gray-500 hover:text-primary-600 transition-colors">
-            <i className="far fa-bookmark"></i>
+            <FontAwesomeIcon icon={faBookmark} />
           </button>
           <button className="text-gray-500 hover:text-primary-600 transition-colors">
-            <i className="far fa-heart"></i>
+            <FontAwesomeIcon icon={faHeart} />
           </button>
           <button className="text-gray-500 hover:text-primary-600 transition-colors">
-            <i className="fas fa-share-alt"></i>
+            <FontAwesomeIcon icon={faShareAlt} />
           </button>
         </div>
       </div>
@@ -44,9 +52,9 @@ const StoryView = ({ story, onBack }) => {
             <p className="text-sm">{story.date}</p>
           </div>
           <div className="ml-auto flex items-center">
-            <i className="far fa-eye mr-1"></i>
+            <FontAwesomeIcon icon={faEye} className="mr-1" />
             <span className="mr-4">{story.views}</span>
-            <i className="far fa-heart mr-1"></i>
+            <FontAwesomeIcon icon={faHeart} className="mr-1" />
             <span>{story.likes}</span>
           </div>
         </div>

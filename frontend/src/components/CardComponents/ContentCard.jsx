@@ -19,6 +19,7 @@ const ContentCard = ({
   tag,
   featured,
   actionText,
+  onReadMore, // Function to open StoryView
 }) => {
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 group">
@@ -53,10 +54,15 @@ const ContentCard = ({
         </div>
         <p className="text-gray-600 mb-4">{description}</p>
         <div className="flex justify-between items-center">
-          <button className="bg-primary-50 text-primary-600 px-4 py-2 rounded-full hover:bg-primary-100 transition-colors flex items-center gap-1">
+          {/* Updated Read More button */}
+          <button
+            onClick={onReadMore} // Calls the function when clicked
+            className="bg-primary-50 text-primary-600 px-4 py-2 rounded-full hover:bg-primary-100 transition-colors flex items-center gap-1"
+          >
             <span>{actionText}</span>
             <FontAwesomeIcon icon={DisplayIcon(type)} className="text-xs" />
           </button>
+
           <div className="flex items-center text-gray-500 text-sm">
             <FontAwesomeIcon icon={faEye} className="mr-1" />
             <span>{views}</span>
