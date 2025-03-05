@@ -12,6 +12,7 @@ import (
 type PostRepositoryInterface interface {
 	GetLatestPosts(ctx context.Context, limit int) ([]*models.Post, error)
 	GetPosts(ctx context.Context, filter enum.Filter, page, limit int) ([]*models.Post, error)
+	GetPostById(ctx context.Context, id string) (*models.Post, error)
 }
 
 type PostRepository struct {
@@ -23,7 +24,7 @@ func NewPostRepo(client *sql.DB) *PostRepository {
 }
 
 func (r *PostRepository) GetLatestPosts(ctx context.Context, limit int) ([]*models.Post, error) {
-	stmt, err := r.client.PrepareContext(ctx, `SELECT p.id, p.title, p.slug, p.description, p.thumbnail, p.kind, p.category, p.created_at, p.updated_at, COUNT (l.liked_on) as likes FROM posts as p LEFT JOIN likes as l ON p.id = l.liked_on GROUP BY p.id ORDER BY p.created_at DESC LIMIT $1;`)
+	stmt, err := r.client.PrepareContext(ctx, `SELECT p.id, p.title, p.slug, p.description, p.thumbnail, p.kind, p.category, p.is_deleted, p.created_at, p.updated_at, COUNT (l.liked_on) as likes FROM posts as p LEFT JOIN likes as l ON p.id = l.liked_on GROUP BY p.id ORDER BY p.created_at DESC LIMIT $1;`)
 	if err != nil {
 		return nil, err
 	}
@@ -69,6 +70,30 @@ func (r *PostRepository) GetPosts(ctx context.Context, filter enum.Filter, page,
 	return getPostsFromRow(rows)
 }
 
+func (r *PostRepository) GetPostById(ctx context.Context, id string) (*models.Post, error) {
+	stmt, err := r.client.PrepareContext(ctx, `SELECT p.id, p.title, p.slug, p.description, p.thumbnail, p.kind, p.category, p.is_deleted, p.created_at, p.updated_at, u.user_name, up.avatar_url, COUNT(l.liked_on) AS likes FROM posts AS p LEFT JOIN users AS u ON p.post_by = u.id LEFT JOIN user_profiles AS up ON u.id = up.user_id LEFT JOIN likes AS l ON l.liked_on = p.id WHERE p.id = $1 GROUP BY p.id, u.user_name, up.avatar_url;`)
+	if err != nil {
+		return nil, err
+	}
+
+	var (
+		post        = models.NewPost()
+		thumbnail   sql.NullString
+		description sql.NullString
+	)
+	post.Author = models.NewUser()
+
+	err = stmt.QueryRowContext(ctx, id).Scan(&post.ID, &post.Title, &post.Slug, &description, &thumbnail, &post.Kind, &post.Category, &post.IsDeleted, &post.CreatedAt, &post.UpdatedAt, &post.Author.UserName, &post.Author.Profile.AvatarUrl, &post.Likes)
+	if err != nil {
+		return nil, err
+	}
+
+	post.Thumbnail = thumbnail.String
+	post.Description = description.String
+
+	return post, nil
+}
+
 func getPostsFromRow(rows *sql.Rows) ([]*models.Post, error) {
 	var (
 		posts       = make([]*models.Post, 0)
@@ -78,7 +103,7 @@ func getPostsFromRow(rows *sql.Rows) ([]*models.Post, error) {
 
 	for rows.Next() {
 		post := models.NewPost()
-		err := rows.Scan(&post.ID, &post.Title, &post.Slug, &description, &thumbnail, &post.Kind, &post.Category, &post.CreatedAt, &post.UpdatedAt, &post.Likes)
+		err := rows.Scan(&post.ID, &post.Title, &post.Slug, &description, &thumbnail, &post.Kind, &post.Category, &post.IsDeleted, &post.CreatedAt, &post.UpdatedAt, &post.Likes)
 		if err != nil {
 			return nil, err
 		}

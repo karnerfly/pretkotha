@@ -27,6 +27,14 @@ func ERROR(err string) {
 	logger.ErrLogger.Println(err)
 }
 
+func Printf(format string, args ...any) {
+	logger.InfoLogger.Printf(format, args...)
+}
+
+func Errorf(format string, args ...any) {
+	logger.ErrLogger.Printf(format, args...)
+}
+
 func Fatal(err error) {
 	logger.ErrLogger.Fatal(err)
 }
