@@ -31,7 +31,7 @@ const ContentGrid = () => {
             type: "story",
             title: "The Quantum Detective",
             description: "A science fiction mystery where reality itself is the prime suspect...",
-            image: "/api/placeholder/400/250",
+            image: "https://cdn.pixabay.com/photo/2025/02/02/01/12/woman-9375864_960_720.jpg",
             views: 842,
             likes: 315,
             tag: "Story",

@@ -42,7 +42,7 @@ const Home = () => {
             title="The Quantum Detective"
             category="Story"
             description="A science fiction mystery where reality itself is the prime suspect..."
-            imageUrl="/api/placeholder/400/250"
+            imageUrl="https://cdn.pixabay.com/photo/2025/02/02/01/12/woman-9375864_960_720.jpg"
             views={842}
             likes={315}
             featured={true}
