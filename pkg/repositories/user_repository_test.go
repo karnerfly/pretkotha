@@ -23,3 +23,18 @@ func TestGetUserById(t *testing.T) {
 
 	t.Logf("USER; %+v\n", user)
 }
+
+func TestExistsByEmail(t *testing.T) {
+	db, err := db.New("postgres://postgres:ajay9339@127.0.0.1:5432/pretkotha?sslmode=disable")
+	if err != nil {
+		t.Fatal(err)
+	}
+	ur := NewUserRepo(db.Client())
+
+	ok, err := ur.ExistsByEmail(context.TODO(), "jane@example.com")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("FOUND: %v", ok)
+}

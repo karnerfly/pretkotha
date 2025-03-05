@@ -9,3 +9,11 @@ var (
 	ErrDatabasePing   DatabaseError = errors.New("cannot establish connection with database")
 	ErrRecordNotFound DatabaseError = errors.New("records not found")
 )
+
+type Filter int
+
+const (
+	PostFilterNewest Filter = iota
+	PostFilterOldest
+	PostFilterMostPopular
+)

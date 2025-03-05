@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/karnerfly/pretkotha/pkg/enum"
 	"github.com/karnerfly/pretkotha/pkg/models"
@@ -10,6 +11,7 @@ import (
 
 type UserRepositoryInterface interface {
 	GetUserById(ctx context.Context, id string) (*models.User, error)
+	ExistsByEmail(ctx context.Context, email string) (bool, error)
 }
 
 type UserRepo struct {
@@ -27,12 +29,6 @@ func (r *UserRepo) GetUserById(ctx context.Context, id string) (*models.User, er
 	}
 	defer stmt.Close()
 
-	row, err := stmt.Query(id)
-	if err != nil {
-		return nil, err
-	}
-	defer row.Close()
-
 	var (
 		user      = models.NewUser()
 		bannedat  sql.NullString
@@ -41,14 +37,13 @@ func (r *UserRepo) GetUserById(ctx context.Context, id string) (*models.User, er
 		phone     sql.NullString
 	)
 
-	found := row.Next()
-	if !found {
-		return nil, enum.ErrRecordNotFound
-	}
-
-	err = row.Scan(&user.ID, &user.UserName, &user.Email, &user.IsBanned, &bannedat, &user.CreatedAt, &user.UpdatedAt, &bio, &avatarurl, &phone)
+	err = stmt.QueryRowContext(ctx, id).Scan(&user.ID, &user.UserName, &user.Email, &user.IsBanned, &bannedat, &user.CreatedAt, &user.UpdatedAt, &bio, &avatarurl, &phone)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, enum.ErrRecordNotFound
+		} else {
+			return nil, err
+		}
 	}
 
 	user.BannedAt = bannedat.String
@@ -57,4 +52,24 @@ func (r *UserRepo) GetUserById(ctx context.Context, id string) (*models.User, er
 	user.Profile.Phone = phone.String
 
 	return user, nil
+}
+
+func (r *UserRepo) ExistsByEmail(ctx context.Context, email string) (bool, error) {
+	stmt, err := r.client.PrepareContext(ctx, `SELECT EXISTS(SELECT 1 FROM users WHERE users.email = $1);`)
+	if err != nil {
+		return false, err
+	}
+	defer stmt.Close()
+
+	var emailExists bool
+	err = stmt.QueryRowContext(ctx, email).Scan(&emailExists)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, enum.ErrRecordNotFound
+		} else {
+			return false, err
+		}
+	}
+
+	return emailExists, nil
 }

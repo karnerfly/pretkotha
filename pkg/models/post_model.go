@@ -10,8 +10,12 @@ type Post struct {
 	Kind        string `json:"kind"`
 	Category    string `json:"category"`
 	IsDeleted   bool   `json:"is_deleted"`
-	Author      User   `json:"author"`
+	Author      *User  `json:"author"`
 	Likes       int64  `json:"likes"`
 	CreatedAt   string `json:"created_at"`
 	UpdatedAt   string `json:"updated_at"`
+}
+
+func NewPost() *Post {
+	return &Post{}
 }
