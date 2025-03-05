@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faThLarge, faList } from "@fortawesome/free-solid-svg-icons"; // Import icons
+import { faThLarge, faList } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 
 const FilterSection = ({
@@ -69,11 +69,13 @@ const FilterSection = ({
             <span id="itemCount">{totalItem}</span> items found
           </p>
           <div className="flex items-center ml-4">
-            <p className="mr-2 text-sm text-gray-600">View:</p>
+            <p className="mr-2 text-sm text-gray-600">View Mode:</p>
             <div className="flex space-x-2">
               <button
                 onClick={() => {
+                  // Ensure the setViewMode is called with 'grid'
                   setViewMode("grid");
+                  // Call onViewChange with 'grid'
                   onViewChange("grid");
                 }}
                 className={`p-2 rounded ${
@@ -86,7 +88,9 @@ const FilterSection = ({
               </button>
               <button
                 onClick={() => {
+                  // Ensure the setViewMode is called with 'list'
                   setViewMode("list");
+                  // Call onViewChange with 'list'
                   onViewChange("list");
                 }}
                 className={`p-2 rounded ${

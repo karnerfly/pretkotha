@@ -1,12 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBookmark,
-  faEye,
-  faHeart,
-  faArrowRight,
-  faExpandAlt,
-} from "@fortawesome/free-solid-svg-icons";
-
+import { faArrowRight, faExpandAlt, faBookmark, faEye, faHeart } from "@fortawesome/free-solid-svg-icons";
 import Badge from "./Badge";
 
 const ContentCard = ({
@@ -19,7 +12,18 @@ const ContentCard = ({
   tag,
   featured,
   actionText,
+  onReadMore,   // Function to open StoryView
+  onViewDrawing // Function to open DrawingModal
 }) => {
+  // Determine which function to call on button click
+  const handleActionClick = () => {
+    if (actionText === "Read Story" && onReadMore) {
+      onReadMore();
+    } else if (actionText === "View Full Size" && onViewDrawing) {
+      onViewDrawing();
+    }
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 group">
       <div className="relative">
@@ -52,11 +56,17 @@ const ContentCard = ({
           </button>
         </div>
         <p className="text-gray-600 mb-4">{description}</p>
+        
+        {/* Action Button (Dynamically Handles Stories & Drawings) */}
         <div className="flex justify-between items-center">
-          <button className="bg-primary-50 text-primary-600 px-4 py-2 rounded-full hover:bg-primary-100 transition-colors flex items-center gap-1">
+          <button
+            onClick={handleActionClick} // Calls the appropriate function
+            className="bg-primary-50 text-primary-600 px-4 py-2 rounded-full hover:bg-primary-100 transition-colors flex items-center gap-1"
+          >
             <span>{actionText}</span>
-            <FontAwesomeIcon icon={DisplayIcon(type)} className="text-xs" />
+            <FontAwesomeIcon icon={type === "story" ? faArrowRight : faExpandAlt} className="text-xs" />
           </button>
+
           <div className="flex items-center text-gray-500 text-sm">
             <FontAwesomeIcon icon={faEye} className="mr-1" />
             <span>{views}</span>
@@ -67,17 +77,6 @@ const ContentCard = ({
       </div>
     </div>
   );
-};
-
-const DisplayIcon = (type) => {
-  switch (type) {
-    case "story":
-      return faArrowRight;
-    case "drawing":
-      return faExpandAlt;
-    default:
-      return faArrowRight;
-  }
 };
 
 export default ContentCard;
