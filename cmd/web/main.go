@@ -11,18 +11,35 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/karnerfly/pretkotha/pkg/configs"
+	"github.com/karnerfly/pretkotha/pkg/db"
 	"github.com/karnerfly/pretkotha/pkg/logger"
 	"github.com/karnerfly/pretkotha/pkg/router"
+	_ "github.com/lib/pq"
 )
 
 func main() {
+	// create custom logger for dubegging
 	logger.Init()
 
+	// load required configurations for server
+	if err := configs.Load(); err != nil {
+		logger.Fatal(err)
+	}
 	cfg := configs.New()
-	r := gin.Default()
 
+	// establish connection with database. (if err then exit)
+	_, err := db.New(cfg.DatabaseURL)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	logger.INFO("Database Connection Established Successfully")
+
+	// create ServeMux with gin
+	gin.SetMode(gin.ReleaseMode)
+	r := gin.Default()
 	router.Initialize(r)
 
+	// create server
 	server := &http.Server{
 		Addr:         cfg.ServerAddress,
 		Handler:      r,
@@ -32,12 +49,14 @@ func main() {
 	}
 
 	go func() {
+		logger.INFO("Server Listing at " + cfg.ServerAddress)
 		err := server.ListenAndServe()
 		if err != nil {
 			logger.Fatal(err)
 		}
 	}()
 
+	// handle graceful shutdown
 	HandleServerShutdown(server)
 }
 

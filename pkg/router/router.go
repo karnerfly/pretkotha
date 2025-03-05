@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/karnerfly/pretkotha/pkg/controllers"
+	"github.com/karnerfly/pretkotha/pkg/handlers"
 	"github.com/karnerfly/pretkotha/pkg/utils"
 )
 
@@ -27,8 +27,8 @@ func Initialize(router *gin.Engine) {
 
 	userRouter := router.Group("/api/user")
 
-	userRouter.GET("", controllers.GetUserHandler)
-	userRouter.POST("", controllers.PostUserHandler)
+	userRouter.GET("", handlers.GetUserHandler)
+	userRouter.POST("", handlers.PostUserHandler)
 
 	router.NoRoute(func(ctx *gin.Context) {
 		utils.SendNotFoundResponse(ctx, "404 not found")

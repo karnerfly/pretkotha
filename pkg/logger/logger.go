@@ -3,14 +3,17 @@ package logger
 import (
 	"log"
 	"os"
-
-	"github.com/karnerfly/pretkotha/types"
 )
 
-var logger *types.Logger
+type Logger struct {
+	ErrLogger  *log.Logger
+	InfoLogger *log.Logger
+}
+
+var logger *Logger
 
 func Init() {
-	logger = &types.Logger{
+	logger = &Logger{
 		ErrLogger:  log.New(os.Stderr, "ERROR :: ", log.LstdFlags),
 		InfoLogger: log.New(os.Stdin, "INFO :: ", log.LstdFlags),
 	}
