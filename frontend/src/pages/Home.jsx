@@ -1,11 +1,14 @@
+import { useState } from "react";
 import HeroSection from "../components/HeroSection";
 import SearchBar from "../components/SearchBar";
 import FilterSection from "../components/FilterSection";
 import ContentSection from "../components/CardComponents/ContentSection";
-import ContentGrid from "../components/CardComponents/ContentGrid";
-import ContentCard from "../components/CardComponents/ContentCard";
 
 const Home = () => {
+  const [filter, setFilter] = useState("all");
+  const [totalItem, setTotalItem] = useState(0);
+  const [viewMode, setViewMode] = useState("list");
+
   return (
     <div>
       {/* Hero Section */}
@@ -15,18 +18,16 @@ const Home = () => {
       <SearchBar />
 
       {/* Filter Section */}
-      <FilterSection />
+      <FilterSection
+        setFilter={setFilter}
+        activeFilter={filter}
+        totalItem={totalItem}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+      />
 
       {/* Content Section */}
-      <ContentSection>
-        {/* Content Grid  */}
-        <ContentGrid>
-          {/* Example Content Cards */}
-          <ContentCard>
-
-          </ContentCard>
-        </ContentGrid>
-      </ContentSection>
+      <ContentSection filter={filter} setTotalItem={setTotalItem} />
     </div>
   );
 };

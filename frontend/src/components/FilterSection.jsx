@@ -1,22 +1,28 @@
-import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThLarge, faList } from "@fortawesome/free-solid-svg-icons"; // Import icons
+import { useState } from "react";
 
-const FilterSection = ({ onViewChange, onSortChange }) => {
-  const [activeFilter, setActiveFilter] = useState("All");
-  const [viewMode, setViewMode] = useState("grid");
-  const [itemCount, setItemCount] = useState(9);
-
+const FilterSection = ({
+  onViewChange,
+  onSortChange,
+  activeFilter,
+  setFilter,
+  totalItem,
+  viewMode,
+  setViewMode,
+}) => {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Filter section */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">Explore Content</h2>
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">
+          Explore Content
+        </h2>
         <div className="flex flex-wrap gap-3">
           <button
-            onClick={() => setActiveFilter("All")}
+            onClick={() => setFilter("all")}
             className={`px-5 py-2 rounded-full transition-colors shadow-sm ${
-              activeFilter === "All"
+              activeFilter === "all"
                 ? "bg-primary-600 text-white hover:bg-primary-700"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
@@ -24,9 +30,9 @@ const FilterSection = ({ onViewChange, onSortChange }) => {
             All
           </button>
           <button
-            onClick={() => setActiveFilter("Unpublished Stories")}
+            onClick={() => setFilter("stories")}
             className={`px-5 py-2 rounded-full transition-colors shadow-sm ${
-              activeFilter === "Unpublished Stories"
+              activeFilter === "stories"
                 ? "bg-primary-600 text-white hover:bg-primary-700"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
@@ -34,9 +40,9 @@ const FilterSection = ({ onViewChange, onSortChange }) => {
             Unpublished Stories
           </button>
           <button
-            onClick={() => setActiveFilter("Drawings")}
+            onClick={() => setFilter("drawings")}
             className={`px-5 py-2 rounded-full transition-colors shadow-sm ${
-              activeFilter === "Drawings"
+              activeFilter === "drawings"
                 ? "bg-primary-600 text-white hover:bg-primary-700"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
@@ -44,9 +50,9 @@ const FilterSection = ({ onViewChange, onSortChange }) => {
             Drawings
           </button>
           <button
-            onClick={() => setActiveFilter("Other Stories")}
+            onClick={() => setFilter("others")}
             className={`px-5 py-2 rounded-full transition-colors shadow-sm ${
-              activeFilter === "Other Stories"
+              activeFilter === "others"
                 ? "bg-primary-600 text-white hover:bg-primary-700"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
@@ -60,7 +66,7 @@ const FilterSection = ({ onViewChange, onSortChange }) => {
       <div className="flex justify-between items-center mb-0">
         <div className="flex items-center gap-4">
           <p className="text-gray-500">
-            <span id="itemCount">{itemCount}</span> items found
+            <span id="itemCount">{totalItem}</span> items found
           </p>
           <div className="flex items-center ml-4">
             <p className="mr-2 text-sm text-gray-600">View:</p>
