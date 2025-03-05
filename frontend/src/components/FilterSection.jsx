@@ -69,7 +69,7 @@ const FilterSection = ({
             <span id="itemCount">{totalItem}</span> items found
           </p>
           <div className="flex items-center ml-4">
-            <p className="mr-2 text-sm text-gray-600">View:</p>
+            <p className="mr-2 text-sm text-gray-600">View Mode:</p>
             <div className="flex space-x-2">
               <button
                 onClick={() => {
