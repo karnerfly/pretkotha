@@ -1,5 +1,13 @@
-import React from "react";
+import HeroSection from "../components/HeroSection";
+import SearchBar from "../components/SearchBar";
 
-export default function Home() {
-  return <h2>Home page</h2>;
-}
+const Home = () => {
+  return (
+    <div>
+      <HeroSection />
+      <SearchBar />
+    </div>
+  );
+};
+
+export default Home;

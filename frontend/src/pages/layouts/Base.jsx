@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router";
-import Navbar from "../../components/header/Navbar";
-import Footer from "../../components/header/Footer";
+import Navbar from "../../components/common/Header";
+import Footer from "../../components/common/Footer";
 
 function Base({ children }) {
   return (
