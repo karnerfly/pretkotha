@@ -7,9 +7,11 @@ import (
 
 	"github.com/karnerfly/pretkotha/pkg/enum"
 	"github.com/karnerfly/pretkotha/pkg/models"
+	"github.com/lib/pq"
 )
 
 type UserRepositoryInterface interface {
+	CreateUser(ctx context.Context, user *models.User) (string, error)
 	GetUserById(ctx context.Context, id string) (*models.User, error)
 	ExistsByEmail(ctx context.Context, email string) (bool, error)
 }
@@ -20,6 +22,60 @@ type UserRepo struct {
 
 func NewUserRepo(client *sql.DB) *UserRepo {
 	return &UserRepo{client}
+}
+
+func (r *UserRepo) CreateUser(ctx context.Context, req *models.CreateUserRequest) (string, error) {
+	tx, err := r.client.BeginTx(ctx, nil)
+	if err != nil {
+		return "", err
+	}
+
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+
+	stmt, err := tx.PrepareContext(ctx, `INSERT INTO users (user_name, email, password_hash) VALUES ($1, $2, $3);`)
+	if err != nil {
+		return "", err
+	}
+	defer stmt.Close()
+
+	if _, err = stmt.ExecContext(ctx, req.UserName, req.Email, req.Hash); err != nil {
+		if isDuplicateKeyError(err) {
+			return "", enum.ErrRecordAlreadyExists
+		} else {
+			return "", err
+		}
+	}
+
+	var id string
+	stmt2, err := tx.PrepareContext(ctx, `SELECT id FROM users WHERE email = $1;`)
+	if err != nil {
+		return "", err
+	}
+	defer stmt2.Close()
+
+	if err = stmt2.QueryRowContext(ctx, req.Email).Scan(&id); err != nil {
+		return "", err
+	}
+
+	stmt3, err := tx.PrepareContext(ctx, `INSERT INTO user_profiles (user_id, avatar_url, bio, phone) VALUES ($1, $2, $3, $4)`)
+	if err != nil {
+		return "", err
+	}
+	defer stmt3.Close()
+
+	if _, err = stmt3.ExecContext(ctx, id, req.AvatarUrl, req.Bio, req.Phone); err != nil {
+		return "", nil
+	}
+
+	if err = tx.Commit(); err != nil {
+		return "", err
+	}
+
+	return id, nil
 }
 
 func (r *UserRepo) GetUserById(ctx context.Context, id string) (*models.User, error) {
@@ -72,4 +128,12 @@ func (r *UserRepo) ExistsByEmail(ctx context.Context, email string) (bool, error
 	}
 
 	return emailExists, nil
+}
+
+func isDuplicateKeyError(err error) bool {
+	var pqErr *pq.Error
+	if errors.As(err, &pqErr) {
+		return pqErr.Code == "23505"
+	}
+	return false
 }

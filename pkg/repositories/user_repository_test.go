@@ -5,11 +5,11 @@ import (
 	"testing"
 
 	"github.com/karnerfly/pretkotha/pkg/db"
+	"github.com/karnerfly/pretkotha/pkg/models"
 	_ "github.com/lib/pq"
 )
 
 func TestGetUserById(t *testing.T) {
-
 	db, err := db.New("postgres://postgres:ajay9339@127.0.0.1:5432/pretkotha?sslmode=disable")
 	if err != nil {
 		t.Fatal(err)
@@ -37,4 +37,28 @@ func TestExistsByEmail(t *testing.T) {
 	}
 
 	t.Logf("FOUND: %v", ok)
+}
+
+func TestCreateUser(t *testing.T) {
+	db, err := db.New("postgres://postgres:ajay9339@127.0.0.1:5432/pretkotha?sslmode=disable")
+	if err != nil {
+		t.Fatal(err)
+	}
+	ur := NewUserRepo(db.Client())
+
+	user := &models.CreateUserRequest{
+		UserName:  "testing",
+		Email:     "testing@testing.com",
+		Hash:      "hash123",
+		AvatarUrl: "avatar.png",
+		Bio:       "testing bio test",
+		Phone:     "0000000000",
+	}
+
+	id, err := ur.CreateUser(context.TODO(), user)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("USER_ID: %s", id)
 }
