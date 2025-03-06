@@ -1,12 +1,10 @@
 package handlers
 
 import (
-	"database/sql"
 	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/karnerfly/pretkotha/pkg/enum/httperr"
 	"github.com/karnerfly/pretkotha/pkg/logger"
 	"github.com/karnerfly/pretkotha/pkg/models"
 	"github.com/karnerfly/pretkotha/pkg/services"
@@ -17,15 +15,15 @@ type UserHandler struct {
 	userService services.UserServiceInterface
 }
 
-func NewUserHander(client *sql.DB) *UserHandler {
+func NewUserHander(userService services.UserServiceInterface) *UserHandler {
 	return &UserHandler{
-		userService: services.NewUserService(client),
+		userService: userService,
 	}
 }
 
 func (h *UserHandler) HandleUserRegister(ctx *gin.Context) {
 
-	var req = &models.CreateUserRequest{}
+	var req = &models.CreateUserPayload{}
 	err := utils.FromJSONRequest(ctx.Request.Body, req)
 
 	if err != nil {
@@ -37,7 +35,7 @@ func (h *UserHandler) HandleUserRegister(ctx *gin.Context) {
 	err = h.userService.Register(req)
 
 	if err != nil {
-		if errors.Is(err, httperr.ErrConflict) {
+		if errors.Is(err, ErrConflict) {
 			utils.SendErrorResponse(ctx, "bad request, duplicate entry", http.StatusConflict)
 			return
 		} else {

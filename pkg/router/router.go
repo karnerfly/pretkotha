@@ -6,6 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/karnerfly/pretkotha/pkg/handlers"
+	"github.com/karnerfly/pretkotha/pkg/repositories"
+	"github.com/karnerfly/pretkotha/pkg/services"
 	"github.com/karnerfly/pretkotha/pkg/utils"
 )
 
@@ -27,7 +29,7 @@ func Initialize(router *gin.Engine, client *sql.DB) {
 	})
 
 	userRouter := router.Group("/api/user")
-	userHandler := handlers.NewUserHander(client)
+	userHandler := getUserHandler(client)
 
 	userRouter.GET("/register", userHandler.HandleUserRegister)
 	userRouter.POST("", userHandler.HandleUserLogin)
@@ -35,4 +37,10 @@ func Initialize(router *gin.Engine, client *sql.DB) {
 	router.NoRoute(func(ctx *gin.Context) {
 		utils.SendNotFoundResponse(ctx, "404 not found")
 	})
+}
+
+func getUserHandler(client *sql.DB) *handlers.UserHandler {
+	userRepo := repositories.NewUserRepo(client)
+	userService := services.NewUserService(userRepo)
+	return handlers.NewUserHander(userService)
 }

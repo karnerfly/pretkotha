@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -12,6 +14,11 @@ import (
 func GenerateRandomUUID() string {
 	id := uuid.New()
 	return id.String()
+}
+
+func GenerateRandomNumber() string {
+	n := rand.Intn(900000) + 100000
+	return strconv.Itoa(n)
 }
 
 func GenerateJwtToken(sub string) string {

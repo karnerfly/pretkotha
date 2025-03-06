@@ -1,6 +1,6 @@
 package models
 
-type CreateUserRequest struct {
+type CreateUserPayload struct {
 	UserName  string `json:"user_name" validate:"required,min=5,max=20"`
 	Email     string `json:"email" validate:"required,email"`
 	Hash      string `json:"password" validate:"required"`
@@ -9,12 +9,12 @@ type CreateUserRequest struct {
 	Phone     string `json:"phone"`
 }
 
-type LoginUserRequest struct {
+type LoginUserPayload struct {
 	Email string `json:"email" validate:"required,email"`
 	Hash  string `json:"password" validate:"required"`
 }
 
-type CreatePostRequest struct {
+type CreatePostPayload struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Thumbnail   string `json:"thumbnail"`
@@ -23,10 +23,10 @@ type CreatePostRequest struct {
 	Category    string `json:"category"`
 }
 
-type LikeRequest struct {
+type LikePayload struct {
 	UserId string `json:"user_id"`
 }
 
-type DislikeRequest struct {
+type DislikPayload struct {
 	UserId string `json:"user_id"`
 }

@@ -14,6 +14,7 @@ import (
 	"github.com/karnerfly/pretkotha/pkg/db"
 	"github.com/karnerfly/pretkotha/pkg/logger"
 	"github.com/karnerfly/pretkotha/pkg/router"
+	"github.com/karnerfly/pretkotha/pkg/utils/mail"
 	_ "github.com/lib/pq"
 )
 
@@ -31,6 +32,20 @@ func main() {
 	db, err := db.New(cfg.DatabaseURL)
 	if err != nil {
 		logger.Fatal(err)
+	}
+
+	// create mailservice and parse all mail templates
+	mailOpts := mail.Option{
+		SmtpUsername:   "",
+		SmtpPassword:   "",
+		SmtpHost:       "",
+		SmtpServerAddr: "",
+		From:           "",
+	}
+	mailService := mail.NewMailService(mailOpts)
+	err = mailService.ParseTemplate()
+	if err != nil {
+		logger.ERROR(err.Error())
 	}
 
 	// create ServeMux with gin

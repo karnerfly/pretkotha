@@ -46,7 +46,7 @@ func TestCreateUser(t *testing.T) {
 	}
 	ur := NewUserRepo(db.Client())
 
-	user := &models.CreateUserRequest{
+	user := &models.CreateUserPayload{
 		UserName:  "testing",
 		Email:     "testing@testing.com",
 		Hash:      "hash123",

@@ -5,12 +5,12 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/karnerfly/pretkotha/pkg/enum/dberr"
+	"github.com/karnerfly/pretkotha/pkg/db"
 	"github.com/karnerfly/pretkotha/pkg/models"
 )
 
 type UserRepositoryInterface interface {
-	CreateUser(ctx context.Context, user *models.CreateUserRequest) (string, error)
+	CreateUser(ctx context.Context, user *models.CreateUserPayload) (string, error)
 	GetUserById(ctx context.Context, id string) (*models.User, error)
 	ExistsByEmail(ctx context.Context, email string) (bool, error)
 }
@@ -23,7 +23,7 @@ func NewUserRepo(client *sql.DB) *UserRepo {
 	return &UserRepo{client}
 }
 
-func (r *UserRepo) CreateUser(ctx context.Context, req *models.CreateUserRequest) (string, error) {
+func (r *UserRepo) CreateUser(ctx context.Context, req *models.CreateUserPayload) (string, error) {
 	tx, err := r.client.BeginTx(ctx, nil)
 	if err != nil {
 		return "", err
@@ -64,7 +64,7 @@ func (r *UserRepo) CreateUser(ctx context.Context, req *models.CreateUserRequest
 }
 
 func (r *UserRepo) GetUserById(ctx context.Context, id string) (*models.User, error) {
-	stmt, err := r.client.PrepareContext(ctx, `SELECT u.id, u.user_name, u.email,u.is_banned, u.banned_at, u.created_at, u.updated_at, up.bio, up.avatar_url, up.phone FROM users AS u LEFT JOIN user_profiles AS up ON u.id = up.user_id WHERE u.is_banned=FALSE AND u.id=$1;`)
+	stmt, err := r.client.PrepareContext(ctx, `SELECT u.id, u.user_name, u.email,u.is_banned, u.banned_at, u.created_at, u.updated_at, up.bio, up.role, up.avatar_url, up.phone FROM users AS u LEFT JOIN user_profiles AS up ON u.id = up.user_id WHERE u.is_banned=FALSE AND u.id=$1;`)
 	if err != nil {
 		return nil, err
 	}
@@ -78,10 +78,10 @@ func (r *UserRepo) GetUserById(ctx context.Context, id string) (*models.User, er
 		phone     sql.NullString
 	)
 
-	err = stmt.QueryRowContext(ctx, id).Scan(&user.ID, &user.UserName, &user.Email, &user.IsBanned, &bannedat, &user.CreatedAt, &user.UpdatedAt, &bio, &avatarurl, &phone)
+	err = stmt.QueryRowContext(ctx, id).Scan(&user.ID, &user.UserName, &user.Email, &user.IsBanned, &bannedat, &user.CreatedAt, &user.UpdatedAt, &bio, &user.Profile.Role, &avatarurl, &phone)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, dberr.ErrRecordNotFound
+			return nil, db.ErrRecordNotFound
 		} else {
 			return nil, err
 		}
