@@ -19,6 +19,6 @@ func NewUserValidator() *UserValidator {
 	}
 }
 
-func (v *UserValidator) ValidateUserSignUp(user *models.User) error {
-	return v.validator.Struct(user)
+func (v *UserValidator) ValidateUserSignUp(req *models.CreateUserPayload) error {
+	return v.validator.Struct(req)
 }

@@ -18,6 +18,11 @@ type Config struct {
 	ServerWriteTimeout time.Duration
 	ServerIdleTimeout  time.Duration
 	DatabaseURL        string
+	SmtpUsername       string
+	SmtpPassword       string
+	SmtpHost           string
+	SmtpServerAddr     string
+	From               string
 }
 
 func Load() error {
@@ -38,6 +43,11 @@ func New() *Config {
 		ServerWriteTimeout: getEnv("SERVER_WRITE_TIMEOUT", time.Duration(15)).(time.Duration),
 		ServerIdleTimeout:  getEnv("SERVER_IDLE_TIMEOUT", time.Duration(90)).(time.Duration),
 		DatabaseURL:        getEnv("DATABASE_URL", "").(string),
+		SmtpUsername:       getEnv("SMTP_USERNAME", "").(string),
+		SmtpPassword:       getEnv("SMTP_PASSWORD", "").(string),
+		SmtpHost:           getEnv("SMTP_HOST", "").(string),
+		SmtpServerAddr:     getEnv("SMTP_SERVER_ADDRESS", "").(string),
+		From:               getEnv("SMTP_FROM", "").(string),
 	}
 }
 
