@@ -18,7 +18,8 @@ type Mailer interface {
 type MailError error
 
 var (
-	ErrTimeOut MailError = errors.New("timeout error")
+	ErrTimeOut      MailError = errors.New("timeout error")
+	ErrExceedMaxTry MailError = errors.New("exceeds the max try for sending mail")
 )
 
 type Option struct {
@@ -42,7 +43,7 @@ func NewMailService(opt Option) *MailService {
 }
 
 func (s *MailService) Mail(ctx context.Context, to []string, body []byte) error {
-	errChan := make(chan error)
+	errChan := make(chan error, 1)
 
 	go func() {
 		auth := smtp.PlainAuth("", s.Option.SmtpUsername, s.Option.SmtpPassword, s.Option.SmtpHost)
@@ -52,6 +53,7 @@ func (s *MailService) Mail(ctx context.Context, to []string, body []byte) error 
 			return
 		}
 		errChan <- nil
+		close(errChan)
 	}()
 
 	select {
@@ -63,12 +65,20 @@ func (s *MailService) Mail(ctx context.Context, to []string, body []byte) error 
 }
 
 func (s *MailService) SendOtpMail(ctx context.Context, to, otp string) error {
-	body := s.getOtpTemplate(to, otp)
+	body, err := s.getOtpTemplate(to, otp)
+	if err != nil {
+		return err
+	}
 
 	attempAfter := 1
+	remainingTry := 5
 	after := time.After(time.Duration(attempAfter) * time.Second)
 
 	for {
+		if remainingTry <= 0 {
+			return ErrExceedMaxTry
+		}
+
 		<-after
 		err := s.Mail(ctx, []string{to}, body)
 		if !errors.Is(err, ErrTimeOut) {
@@ -76,6 +86,7 @@ func (s *MailService) SendOtpMail(ctx context.Context, to, otp string) error {
 		}
 
 		attempAfter *= 2
+		remainingTry--
 		after = time.After(time.Duration(attempAfter) * time.Second)
 		logger.Errorf("Timout Happend, try again after %ds [TO: %s]\n", attempAfter, to)
 	}

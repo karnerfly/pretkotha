@@ -7,13 +7,7 @@ import (
 )
 
 func TestSendOtpMail(t *testing.T) {
-	opt := Option{
-		SmtpUsername:   "toufiquealajay64@gmail.com",
-		SmtpPassword:   "imbn eecm acss ruzy",
-		SmtpHost:       "smtp.gmail.com",
-		SmtpServerAddr: "smtp.gmail.com:587",
-		From:           "Pretkotha toufiquealajay64@gmail.com",
-	}
+	opt := Option{}
 	m := NewMailService(opt)
 	ctx, cancle := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancle()

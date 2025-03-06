@@ -1,12 +1,10 @@
 package handlers
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/karnerfly/pretkotha/pkg/logger"
-	"github.com/karnerfly/pretkotha/pkg/models"
+	"github.com/karnerfly/pretkotha/pkg/queue/mailqueue"
 	"github.com/karnerfly/pretkotha/pkg/services"
 	"github.com/karnerfly/pretkotha/pkg/utils"
 )
@@ -22,32 +20,33 @@ func NewUserHander(userService services.UserServiceInterface) *UserHandler {
 }
 
 func (h *UserHandler) HandleUserRegister(ctx *gin.Context) {
+	// data, exists := ctx.Get("data")
+	// if !exists {
+	// 	utils.SendServerErrorResponse(ctx, ErrInternalServer)
+	// 	return
+	// }
+	// req := data.(*models.CreateUserPayload)
 
-	var req = &models.CreateUserPayload{}
-	err := utils.FromJSONRequest(ctx.Request.Body, req)
-
-	if err != nil {
-		logger.ERROR(err.Error())
-		utils.SendErrorResponse(ctx, "bad request, cannot parse body", http.StatusBadRequest)
-		return
+	// _, err := h.userService.Register(req)
+	// if err != nil {
+	// 	if errors.Is(err, db.ErrRecordAlreadyExists) {
+	// 		utils.SendErrorResponse(ctx, "account already exists", http.StatusBadRequest)
+	// 		return
+	// 	} else {
+	// 		utils.SendServerErrorResponse(ctx, err)
+	// 		return
+	// 	}
+	// }
+	p := &mailqueue.MailPayload{
+		To:   "toufique26ajay@gmail.com",
+		Data: "123456",
 	}
+	mailqueue.Enqueue(mailqueue.TypeOtp, p)
 
-	err = h.userService.Register(req)
-
-	if err != nil {
-		if errors.Is(err, ErrConflict) {
-			utils.SendErrorResponse(ctx, "bad request, duplicate entry", http.StatusConflict)
-			return
-		} else {
-			utils.SendServerErrorResponse(ctx, err)
-			return
-		}
-	}
-
-	ctx.JSON(http.StatusCreated, map[string]any{
-		"status": "ok",
-		"page":   "register",
-	})
+	utils.SendSuccessResponse(ctx, map[string]string{
+		"message": "OK",
+		"page":    "register",
+	}, http.StatusOK)
 }
 
 func (h *UserHandler) HandleUserLogin(ctx *gin.Context) {

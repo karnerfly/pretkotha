@@ -47,12 +47,11 @@ func TestCreateUser(t *testing.T) {
 	ur := NewUserRepo(db.Client())
 
 	user := &models.CreateUserPayload{
-		UserName:  "testing",
-		Email:     "testing@testing.com",
-		Hash:      "hash123",
-		AvatarUrl: "avatar.png",
-		Bio:       "testing bio test",
-		Phone:     "0000000000",
+		UserName: "testing",
+		Email:    "testing@testing.com",
+		Hash:     "hash123",
+		Bio:      "testing bio test",
+		Phone:    "0000000000",
 	}
 
 	id, err := ur.CreateUser(context.TODO(), user)

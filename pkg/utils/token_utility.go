@@ -1,7 +1,9 @@
 package utils
 
 import (
-	"math/rand"
+	"crypto/rand"
+	"encoding/base64"
+	mrand "math/rand"
 	"strconv"
 	"time"
 
@@ -16,8 +18,24 @@ func GenerateRandomUUID() string {
 	return id.String()
 }
 
+func GenerateUrlEncodedToken(size int) (string, error) {
+	b := make([]byte, size)
+
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", err
+	}
+
+	d := base64.StdEncoding.EncodeToString(b)
+	return d, nil
+}
+
+func ConvertToBase64(src string) string {
+	return base64.StdEncoding.EncodeToString([]byte(src)[:32])
+}
+
 func GenerateRandomNumber() string {
-	n := rand.Intn(900000) + 100000
+	n := mrand.Intn(900000) + 100000
 	return strconv.Itoa(n)
 }
 

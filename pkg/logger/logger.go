@@ -13,10 +13,6 @@ type Logger struct {
 var logger *Logger
 
 func init() {
-	Init()
-}
-
-func Init() {
 	if logger == nil {
 		logger = &Logger{
 			ErrLogger:  log.New(os.Stderr, "ERROR :: ", log.LstdFlags),

@@ -14,15 +14,14 @@ func TestRegister(t *testing.T) {
 	us := NewUserService(mr)
 
 	req := &models.CreateUserPayload{
-		UserName:  "toufique",
-		Email:     "toufique23@gmail.com",
-		Hash:      "hash1",
-		AvatarUrl: "avatar.jpg",
-		Bio:       "interesting bio",
-		Phone:     "9339813538",
+		UserName: "toufique",
+		Email:    "toufique23@gmail.com",
+		Hash:     "hash1",
+		Bio:      "interesting bio",
+		Phone:    "9339813538",
 	}
 
-	err := us.Register(req)
+	_, err := us.Register(req)
 	if err != nil {
 		t.Error(err)
 		t.Fail()

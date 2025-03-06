@@ -10,6 +10,20 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: pg_cron; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pg_cron WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pg_cron; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION pg_cron IS 'Job scheduler for PostgreSQL';
+
+
+--
 -- Name: categories; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -39,6 +53,21 @@ CREATE TYPE public.user_role AS ENUM (
     'user',
     'admin'
 );
+
+
+--
+-- Name: cleanup_unverified_users(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.cleanup_unverified_users() RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    DELETE FROM users
+    WHERE verified = FALSE
+    AND created_at <= NOW() - INTERVAL '1 hour';
+END;
+$$;
 
 
 SET default_tablespace = '';
@@ -252,4 +281,5 @@ ALTER TABLE ONLY public.user_profiles
 
 INSERT INTO public.schema_migrations (version) VALUES
     ('20250304161637'),
-    ('20250304185255');
+    ('20250304185255'),
+    ('20250306115632');

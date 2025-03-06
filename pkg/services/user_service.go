@@ -10,7 +10,7 @@ import (
 )
 
 type UserServiceInterface interface {
-	Register(req *models.CreateUserPayload) error
+	Register(req *models.CreateUserPayload) (string, error)
 	Login(req *models.LoginUserPayload) error
 }
 
@@ -24,31 +24,33 @@ func NewUserService(userRepo repositories.UserRepositoryInterface) *UserService 
 	}
 }
 
-func (s *UserService) Register(req *models.CreateUserPayload) error {
+/* returns ErrRecordAlreadyExists if any duplicate record found */
+func (s *UserService) Register(req *models.CreateUserPayload) (string, error) {
 	ctx, cancle := db.GetIdleTimeoutContext()
 	defer cancle()
 
 	exists, err := s.userRepo.ExistsByEmail(ctx, req.Email)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if exists {
-		return db.ErrRecordAlreadyExists
+		return "", db.ErrRecordAlreadyExists
 	}
 
-	req.Hash = utils.HashPassword(req.Hash)
+	hash := utils.HashPassword(req.Hash)
 
 	id, err := s.userRepo.CreateUser(ctx, req)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	otp := utils.GenerateRandomNumber()
+	sessionToken := utils.ConvertToBase64(id)
 
-	fmt.Printf("UserID: %s, UserEmail: %s Otp: %s\n", id, req.Email, otp)
+	fmt.Println(otp, hash, sessionToken)
 
-	return nil
+	return sessionToken, nil
 }
 
 func (s *UserService) Login(req *models.LoginUserPayload) error {

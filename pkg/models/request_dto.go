@@ -1,12 +1,11 @@
 package models
 
 type CreateUserPayload struct {
-	UserName  string `json:"user_name" validate:"required,min=5,max=20"`
-	Email     string `json:"email" validate:"required,email"`
-	Hash      string `json:"password" validate:"required"`
-	AvatarUrl string `json:"avatar_url"`
-	Bio       string `json:"bio"`
-	Phone     string `json:"phone"`
+	UserName string `json:"user_name" validate:"required,min=4,max=20"`
+	Email    string `json:"email" validate:"required,email"`
+	Hash     string `json:"password" validate:"required,min=8,max=25"`
+	Bio      string `json:"bio"`
+	Phone    string `json:"phone"`
 }
 
 type LoginUserPayload struct {

@@ -46,13 +46,13 @@ func (r *UserRepo) CreateUser(ctx context.Context, req *models.CreateUserPayload
 		return "", err
 	}
 
-	stmt2, err := tx.PrepareContext(ctx, `INSERT INTO user_profiles (user_id, avatar_url, bio, phone) VALUES ($1, $2, $3, $4)`)
+	stmt2, err := tx.PrepareContext(ctx, `INSERT INTO user_profiles (user_id, bio, phone) VALUES ($1, $2, $3, $4)`)
 	if err != nil {
 		return "", err
 	}
 	defer stmt2.Close()
 
-	if _, err = stmt2.ExecContext(ctx, id, req.AvatarUrl, req.Bio, req.Phone); err != nil {
+	if _, err = stmt2.ExecContext(ctx, id, req.Bio, req.Phone); err != nil {
 		return "", nil
 	}
 

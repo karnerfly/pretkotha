@@ -44,6 +44,11 @@ func (db *DB) Client() *sql.DB {
 	return db.client
 }
 
+func (db *DB) Close() error {
+	logger.INFO("Closing connection with database")
+	return db.client.Close()
+}
+
 func GetIdleTimeoutContext() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), 5*time.Second)
 }

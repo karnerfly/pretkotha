@@ -6,9 +6,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/karnerfly/pretkotha/pkg/handlers"
+	"github.com/karnerfly/pretkotha/pkg/middlewares"
 	"github.com/karnerfly/pretkotha/pkg/repositories"
 	"github.com/karnerfly/pretkotha/pkg/services"
 	"github.com/karnerfly/pretkotha/pkg/utils"
+	"github.com/karnerfly/pretkotha/pkg/validators"
 )
 
 func Initialize(router *gin.Engine, client *sql.DB) {
@@ -29,9 +31,10 @@ func Initialize(router *gin.Engine, client *sql.DB) {
 	})
 
 	userRouter := router.Group("/api/user")
+	userMiddleware := getUserMiddleware()
 	userHandler := getUserHandler(client)
 
-	userRouter.GET("/register", userHandler.HandleUserRegister)
+	userRouter.POST("/register", userMiddleware.ValidateRegister, userHandler.HandleUserRegister)
 	userRouter.POST("", userHandler.HandleUserLogin)
 
 	router.NoRoute(func(ctx *gin.Context) {
@@ -43,4 +46,9 @@ func getUserHandler(client *sql.DB) *handlers.UserHandler {
 	userRepo := repositories.NewUserRepo(client)
 	userService := services.NewUserService(userRepo)
 	return handlers.NewUserHander(userService)
+}
+
+func getUserMiddleware() *middlewares.UserMiddleware {
+	v := validators.NewUserValidator()
+	return middlewares.NewUserMiddleware(v)
 }
