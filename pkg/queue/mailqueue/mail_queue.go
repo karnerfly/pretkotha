@@ -8,6 +8,14 @@ import (
 	"github.com/karnerfly/pretkotha/pkg/logger"
 )
 
+type QueueError error
+
+var (
+	ErrNotInitialize    = errors.New("mail queue is not initialized")
+	ErrInvalidQueueType = errors.New("invalid queue type")
+	ErrBufferFull       = errors.New("mail queue is full, message dropped")
+)
+
 type QueueType int
 
 const (
@@ -55,47 +63,47 @@ func Shutdown() {
 
 func Enqueue(qt QueueType, payload *MailPayload) error {
 	if queue == nil {
-		return errors.New("mail queue is not initialized")
+		return ErrNotInitialize
 	}
 	if qt < 0 || qt >= maxQueueType {
-		return errors.New("invalid queue type")
+		return ErrInvalidQueueType
 	}
 
 	select {
 	case queue.ch[qt] <- payload:
 		return nil
 	default:
-		return errors.New("mail queue is full, message dropped")
+		return ErrBufferFull
 	}
 }
 
-func RegisterWorker(qt QueueType, fn Worker) {
+func RegisterWorker(qt QueueType, fn Worker) error {
 	if queue == nil {
-		logger.ERROR("Mail queue is not initialized")
-		return
+		return ErrNotInitialize
 	}
 	if qt < 0 || qt >= maxQueueType {
-		logger.ERROR("Invalid queue type for worker")
-		return
+		return ErrInvalidQueueType
 	}
 
 	queue.wg.Add(1)
 	go func() {
 		defer queue.wg.Done()
-		logger.INFO("Worker started for queue: " + qt.String())
+		logger.Printf("Worker started for queue: %s", qt)
 
 		for {
 			select {
 			case payload := <-queue.ch[qt]:
 				if err := fn(payload); err != nil {
-					logger.ERROR("Worker error: " + err.Error())
+					logger.Errorf("Worker error: %v", err)
 				}
 			case <-queue.ctx.Done():
-				logger.INFO("Shutting down worker for queue: " + qt.String())
+				logger.Printf("Shutting down worker for queue: %s", qt)
 				return
 			}
 		}
 	}()
+
+	return nil
 }
 
 func (qt QueueType) String() string {

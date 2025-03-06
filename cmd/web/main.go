@@ -16,6 +16,7 @@ import (
 	"github.com/karnerfly/pretkotha/pkg/queue/mailqueue"
 	"github.com/karnerfly/pretkotha/pkg/router"
 	"github.com/karnerfly/pretkotha/pkg/services/mail"
+	"github.com/karnerfly/pretkotha/pkg/session"
 	_ "github.com/lib/pq"
 )
 
@@ -29,6 +30,10 @@ func main() {
 	// establish connection with database. (if err then exit)
 	db, err := db.New(cfg.DatabaseURL)
 	if err != nil {
+		logger.Fatal(err)
+	}
+
+	if err = session.Init(cfg.RedisUrl); err != nil {
 		logger.Fatal(err)
 	}
 
@@ -46,10 +51,10 @@ func main() {
 	}
 
 	// initialize mail queue for OTP mail channel and EVENT mail channel
-	mailqueue.Init(5)
+	mailqueue.Init(10)
 
 	// register worker for send OTP mail
-	mailqueue.RegisterWorker(mailqueue.TypeOtp, func(payload *mailqueue.MailPayload) error {
+	err = mailqueue.RegisterWorker(mailqueue.TypeOtp, func(payload *mailqueue.MailPayload) error {
 		ctx, cancle := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancle()
 
@@ -61,6 +66,9 @@ func main() {
 		logger.INFO("Mail sent successfully")
 		return nil
 	})
+	if err != nil {
+		logger.ERROR(err.Error())
+	}
 
 	// create ServeMux with gin
 	gin.SetMode(gin.ReleaseMode)

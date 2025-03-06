@@ -23,6 +23,7 @@ type Config struct {
 	SmtpHost           string
 	SmtpServerAddr     string
 	From               string
+	RedisUrl           string
 }
 
 func Load() error {
@@ -48,6 +49,7 @@ func New() *Config {
 		SmtpHost:           getEnv("SMTP_HOST", "").(string),
 		SmtpServerAddr:     getEnv("SMTP_SERVER_ADDRESS", "").(string),
 		From:               getEnv("SMTP_FROM", "").(string),
+		RedisUrl:           getEnv("REDIS_URL", "").(string),
 	}
 }
 
