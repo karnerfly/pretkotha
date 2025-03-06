@@ -19,7 +19,7 @@ func NewUserMiddleware(v validators.UserValidatorInterface) *UserMiddleware {
 	}
 }
 
-func (m *UserMiddleware) ValidateSignUp(ctx *gin.Context) {
+func (m *UserMiddleware) ValidateRegister(ctx *gin.Context) {
 	req := &models.CreateUserPayload{}
 
 	err := utils.ValidateJSON(ctx, req)
@@ -29,7 +29,7 @@ func (m *UserMiddleware) ValidateSignUp(ctx *gin.Context) {
 		return
 	}
 
-	err = m.validator.ValidateUserSignUp(req)
+	err = m.validator.ValidateUserRegister(req)
 	if err != nil {
 		ctx.Abort()
 		utils.SendErrorResponse(ctx, "invalid credentials", http.StatusBadRequest)

@@ -6,7 +6,8 @@ import (
 )
 
 type UserValidatorInterface interface {
-	ValidateUserSignUp(*models.CreateUserPayload) error
+	ValidateUserRegister(*models.CreateUserPayload) error
+	ValidateUserLogin(req *models.LoginUserPayload) error
 }
 
 type UserValidator struct {
@@ -19,6 +20,10 @@ func NewUserValidator() *UserValidator {
 	}
 }
 
-func (v *UserValidator) ValidateUserSignUp(req *models.CreateUserPayload) error {
+func (v *UserValidator) ValidateUserRegister(req *models.CreateUserPayload) error {
+	return v.validator.Struct(req)
+}
+
+func (v *UserValidator) ValidateUserLogin(req *models.LoginUserPayload) error {
 	return v.validator.Struct(req)
 }

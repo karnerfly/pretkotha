@@ -34,7 +34,7 @@ func Initialize(router *gin.Engine, client *sql.DB) {
 	userMiddleware := getUserMiddleware()
 	userHandler := getUserHandler(client)
 
-	userRouter.POST("/register", userMiddleware.ValidateSignUp, userHandler.HandleUserRegister)
+	userRouter.POST("/register", userMiddleware.ValidateRegister, userHandler.HandleUserRegister)
 	userRouter.POST("", userHandler.HandleUserLogin)
 
 	router.NoRoute(func(ctx *gin.Context) {
