@@ -14,12 +14,13 @@ import (
 	"github.com/karnerfly/pretkotha/pkg/db"
 	"github.com/karnerfly/pretkotha/pkg/logger"
 	"github.com/karnerfly/pretkotha/pkg/router"
+	"github.com/karnerfly/pretkotha/pkg/utils/mail"
 	_ "github.com/lib/pq"
 )
 
 func main() {
-	// create custom logger for dubegging
-	logger.Init()
+	// // create custom logger for dubegging
+	// logger.Init()
 
 	// load required configurations for server
 	if err := configs.Load(); err != nil {
@@ -28,16 +29,29 @@ func main() {
 	cfg := configs.New()
 
 	// establish connection with database. (if err then exit)
-	_, err := db.New(cfg.DatabaseURL)
+	db, err := db.New(cfg.DatabaseURL)
 	if err != nil {
 		logger.Fatal(err)
 	}
-	logger.INFO("Database Connection Established Successfully")
+
+	// create mailservice and parse all mail templates
+	mailOpts := mail.Option{
+		SmtpUsername:   "",
+		SmtpPassword:   "",
+		SmtpHost:       "",
+		SmtpServerAddr: "",
+		From:           "",
+	}
+	mailService := mail.NewMailService(mailOpts)
+	err = mailService.ParseTemplate()
+	if err != nil {
+		logger.ERROR(err.Error())
+	}
 
 	// create ServeMux with gin
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
-	router.Initialize(r)
+	router.Initialize(r, db.Client())
 
 	// create server
 	server := &http.Server{

@@ -5,13 +5,12 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/karnerfly/pretkotha/pkg/enum"
+	"github.com/karnerfly/pretkotha/pkg/db"
 	"github.com/karnerfly/pretkotha/pkg/models"
-	"github.com/lib/pq"
 )
 
 type UserRepositoryInterface interface {
-	CreateUser(ctx context.Context, user *models.User) (string, error)
+	CreateUser(ctx context.Context, user *models.CreateUserPayload) (string, error)
 	GetUserById(ctx context.Context, id string) (*models.User, error)
 	ExistsByEmail(ctx context.Context, email string) (bool, error)
 }
@@ -24,7 +23,7 @@ func NewUserRepo(client *sql.DB) *UserRepo {
 	return &UserRepo{client}
 }
 
-func (r *UserRepo) CreateUser(ctx context.Context, req *models.CreateUserRequest) (string, error) {
+func (r *UserRepo) CreateUser(ctx context.Context, req *models.CreateUserPayload) (string, error) {
 	tx, err := r.client.BeginTx(ctx, nil)
 	if err != nil {
 		return "", err
@@ -36,38 +35,24 @@ func (r *UserRepo) CreateUser(ctx context.Context, req *models.CreateUserRequest
 		}
 	}()
 
-	stmt, err := tx.PrepareContext(ctx, `INSERT INTO users (user_name, email, password_hash) VALUES ($1, $2, $3);`)
+	stmt, err := tx.PrepareContext(ctx, `INSERT INTO users (user_name, email, password_hash) VALUES ($1, $2, $3) RETURNING id;`)
 	if err != nil {
 		return "", err
 	}
 	defer stmt.Close()
 
-	if _, err = stmt.ExecContext(ctx, req.UserName, req.Email, req.Hash); err != nil {
-		if isDuplicateKeyError(err) {
-			return "", enum.ErrRecordAlreadyExists
-		} else {
-			return "", err
-		}
+	var id string
+	if err = stmt.QueryRowContext(ctx, req.UserName, req.Email, req.Hash).Scan(&id); err != nil {
+		return "", err
 	}
 
-	var id string
-	stmt2, err := tx.PrepareContext(ctx, `SELECT id FROM users WHERE email = $1;`)
+	stmt2, err := tx.PrepareContext(ctx, `INSERT INTO user_profiles (user_id, avatar_url, bio, phone) VALUES ($1, $2, $3, $4)`)
 	if err != nil {
 		return "", err
 	}
 	defer stmt2.Close()
 
-	if err = stmt2.QueryRowContext(ctx, req.Email).Scan(&id); err != nil {
-		return "", err
-	}
-
-	stmt3, err := tx.PrepareContext(ctx, `INSERT INTO user_profiles (user_id, avatar_url, bio, phone) VALUES ($1, $2, $3, $4)`)
-	if err != nil {
-		return "", err
-	}
-	defer stmt3.Close()
-
-	if _, err = stmt3.ExecContext(ctx, id, req.AvatarUrl, req.Bio, req.Phone); err != nil {
+	if _, err = stmt2.ExecContext(ctx, id, req.AvatarUrl, req.Bio, req.Phone); err != nil {
 		return "", nil
 	}
 
@@ -79,7 +64,7 @@ func (r *UserRepo) CreateUser(ctx context.Context, req *models.CreateUserRequest
 }
 
 func (r *UserRepo) GetUserById(ctx context.Context, id string) (*models.User, error) {
-	stmt, err := r.client.PrepareContext(ctx, `SELECT u.id, u.user_name, u.email,u.is_banned, u.banned_at, u.created_at, u.updated_at, up.bio, up.avatar_url, up.phone FROM users AS u LEFT JOIN user_profiles AS up ON u.id = up.user_id WHERE u.is_banned=FALSE AND u.id=$1;`)
+	stmt, err := r.client.PrepareContext(ctx, `SELECT u.id, u.user_name, u.email,u.is_banned, u.banned_at, u.created_at, u.updated_at, up.bio, up.role, up.avatar_url, up.phone FROM users AS u LEFT JOIN user_profiles AS up ON u.id = up.user_id WHERE u.is_banned=FALSE AND u.id=$1;`)
 	if err != nil {
 		return nil, err
 	}
@@ -93,10 +78,10 @@ func (r *UserRepo) GetUserById(ctx context.Context, id string) (*models.User, er
 		phone     sql.NullString
 	)
 
-	err = stmt.QueryRowContext(ctx, id).Scan(&user.ID, &user.UserName, &user.Email, &user.IsBanned, &bannedat, &user.CreatedAt, &user.UpdatedAt, &bio, &avatarurl, &phone)
+	err = stmt.QueryRowContext(ctx, id).Scan(&user.ID, &user.UserName, &user.Email, &user.IsBanned, &bannedat, &user.CreatedAt, &user.UpdatedAt, &bio, &user.Profile.Role, &avatarurl, &phone)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, enum.ErrRecordNotFound
+			return nil, db.ErrRecordNotFound
 		} else {
 			return nil, err
 		}
@@ -117,23 +102,11 @@ func (r *UserRepo) ExistsByEmail(ctx context.Context, email string) (bool, error
 	}
 	defer stmt.Close()
 
-	var emailExists bool
-	err = stmt.QueryRowContext(ctx, email).Scan(&emailExists)
+	var exists bool
+	err = stmt.QueryRowContext(ctx, email).Scan(&exists)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return false, enum.ErrRecordNotFound
-		} else {
-			return false, err
-		}
+		return false, err
 	}
 
-	return emailExists, nil
-}
-
-func isDuplicateKeyError(err error) bool {
-	var pqErr *pq.Error
-	if errors.As(err, &pqErr) {
-		return pqErr.Code == "23505"
-	}
-	return false
+	return exists, nil
 }
