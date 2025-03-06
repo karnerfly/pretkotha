@@ -5,7 +5,8 @@ import (
 	"errors"
 
 	"github.com/karnerfly/pretkotha/pkg/db"
-	"github.com/karnerfly/pretkotha/pkg/enum"
+	"github.com/karnerfly/pretkotha/pkg/enum/dberr"
+	"github.com/karnerfly/pretkotha/pkg/enum/httperr"
 	"github.com/karnerfly/pretkotha/pkg/models"
 	"github.com/karnerfly/pretkotha/pkg/repositories"
 )
@@ -31,10 +32,10 @@ func (s *UserService) Register(req *models.CreateUserRequest) error {
 
 	_, err := s.userRepo.CreateUser(ctx, req)
 	if err != nil {
-		if errors.Is(err, enum.ErrRecordAlreadyExists) {
-			return enum.ErrConflict
+		if errors.Is(err, dberr.ErrRecordAlreadyExists) {
+			return httperr.ErrConflict
 		} else {
-			return enum.ErrInternalServer
+			return httperr.ErrInternalServer
 		}
 	}
 

@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/karnerfly/pretkotha/pkg/enum"
+	"github.com/karnerfly/pretkotha/pkg/enum/dberr"
 	"github.com/karnerfly/pretkotha/pkg/models"
 	"github.com/lib/pq"
 )
@@ -45,7 +45,7 @@ func (r *UserRepo) CreateUser(ctx context.Context, req *models.CreateUserRequest
 
 	if _, err = stmt.ExecContext(ctx, req.UserName, req.Email, req.Hash); err != nil {
 		if isDuplicateKeyError(err) {
-			return "", enum.ErrRecordAlreadyExists
+			return "", dberr.ErrRecordAlreadyExists
 		} else {
 			return "", err
 		}
@@ -97,7 +97,7 @@ func (r *UserRepo) GetUserById(ctx context.Context, id string) (*models.User, er
 	err = stmt.QueryRowContext(ctx, id).Scan(&user.ID, &user.UserName, &user.Email, &user.IsBanned, &bannedat, &user.CreatedAt, &user.UpdatedAt, &bio, &avatarurl, &phone)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, enum.ErrRecordNotFound
+			return nil, dberr.ErrRecordNotFound
 		} else {
 			return nil, err
 		}
@@ -118,17 +118,13 @@ func (r *UserRepo) ExistsByEmail(ctx context.Context, email string) (bool, error
 	}
 	defer stmt.Close()
 
-	var emailExists bool
-	err = stmt.QueryRowContext(ctx, email).Scan(&emailExists)
+	var exists bool
+	err = stmt.QueryRowContext(ctx, email).Scan(&exists)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return false, enum.ErrRecordNotFound
-		} else {
-			return false, err
-		}
+		return false, err
 	}
 
-	return emailExists, nil
+	return exists, nil
 }
 
 func isDuplicateKeyError(err error) bool {

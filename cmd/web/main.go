@@ -18,8 +18,8 @@ import (
 )
 
 func main() {
-	// create custom logger for dubegging
-	logger.Init()
+	// // create custom logger for dubegging
+	// logger.Init()
 
 	// load required configurations for server
 	if err := configs.Load(); err != nil {
@@ -32,7 +32,6 @@ func main() {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	logger.INFO("Database Connection Established Successfully")
 
 	// create ServeMux with gin
 	gin.SetMode(gin.ReleaseMode)

@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"time"
+
+	"github.com/karnerfly/pretkotha/pkg/logger"
 )
 
 type DB struct {
@@ -22,6 +24,7 @@ func New(url string) (*DB, error) {
 		return nil, err
 	}
 
+	logger.INFO("Database Connection Established Successfully")
 	return &DB{
 		client: db,
 	}, nil

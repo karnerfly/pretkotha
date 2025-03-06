@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/karnerfly/pretkotha/pkg/enum"
+	"github.com/karnerfly/pretkotha/pkg/enum/httperr"
 	"github.com/karnerfly/pretkotha/pkg/logger"
 	"github.com/karnerfly/pretkotha/pkg/models"
 	"github.com/karnerfly/pretkotha/pkg/services"
@@ -37,7 +37,7 @@ func (h *UserHandler) HandleUserRegister(ctx *gin.Context) {
 	err = h.userService.Register(req)
 
 	if err != nil {
-		if errors.Is(err, enum.ErrConflict) {
+		if errors.Is(err, httperr.ErrConflict) {
 			utils.SendErrorResponse(ctx, "bad request, duplicate entry", http.StatusConflict)
 			return
 		} else {

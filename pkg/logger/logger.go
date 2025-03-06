@@ -12,10 +12,16 @@ type Logger struct {
 
 var logger *Logger
 
+func init() {
+	Init()
+}
+
 func Init() {
-	logger = &Logger{
-		ErrLogger:  log.New(os.Stderr, "ERROR :: ", log.LstdFlags),
-		InfoLogger: log.New(os.Stdin, "INFO :: ", log.LstdFlags),
+	if logger == nil {
+		logger = &Logger{
+			ErrLogger:  log.New(os.Stderr, "ERROR :: ", log.LstdFlags),
+			InfoLogger: log.New(os.Stdin, "INFO :: ", log.LstdFlags),
+		}
 	}
 }
 
