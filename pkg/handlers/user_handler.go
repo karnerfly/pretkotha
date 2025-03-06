@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/karnerfly/pretkotha/pkg/queue/mailqueue"
 	"github.com/karnerfly/pretkotha/pkg/services"
+	"github.com/karnerfly/pretkotha/pkg/utils"
 )
 
 type UserHandler struct {
@@ -19,35 +20,33 @@ func NewUserHander(userService services.UserServiceInterface) *UserHandler {
 }
 
 func (h *UserHandler) HandleUserRegister(ctx *gin.Context) {
-
-	// var req = &models.CreateUserPayload{}
-	// err := utils.FromJSONRequest(ctx.Request.Body, req)
-
-	// if err != nil {
-	// 	logger.ERROR(err.Error())
-	// 	utils.SendErrorResponse(ctx, "bad request, cannot parse body", http.StatusBadRequest)
+	// data, exists := ctx.Get("data")
+	// if !exists {
+	// 	utils.SendServerErrorResponse(ctx, ErrInternalServer)
 	// 	return
 	// }
+	// req := data.(*models.CreateUserPayload)
 
-	// err = h.userService.Register(req)
-
+	// _, err := h.userService.Register(req)
 	// if err != nil {
-	// 	if errors.Is(err, ErrConflict) {
-	// 		utils.SendErrorResponse(ctx, "bad request, duplicate entry", http.StatusConflict)
+	// 	if errors.Is(err, db.ErrRecordAlreadyExists) {
+	// 		utils.SendErrorResponse(ctx, "account already exists", http.StatusBadRequest)
 	// 		return
 	// 	} else {
 	// 		utils.SendServerErrorResponse(ctx, err)
 	// 		return
 	// 	}
 	// }
-
-	p := mailqueue.NewMailPaylod("toufique26ajay@gmail.com", "123456")
+	p := &mailqueue.MailPayload{
+		To:   "toufique26ajay@gmail.com",
+		Data: "123456",
+	}
 	mailqueue.Enqueue(mailqueue.TypeOtp, p)
 
-	ctx.JSON(http.StatusCreated, map[string]any{
-		"status": "ok",
-		"page":   "register",
-	})
+	utils.SendSuccessResponse(ctx, map[string]string{
+		"message": "OK",
+		"page":    "register",
+	}, http.StatusOK)
 }
 
 func (h *UserHandler) HandleUserLogin(ctx *gin.Context) {

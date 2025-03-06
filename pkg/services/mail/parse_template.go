@@ -2,6 +2,7 @@ package mail
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"html/template"
 	"path/filepath"
@@ -32,14 +33,17 @@ func (s *MailService) ParseTemplate() error {
 	return nil
 }
 
-func (s *MailService) getOtpTemplate(to, otp string) []byte {
+func (s *MailService) getOtpTemplate(to, otp string) ([]byte, error) {
 	// s.ParseTemplate() // for only testing
-	tx := s.Templates["otp"]
+	tx, ok := s.Templates["otp"]
+	if !ok {
+		return nil, errors.New("template not found")
+	}
 	var buffer bytes.Buffer
 
 	err := tx.Execute(&buffer, otp)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	data := []byte(fmt.Sprintf("To: %s\r\n", to) +
@@ -49,5 +53,5 @@ func (s *MailService) getOtpTemplate(to, otp string) []byte {
 		buffer.String(),
 	)
 
-	return data
+	return data, nil
 }

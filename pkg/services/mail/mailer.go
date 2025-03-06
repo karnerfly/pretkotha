@@ -65,7 +65,10 @@ func (s *MailService) Mail(ctx context.Context, to []string, body []byte) error 
 }
 
 func (s *MailService) SendOtpMail(ctx context.Context, to, otp string) error {
-	body := s.getOtpTemplate(to, otp)
+	body, err := s.getOtpTemplate(to, otp)
+	if err != nil {
+		return err
+	}
 
 	attempAfter := 1
 	remainingTry := 5

@@ -1,17 +1,16 @@
 package utils
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"encoding/hex"
+
+	"golang.org/x/crypto/argon2"
+)
 
 func HashPassword(password string) string {
-	h, err := bcrypt.GenerateFromPassword([]byte(password), 12)
-	if err != nil {
-		return ""
-	}
-
-	return string(h)
+	hash := argon2.IDKey([]byte(password), nil, 1, 64*1024, 4, 32)
+	return hex.EncodeToString(hash)
 }
 
-func ComparePassword(password string, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
+func ComparePassword(password, hash string) bool {
+	return HashPassword(password) == hash
 }

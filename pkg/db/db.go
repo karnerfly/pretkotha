@@ -45,6 +45,7 @@ func (db *DB) Client() *sql.DB {
 }
 
 func (db *DB) Close() error {
+	logger.INFO("Closing connection with database")
 	return db.client.Close()
 }
 

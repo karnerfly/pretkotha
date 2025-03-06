@@ -15,7 +15,7 @@ import (
 	"github.com/karnerfly/pretkotha/pkg/logger"
 	"github.com/karnerfly/pretkotha/pkg/queue/mailqueue"
 	"github.com/karnerfly/pretkotha/pkg/router"
-	"github.com/karnerfly/pretkotha/pkg/utils/mail"
+	"github.com/karnerfly/pretkotha/pkg/services/mail"
 	_ "github.com/lib/pq"
 )
 
@@ -46,7 +46,7 @@ func main() {
 	}
 
 	// initialize mail queue for OTP mail channel and EVENT mail channel
-	mailqueue.Init()
+	mailqueue.Init(5)
 
 	// register worker for send OTP mail
 	mailqueue.RegisterWorker(mailqueue.TypeOtp, func(payload *mailqueue.MailPayload) error {
@@ -76,6 +76,7 @@ func main() {
 		IdleTimeout:  cfg.ServerIdleTimeout * time.Second,
 	}
 
+	// listen in another go routine
 	go func() {
 		logger.INFO("Server Listing at " + cfg.ServerAddress)
 		if err := server.ListenAndServe(); err != nil {
@@ -84,25 +85,24 @@ func main() {
 	}()
 
 	// handle graceful shutdown
-	HandleServerShutdown(server, db)
-}
-
-func HandleServerShutdown(server *http.Server, db *db.DB) {
 	sig := make(chan os.Signal, 1)
-
 	signal.Notify(sig, os.Interrupt)
 	signal.Notify(sig, syscall.SIGTERM)
 
 	s := <-sig
-
-	logger.INFO("Closing connection with database")
+	// close database
 	if err := db.Close(); err != nil {
 		logger.ERROR(err.Error())
 	}
 
-	logger.INFO(fmt.Sprintf("shutting down the server:[SIGNAL=%s]", s))
+	// stop queue workers
+	mailqueue.Shutdown()
+
 	ctx, cancle := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancle()
+
+	// shutdown the server
+	logger.INFO(fmt.Sprintf("shutting down the server:[SIGNAL=%s]", s))
 	if err := server.Shutdown(ctx); err != nil {
 		logger.ERROR(err.Error())
 	}

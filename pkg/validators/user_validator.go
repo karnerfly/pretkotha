@@ -6,7 +6,7 @@ import (
 )
 
 type UserValidatorInterface interface {
-	ValidateUserSignUp(*models.User) error
+	ValidateUserSignUp(*models.CreateUserPayload) error
 }
 
 type UserValidator struct {

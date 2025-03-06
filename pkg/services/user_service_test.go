@@ -21,7 +21,7 @@ func TestRegister(t *testing.T) {
 		Phone:    "9339813538",
 	}
 
-	err := us.Register(req)
+	_, err := us.Register(req)
 	if err != nil {
 		t.Error(err)
 		t.Fail()

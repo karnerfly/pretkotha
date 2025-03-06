@@ -16,9 +16,9 @@ func TestParseTemplate(t *testing.T) {
 func TestGetOtpTemplate(t *testing.T) {
 	s := NewMailService(Option{})
 
-	msg := s.getOtpTemplate("toufique26ajay@gmail.com", "123456")
-	if msg == nil {
-		t.Fatal("message body is empty")
+	msg, err := s.getOtpTemplate("toufique26ajay@gmail.com", "123456")
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	t.Log(string(msg))

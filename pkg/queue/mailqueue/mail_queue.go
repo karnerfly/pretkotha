@@ -1,7 +1,9 @@
 package mailqueue
 
 import (
+	"context"
 	"errors"
+	"sync"
 
 	"github.com/karnerfly/pretkotha/pkg/logger"
 )
@@ -9,8 +11,9 @@ import (
 type QueueType int
 
 const (
-	TypeOtp = iota
+	TypeOtp QueueType = iota
 	TypeEvent
+	maxQueueType // Prevents out-of-bounds errors
 )
 
 type MailPayload struct {
@@ -21,56 +24,84 @@ type MailPayload struct {
 type Worker func(payload *MailPayload) error
 
 type mailQueue struct {
-	ch [2]chan *MailPayload
+	ch     [maxQueueType]chan *MailPayload
+	ctx    context.Context
+	cancel context.CancelFunc
+	wg     sync.WaitGroup
 }
 
 var queue *mailQueue
 
-func NewMailPaylod(to string, data any) *MailPayload {
-	return &MailPayload{
-		To:   to,
-		Data: data,
+// Initialize the queue with buffered channels
+func Init(bufferSize int) {
+	ctx, cancel := context.WithCancel(context.Background())
+	queue = &mailQueue{
+		ch: [maxQueueType]chan *MailPayload{
+			make(chan *MailPayload, bufferSize),
+			make(chan *MailPayload, bufferSize),
+		},
+		ctx:    ctx,
+		cancel: cancel,
 	}
 }
 
-func Init() {
-	queue = &mailQueue{
-		ch: [2]chan *MailPayload{
-			make(chan *MailPayload),
-			make(chan *MailPayload),
-		},
+func Shutdown() {
+	if queue == nil {
+		return
 	}
+	queue.cancel()
+	queue.wg.Wait()
 }
 
 func Enqueue(qt QueueType, payload *MailPayload) error {
 	if queue == nil {
 		return errors.New("mail queue is not initialized")
 	}
-	queue.ch[qt] <- payload
-
-	return nil
-}
-
-func Dequeue(qt QueueType) (*MailPayload, error) {
-	if queue == nil {
-		return nil, errors.New("mail queue is not initialized")
+	if qt < 0 || qt >= maxQueueType {
+		return errors.New("invalid queue type")
 	}
 
-	return <-queue.ch[qt], nil
+	select {
+	case queue.ch[qt] <- payload:
+		return nil
+	default:
+		return errors.New("mail queue is full, message dropped")
+	}
 }
 
 func RegisterWorker(qt QueueType, fn Worker) {
+	if queue == nil {
+		logger.ERROR("Mail queue is not initialized")
+		return
+	}
+	if qt < 0 || qt >= maxQueueType {
+		logger.ERROR("Invalid queue type for worker")
+		return
+	}
+
+	queue.wg.Add(1)
 	go func() {
-		for paylod := range queue.ch[qt] {
-			if err := fn(paylod); err != nil {
-				logger.ERROR(err.Error())
+		defer queue.wg.Done()
+		logger.INFO("Worker started for queue: " + qt.String())
+
+		for {
+			select {
+			case payload := <-queue.ch[qt]:
+				if err := fn(payload); err != nil {
+					logger.ERROR("Worker error: " + err.Error())
+				}
+			case <-queue.ctx.Done():
+				logger.INFO("Shutting down worker for queue: " + qt.String())
+				return
 			}
 		}
 	}()
-
-	logger.INFO("Worker Registered Successfully for Mail Type: " + qt.String())
 }
 
 func (qt QueueType) String() string {
-	return [...]string{"OTP", "EVENT"}[qt]
+	types := []string{"OTP", "EVENT"}
+	if qt >= 0 && int(qt) < len(types) {
+		return types[qt]
+	}
+	return "UNKNOWN"
 }
