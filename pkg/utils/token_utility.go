@@ -31,7 +31,7 @@ func GenerateUrlEncodedToken(size int) (string, error) {
 }
 
 func ConvertToBase64(src string) string {
-	return base64.StdEncoding.EncodeToString([]byte(src)[:32])
+	return base64.StdEncoding.EncodeToString([]byte(src))
 }
 
 func GenerateRandomNumber() string {

@@ -151,6 +151,7 @@ CREATE TABLE public.users (
     user_name text NOT NULL,
     email text NOT NULL,
     password_hash text NOT NULL,
+    verified boolean DEFAULT false NOT NULL,
     is_banned boolean DEFAULT false NOT NULL,
     banned_at timestamp with time zone,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,

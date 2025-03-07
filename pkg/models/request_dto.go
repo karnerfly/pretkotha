@@ -1,5 +1,14 @@
 package models
 
+type SendOtpPayload struct {
+	Email string `json:"email" validate:"required,email"`
+}
+
+type VerifyOtpPayload struct {
+	Email string `json:"email" validate:"required,email"`
+	Otp   string `json:"otp" validate:"required,numeric,len=6"`
+}
+
 type CreateUserPayload struct {
 	UserName string `json:"user_name" validate:"required,min=4,max=20"`
 	Email    string `json:"email" validate:"required,email"`
