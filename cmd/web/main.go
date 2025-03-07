@@ -27,13 +27,14 @@ func main() {
 	}
 	cfg := configs.New()
 
-	// establish connection with database. (if err then exit)
-	db, err := db.New(cfg.DatabaseURL)
-	if err != nil {
+	// initialize session
+	if err := session.Init(cfg.RedisUrl); err != nil {
 		logger.Fatal(err)
 	}
 
-	if err = session.Init(cfg.RedisUrl); err != nil {
+	// establish connection with database. (if err then exit)
+	db, err := db.New(cfg.DatabaseURL)
+	if err != nil {
 		logger.Fatal(err)
 	}
 

@@ -1,0 +1,111 @@
+package handlers
+
+import (
+	"errors"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/karnerfly/pretkotha/pkg/configs"
+	"github.com/karnerfly/pretkotha/pkg/db"
+	"github.com/karnerfly/pretkotha/pkg/models"
+	"github.com/karnerfly/pretkotha/pkg/services"
+	"github.com/karnerfly/pretkotha/pkg/utils"
+)
+
+type AuthHandler struct {
+	authService services.AuthServiceInterface
+	config      *configs.Config
+}
+
+func NewAuthHander(userService services.AuthServiceInterface) *AuthHandler {
+	return &AuthHandler{
+		authService: userService,
+		config:      configs.New(),
+	}
+}
+
+func (h *AuthHandler) HandleSendOtp(ctx *gin.Context) {
+	data, exists := ctx.Get("data")
+	if !exists {
+		utils.SendServerErrorResponse(ctx, ErrInternalServer)
+		return
+	}
+	req := data.(*models.SendOtpPayload)
+
+	err := h.authService.SendOtp(req)
+	if err != nil {
+		switch err {
+		case db.ErrRecordNotFound:
+			utils.SendErrorResponse(ctx, "invalid email id", http.StatusBadRequest)
+		case db.ErrRecordAlreadyExists:
+			utils.SendErrorResponse(ctx, "account already activated", http.StatusBadRequest)
+		default:
+			utils.SendServerErrorResponse(ctx, err)
+		}
+		return
+	}
+
+	utils.SendSuccessResponse(ctx, map[string]string{
+		"message": "OK",
+		"page":    "send otp",
+	}, http.StatusOK)
+}
+
+func (h *AuthHandler) HandleVerifyOtp(ctx *gin.Context) {
+	data, exists := ctx.Get("data")
+	if !exists {
+		utils.SendServerErrorResponse(ctx, ErrInternalServer)
+		return
+	}
+	req := data.(*models.VerifyOtpPayload)
+
+	err := h.authService.VerifyOtp(req)
+	if err != nil {
+		switch err {
+		case services.ErrInvalidOtp:
+			utils.SendErrorResponse(ctx, "invalid otp", http.StatusBadRequest)
+		case services.ErrOtpNotMatch:
+			utils.SendErrorResponse(ctx, "opt not matched", http.StatusBadRequest)
+		default:
+			utils.SendServerErrorResponse(ctx, err)
+		}
+		return
+	}
+
+	utils.SendSuccessResponse(ctx, map[string]string{
+		"message": "OK",
+		"page":    "verify otp",
+	}, http.StatusOK)
+}
+
+func (h *AuthHandler) HandleUserRegister(ctx *gin.Context) {
+	data, exists := ctx.Get("data")
+	if !exists {
+		utils.SendServerErrorResponse(ctx, ErrInternalServer)
+		return
+	}
+	req := data.(*models.CreateUserPayload)
+
+	err := h.authService.Register(req)
+	if err != nil {
+		if errors.Is(err, db.ErrRecordAlreadyExists) {
+			utils.SendErrorResponse(ctx, "account already exists", http.StatusBadRequest)
+			return
+		} else {
+			utils.SendServerErrorResponse(ctx, err)
+			return
+		}
+	}
+
+	utils.SendSuccessResponse(ctx, map[string]string{
+		"message": "OK",
+		"page":    "register",
+	}, http.StatusOK)
+}
+
+func (h *AuthHandler) HandleUserLogin(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, map[string]any{
+		"status": "ok",
+		"page":   "login",
+	})
+}

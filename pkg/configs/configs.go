@@ -37,7 +37,7 @@ func New() *Config {
 	return &Config{
 		ServerAddress:      getEnv("SERVER_ADDRERSS", ":3000").(string),
 		Version:            getEnv("VERSION", "v0.1-alpha").(string),
-		Domain:             getEnv("DOMAIN", "pretkotha.com").(string),
+		Domain:             getEnv("DOMAIN", "localhost").(string),
 		JwtSecret:          getEnv("JWT_SECRET", "random_jwt_secret").(string),
 		JwtExpiry:          getEnv("JWT_EXPIRY", time.Duration(30*24*time.Hour)).(time.Duration),
 		ServerReadTimeout:  getEnv("SERVER_READ_TIMEOUT", time.Duration(20)).(time.Duration),

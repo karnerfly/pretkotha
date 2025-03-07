@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/karnerfly/pretkotha/pkg/utils"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -14,11 +15,17 @@ var (
 	ErrNotInitialize = errors.New("session is not initialize")
 )
 
+const Nil = redis.Nil
+
 type Session struct {
 	client *redis.Client
 }
 
-var session *Session
+var s *Session
+
+func GetIdleTimeoutContext() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), 5*time.Second)
+}
 
 func Init(url string) error {
 	opts, err := redis.ParseURL(url)
@@ -26,40 +33,54 @@ func Init(url string) error {
 		return err
 	}
 
-	session = &Session{
+	s = &Session{
 		client: redis.NewClient(opts),
 	}
 
-	ctx, cancle := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancle := GetIdleTimeoutContext()
 	defer cancle()
-	sc := session.client.Ping(ctx)
+	sc := s.client.Ping(ctx)
+	if sc.Err() != nil {
+		return errors.New("Session cannot initialized")
+	}
+
+	return nil
+}
+
+func Serialize(ctx context.Context, key string, value any, ttl time.Duration) error {
+	if s == nil {
+		return ErrNotInitialize
+	}
+
+	data, err := utils.ToJSON(value)
+	if err != nil {
+		return err
+	}
+
+	sc := s.client.SetEx(ctx, key, string(data), ttl)
 
 	return sc.Err()
 }
 
-func (s *Session) Serialize(ctx context.Context, key string, value any, ttl time.Duration) error {
-	if session == nil {
+func DeSerialize(ctx context.Context, key string, value any) error {
+	if s == nil {
 		return ErrNotInitialize
 	}
-	sc := session.client.SetEx(ctx, key, value, ttl)
+	sc := s.client.Get(ctx, key)
 
-	return sc.Err()
-}
-
-func (s *Session) DeSerialize(ctx context.Context, key string) (string, error) {
-	if session == nil {
-		return "", ErrNotInitialize
+	data, err := sc.Result()
+	if err != nil {
+		return err
 	}
-	sc := session.client.Get(ctx, key)
 
-	return sc.Result()
+	return utils.FromJSON([]byte(data), value)
 }
 
-func (s *Session) Remove(ctx context.Context, key string) error {
-	if session == nil {
+func Remove(ctx context.Context, key string) error {
+	if s == nil {
 		return ErrNotInitialize
 	}
-	sc := session.client.Del(ctx, key)
+	sc := s.client.Del(ctx, key)
 
 	return sc.Err()
 }

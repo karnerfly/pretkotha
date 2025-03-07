@@ -11,6 +11,8 @@ import (
 
 type UserRepositoryInterface interface {
 	CreateUser(ctx context.Context, user *models.CreateUserPayload) (string, error)
+	ActivateUser(ctx context.Context, email string) error
+	IsActiveUser(ctx context.Context, email string) (bool, error)
 	GetUserById(ctx context.Context, id string) (*models.User, error)
 	ExistsByEmail(ctx context.Context, email string) (bool, error)
 }
@@ -46,7 +48,7 @@ func (r *UserRepo) CreateUser(ctx context.Context, req *models.CreateUserPayload
 		return "", err
 	}
 
-	stmt2, err := tx.PrepareContext(ctx, `INSERT INTO user_profiles (user_id, bio, phone) VALUES ($1, $2, $3, $4)`)
+	stmt2, err := tx.PrepareContext(ctx, `INSERT INTO user_profiles (user_id, bio, phone) VALUES ($1, $2, $3);`)
 	if err != nil {
 		return "", err
 	}
@@ -61,6 +63,44 @@ func (r *UserRepo) CreateUser(ctx context.Context, req *models.CreateUserPayload
 	}
 
 	return id, nil
+}
+
+func (r *UserRepo) ActivateUser(ctx context.Context, email string) error {
+	tx, err := r.client.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	stmt, err := tx.PrepareContext(ctx, `UPDATE users SET verified = TRUE WHERE email = $1;`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.ExecContext(ctx, email)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (r *UserRepo) IsActiveUser(ctx context.Context, email string) (bool, error) {
+	stmt, err := r.client.PrepareContext(ctx, `SELECT verified FROM users WHERE email = $1;`)
+	if err != nil {
+		return false, err
+	}
+
+	var active bool
+	err = stmt.QueryRowContext(ctx, email).Scan(&active)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, db.ErrRecordNotFound
+		} else {
+			return false, err
+		}
+	}
+
+	return active, nil
 }
 
 func (r *UserRepo) GetUserById(ctx context.Context, id string) (*models.User, error) {

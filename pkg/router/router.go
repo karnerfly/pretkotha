@@ -14,6 +14,8 @@ import (
 )
 
 func Initialize(router *gin.Engine, client *sql.DB) {
+	router.Use(gin.Recovery())
+
 	router.GET("/_health", func(ctx *gin.Context) {
 		utils.SendSuccessResponse(ctx, gin.H{"message": "OK"}, http.StatusOK)
 	})
@@ -30,25 +32,27 @@ func Initialize(router *gin.Engine, client *sql.DB) {
 		utils.SendSuccessResponse(ctx, data, http.StatusOK)
 	})
 
-	userRouter := router.Group("/api/user")
-	userMiddleware := getUserMiddleware()
-	userHandler := getUserHandler(client)
+	authRouter := router.Group("/api/auth")
+	authMiddleware := getAuthMiddleware()
+	authHandler := getAuthHandler(client)
 
-	userRouter.POST("/register", userMiddleware.ValidateRegister, userHandler.HandleUserRegister)
-	userRouter.POST("", userHandler.HandleUserLogin)
+	authRouter.POST("/register", authMiddleware.ValidateRegister, authHandler.HandleUserRegister)
+	authRouter.POST("/otp/verify", authMiddleware.ValidateVerifyOtp, authHandler.HandleVerifyOtp)
+	authRouter.POST("/otp/resend", authMiddleware.ValidateSendOtp, authHandler.HandleSendOtp)
+	authRouter.POST("/login", authHandler.HandleUserLogin)
 
 	router.NoRoute(func(ctx *gin.Context) {
 		utils.SendNotFoundResponse(ctx, "404 not found")
 	})
 }
 
-func getUserHandler(client *sql.DB) *handlers.UserHandler {
+func getAuthHandler(client *sql.DB) *handlers.AuthHandler {
 	userRepo := repositories.NewUserRepo(client)
-	userService := services.NewUserService(userRepo)
-	return handlers.NewUserHander(userService)
+	authService := services.NewAuthService(userRepo)
+	return handlers.NewAuthHander(authService)
 }
 
-func getUserMiddleware() *middlewares.UserMiddleware {
-	v := validators.NewUserValidator()
-	return middlewares.NewUserMiddleware(v)
+func getAuthMiddleware() *middlewares.AuthMiddleware {
+	v := validators.NewAuthValidator()
+	return middlewares.NewAuthMiddleware(v)
 }
