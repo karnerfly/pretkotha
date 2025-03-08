@@ -41,6 +41,7 @@ func Initialize(router *gin.Engine, client *sql.DB) {
 	authRouter.POST("/otp/verify", authMiddleware.ValidateVerifyOtp, authHandler.HandleVerifyOtp)
 	authRouter.POST("/otp/resend", authMiddleware.ValidateSendOtp, authHandler.HandleSendOtp)
 	authRouter.POST("/login", authMiddleware.ValidateLogin, authHandler.HandleUserLogin)
+	authRouter.POST("/logout", authMiddleware.Protect, authHandler.HandleUserLogout)
 
 	// user router
 	userRouter := router.Group("/api/user")

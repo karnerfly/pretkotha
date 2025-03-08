@@ -9,6 +9,7 @@ import (
 	"github.com/karnerfly/pretkotha/pkg/db"
 	"github.com/karnerfly/pretkotha/pkg/models"
 	"github.com/karnerfly/pretkotha/pkg/services"
+	"github.com/karnerfly/pretkotha/pkg/session"
 	"github.com/karnerfly/pretkotha/pkg/utils"
 )
 
@@ -129,4 +130,28 @@ func (h *AuthHandler) HandleUserLogin(ctx *gin.Context) {
 		"page":       "login",
 		"auth_token": token,
 	})
+}
+
+func (h *AuthHandler) HandleUserLogout(ctx *gin.Context) {
+	sessionId, err := ctx.Cookie("user_session")
+	if err != nil {
+		utils.SendErrorResponse(ctx, ErrForbidden.Error(), http.StatusForbidden)
+		return
+	}
+
+	sctx, cancle := session.GetIdleTimeoutContext()
+	defer cancle()
+	err = session.Remove(sctx, sessionId)
+	if err != nil {
+		utils.SendServerErrorResponse(ctx, ErrInternalServer)
+		return
+	}
+
+	ctx.SetCookie("auth_token", "", -1, "/", h.config.Domain, false, true)
+	ctx.SetCookie("user_session", "", -1, "/", h.config.Domain, false, true)
+
+	utils.SendSuccessResponse(ctx, map[string]string{
+		"message": "OK",
+		"page":    "logout",
+	}, http.StatusOK)
 }
