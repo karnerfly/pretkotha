@@ -127,9 +127,9 @@ func (m *AuthMiddleware) Protect(ctx *gin.Context) {
 
 	var data map[string]any
 
-	sctx, sc := session.GetIdleTimeoutContext()
-	defer sc()
-	err = session.DeSerialize(sctx, sessionId, &data)
+	sessionCtx, sessionCancle := session.GetIdleTimeoutContext(ctx.Request.Context())
+	defer sessionCancle()
+	err = session.DeSerialize(sessionCtx, sessionId, &data)
 	if err != nil {
 		if err == session.Nil {
 			ctx.SetCookie("auth_token", "", -1, "/", m.config.Domain, false, true)
@@ -172,7 +172,7 @@ func (m *AuthMiddleware) Protect(ctx *gin.Context) {
 			"created_at": time.Now().Unix(),
 			"expires_at": time.Now().Add(time.Duration(m.config.JwtExpiry) * time.Second).Unix(),
 		}
-		err := session.Update(sctx, sessionId, data)
+		err := session.Update(sessionCtx, sessionId, data)
 		if err != nil {
 			utils.SendErrorResponse(ctx, handlers.ErrForbidden.Error(), http.StatusForbidden)
 			ctx.Abort()

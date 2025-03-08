@@ -20,7 +20,7 @@ func NewPostHandler(postService services.PostServiceInterface) *PostHandler {
 }
 
 func (h *PostHandler) GetLatestPosts(ctx *gin.Context) {
-	posts, err := h.postService.GetLatestPosts(12)
+	posts, err := h.postService.GetLatestPosts(ctx.Request.Context(), 12)
 	if err != nil {
 		utils.SendServerErrorResponse(ctx, err)
 		return
@@ -30,7 +30,7 @@ func (h *PostHandler) GetLatestPosts(ctx *gin.Context) {
 }
 
 func (h *PostHandler) GetPopularPosts(ctx *gin.Context) {
-	posts, err := h.postService.GetPopularPosts(12)
+	posts, err := h.postService.GetPopularPosts(ctx.Request.Context(), 12)
 	if err != nil {
 		utils.SendServerErrorResponse(ctx, err)
 		return
@@ -48,7 +48,7 @@ func (h *PostHandler) GetAllPosts(ctx *gin.Context) {
 
 	params := data.(*models.GetPostsParam)
 
-	posts, err := h.postService.GetAllPosts(params)
+	posts, err := h.postService.GetAllPosts(ctx.Request.Context(), params)
 	if err != nil {
 		utils.SendServerErrorResponse(ctx, ErrInternalServer)
 		return
@@ -60,7 +60,7 @@ func (h *PostHandler) GetAllPosts(ctx *gin.Context) {
 func (h *PostHandler) GetPostById(ctx *gin.Context) {
 	postId := ctx.Param("postId")
 
-	posts, err := h.postService.GetPostById(postId)
+	posts, err := h.postService.GetPostById(ctx.Request.Context(), postId)
 	if err != nil {
 		if errors.Is(err, db.ErrRecordNotFound) {
 			utils.SendErrorResponse(ctx, ErrNotFound.Error(), http.StatusNotFound)

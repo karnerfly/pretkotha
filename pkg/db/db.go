@@ -49,6 +49,6 @@ func (db *DB) Close() error {
 	return db.client.Close()
 }
 
-func GetIdleTimeoutContext() (context.Context, context.CancelFunc) {
-	return context.WithTimeout(context.Background(), 5*time.Second)
+func GetIdleTimeoutContext(base context.Context) (context.Context, context.CancelFunc) {
+	return context.WithTimeout(base, 5*time.Second)
 }

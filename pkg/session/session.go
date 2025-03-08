@@ -23,8 +23,8 @@ type Session struct {
 
 var s *Session
 
-func GetIdleTimeoutContext() (context.Context, context.CancelFunc) {
-	return context.WithTimeout(context.Background(), 5*time.Second)
+func GetIdleTimeoutContext(base context.Context) (context.Context, context.CancelFunc) {
+	return context.WithTimeout(base, 2*time.Second)
 }
 
 func Init(url string) error {
@@ -37,7 +37,7 @@ func Init(url string) error {
 		client: redis.NewClient(opts),
 	}
 
-	ctx, cancle := GetIdleTimeoutContext()
+	ctx, cancle := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancle()
 	sc := s.client.Ping(ctx)
 	if sc.Err() != nil {

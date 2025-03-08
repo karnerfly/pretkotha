@@ -23,7 +23,7 @@ func (h *UserHandler) GetUser(ctx *gin.Context) {
 		return
 	}
 	id := data.(string)
-	user, err := h.userService.GetUser(id)
+	user, err := h.userService.GetUser(ctx.Request.Context(), id)
 	if err != nil {
 		utils.SendServerErrorResponse(ctx, ErrInternalServer)
 		return

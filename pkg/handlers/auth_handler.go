@@ -9,7 +9,6 @@ import (
 	"github.com/karnerfly/pretkotha/pkg/db"
 	"github.com/karnerfly/pretkotha/pkg/models"
 	"github.com/karnerfly/pretkotha/pkg/services"
-	"github.com/karnerfly/pretkotha/pkg/session"
 	"github.com/karnerfly/pretkotha/pkg/utils"
 )
 
@@ -33,7 +32,7 @@ func (h *AuthHandler) HandleSendOtp(ctx *gin.Context) {
 	}
 	req := data.(*models.SendOtpPayload)
 
-	err := h.authService.SendOtp(req)
+	err := h.authService.SendOtp(ctx.Request.Context(), req)
 	if err != nil {
 		switch err {
 		case db.ErrRecordNotFound:
@@ -60,7 +59,7 @@ func (h *AuthHandler) HandleVerifyOtp(ctx *gin.Context) {
 	}
 	req := data.(*models.VerifyOtpPayload)
 
-	err := h.authService.VerifyOtp(req)
+	err := h.authService.VerifyOtp(ctx.Request.Context(), req)
 	if err != nil {
 		switch err {
 		case services.ErrInvalidOtp:
@@ -87,7 +86,7 @@ func (h *AuthHandler) HandleUserRegister(ctx *gin.Context) {
 	}
 	req := data.(*models.CreateUserPayload)
 
-	err := h.authService.Register(req)
+	err := h.authService.Register(ctx.Request.Context(), req)
 	if err != nil {
 		if errors.Is(err, db.ErrRecordAlreadyExists) {
 			utils.SendErrorResponse(ctx, "account already exists", http.StatusBadRequest)
@@ -112,7 +111,7 @@ func (h *AuthHandler) HandleUserLogin(ctx *gin.Context) {
 
 	req := data.(*models.LoginUserPayload)
 
-	token, sessionId, err := h.authService.Login(req)
+	token, sessionId, err := h.authService.Login(ctx.Request.Context(), req)
 	if err != nil {
 		if errors.Is(err, db.ErrRecordNotFound) {
 			utils.SendErrorResponse(ctx, "invalid credentials", http.StatusBadRequest)
@@ -139,9 +138,7 @@ func (h *AuthHandler) HandleUserLogout(ctx *gin.Context) {
 		return
 	}
 
-	sctx, cancle := session.GetIdleTimeoutContext()
-	defer cancle()
-	err = session.Remove(sctx, sessionId)
+	err = h.authService.Logout(ctx.Request.Context(), sessionId)
 	if err != nil {
 		utils.SendServerErrorResponse(ctx, ErrInternalServer)
 		return

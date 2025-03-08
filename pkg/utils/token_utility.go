@@ -3,7 +3,6 @@ package utils
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"fmt"
 	mrand "math/rand"
 	"strconv"
 	"time"
@@ -63,8 +62,6 @@ func VerifyJwtToken(tokenString string) (*jwt.Token, error) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		return []byte(cfg.JwtSecret), nil
 	})
-
-	fmt.Println(token.Claims.GetSubject())
 
 	if err != nil {
 		return token, err

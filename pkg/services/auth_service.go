@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"errors"
 	"time"
 
@@ -21,10 +22,11 @@ var (
 )
 
 type AuthServiceInterface interface {
-	SendOtp(req *models.SendOtpPayload) error
-	VerifyOtp(req *models.VerifyOtpPayload) error
-	Register(req *models.CreateUserPayload) error
-	Login(req *models.LoginUserPayload) (string, string, error)
+	SendOtp(ctx context.Context, req *models.SendOtpPayload) error
+	VerifyOtp(ctx context.Context, req *models.VerifyOtpPayload) error
+	Register(ctx context.Context, req *models.CreateUserPayload) error
+	Login(ctx context.Context, req *models.LoginUserPayload) (string, string, error)
+	Logout(ctx context.Context, sessionId string) error
 }
 
 type AuthService struct {
@@ -40,11 +42,11 @@ func NewAuthService(userRepo repositories.UserRepositoryInterface) *AuthService 
 }
 
 /* returns ErrRecordAlreadyExists if any duplicate record found */
-func (s *AuthService) SendOtp(req *models.SendOtpPayload) error {
-	dctx, dcancle := db.GetIdleTimeoutContext()
-	defer dcancle()
+func (s *AuthService) SendOtp(ctx context.Context, req *models.SendOtpPayload) error {
+	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
+	defer dbCancle()
 
-	activeUser, err := s.userRepo.IsActiveUser(dctx, req.Email)
+	activeUser, err := s.userRepo.IsActiveUser(dbCtx, req.Email)
 	if err != nil {
 		return err
 	}
@@ -56,7 +58,7 @@ func (s *AuthService) SendOtp(req *models.SendOtpPayload) error {
 	otp := utils.GenerateRandomNumber()
 	key := utils.ConvertToBase64(req.Email)
 
-	sctx, sc := session.GetIdleTimeoutContext()
+	sctx, sc := session.GetIdleTimeoutContext(ctx)
 	defer sc()
 	err = session.Serialize(sctx, key, otp, 1800) // serialize for 30min
 	if err != nil {
@@ -69,11 +71,11 @@ func (s *AuthService) SendOtp(req *models.SendOtpPayload) error {
 	})
 }
 
-func (s *AuthService) Register(req *models.CreateUserPayload) error {
-	dctx, dcancle := db.GetIdleTimeoutContext()
-	defer dcancle()
+func (s *AuthService) Register(ctx context.Context, req *models.CreateUserPayload) error {
+	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
+	defer dbCancle()
 
-	exists, err := s.userRepo.ExistsByEmail(dctx, req.Email)
+	exists, err := s.userRepo.ExistsByEmail(dbCtx, req.Email)
 	if err != nil {
 		return err
 	}
@@ -84,7 +86,7 @@ func (s *AuthService) Register(req *models.CreateUserPayload) error {
 
 	req.Hash = utils.HashPassword(req.Hash)
 
-	_, err = s.userRepo.CreateUser(dctx, req)
+	_, err = s.userRepo.CreateUser(dbCtx, req)
 	if err != nil {
 		return err
 	}
@@ -92,9 +94,9 @@ func (s *AuthService) Register(req *models.CreateUserPayload) error {
 	key := utils.ConvertToBase64(req.Email)
 	otp := utils.GenerateRandomNumber()
 
-	sctx, sc := session.GetIdleTimeoutContext()
-	defer sc()
-	err = session.Serialize(sctx, key, otp, 1800) // serialize for 30 min
+	sessionCtx, sessionCancle := session.GetIdleTimeoutContext(ctx)
+	defer sessionCancle()
+	err = session.Serialize(sessionCtx, key, otp, 1800) // serialize for 30 min
 	if err != nil {
 		return err
 	}
@@ -105,14 +107,14 @@ func (s *AuthService) Register(req *models.CreateUserPayload) error {
 	})
 }
 
-func (s *AuthService) VerifyOtp(req *models.VerifyOtpPayload) error {
-	sctx, sc := session.GetIdleTimeoutContext()
-	defer sc()
+func (s *AuthService) VerifyOtp(ctx context.Context, req *models.VerifyOtpPayload) error {
+	sessionCtx, sessionCancle := session.GetIdleTimeoutContext(ctx)
+	defer sessionCancle()
 
 	key := utils.ConvertToBase64(req.Email)
 
 	var otp string
-	err := session.DeSerialize(sctx, key, &otp)
+	err := session.DeSerialize(sessionCtx, key, &otp)
 	if err != nil {
 		if errors.Is(err, session.Nil) {
 			return ErrInvalidOtp
@@ -124,22 +126,23 @@ func (s *AuthService) VerifyOtp(req *models.VerifyOtpPayload) error {
 		return ErrOtpNotMatch
 	}
 
-	dctx, dcancle := db.GetIdleTimeoutContext()
-	defer dcancle()
-	err = s.userRepo.ActivateUser(dctx, req.Email)
+	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
+	defer dbCancle()
+	err = s.userRepo.ActivateUser(dbCtx, req.Email)
 	if err != nil {
 		return err
 	}
 
-	return session.Remove(sctx, key)
+	return session.Remove(sessionCtx, key)
 }
 
-func (s *AuthService) Login(req *models.LoginUserPayload) (string, string, error) {
+func (s *AuthService) Login(ctx context.Context, req *models.LoginUserPayload) (string, string, error) {
+	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
+	defer dbCancle()
+
 	hash := utils.HashPassword(req.Hash)
 
-	ctx, cancle := db.GetIdleTimeoutContext()
-	defer cancle()
-	id, err := s.userRepo.SearchUserByEmailPassword(ctx, req.Email, hash)
+	id, err := s.userRepo.SearchUserByEmailPassword(dbCtx, req.Email, hash)
 	if err != nil {
 		return "", "", err
 	}
@@ -156,12 +159,18 @@ func (s *AuthService) Login(req *models.LoginUserPayload) (string, string, error
 		"expires_at": time.Now().Add(time.Duration(s.config.JwtExpiry) * time.Second).Unix(),
 	}
 
-	sctx, sc := session.GetIdleTimeoutContext()
-	defer sc()
-	err = session.Serialize(sctx, sessionId, data, s.config.SessionCookieExpiry)
+	sessionCtx, sessionCancle := session.GetIdleTimeoutContext(ctx)
+	defer sessionCancle()
+	err = session.Serialize(sessionCtx, sessionId, data, s.config.SessionCookieExpiry)
 	if err != nil {
 		return "", "", err
 	}
 
 	return token, sessionId, nil
+}
+
+func (s *AuthService) Logout(ctx context.Context, sessionId string) error {
+	sessionCtx, cancle := session.GetIdleTimeoutContext(ctx)
+	defer cancle()
+	return session.Remove(sessionCtx, sessionId)
 }

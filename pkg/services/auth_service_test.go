@@ -21,7 +21,7 @@ func TestRegister(t *testing.T) {
 		Phone:    "9339813538",
 	}
 
-	err := us.Register(req)
+	err := us.Register(context.TODO(), req)
 	if err != nil {
 		t.Error(err)
 		t.Fail()

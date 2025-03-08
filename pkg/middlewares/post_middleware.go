@@ -58,7 +58,9 @@ func (m *PostMiddleware) ValidatePostPagination(ctx *gin.Context) {
 		}
 
 		if nPage < 1 {
-			nPage = 1 // set to first page
+			utils.SendErrorResponse(ctx, handlers.ErrBadRequest.Error(), http.StatusBadRequest)
+			ctx.Abort()
+			return
 		}
 	}
 
