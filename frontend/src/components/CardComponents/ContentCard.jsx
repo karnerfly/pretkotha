@@ -1,8 +1,16 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faExpandAlt, faBookmark, faEye, faHeart } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowRight,
+  faExpandAlt,
+  faBookmark,
+  faEye,
+  faHeart,
+} from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router";
 import Badge from "./Badge";
 
 const ContentCard = ({
+  id,
   type,
   title,
   description,
@@ -12,14 +20,13 @@ const ContentCard = ({
   tag,
   featured,
   actionText,
-  onReadMore,   // Function to open StoryView
-  onViewDrawing // Function to open DrawingModal
+  onViewDrawing, // Function to open DrawingModal
 }) => {
-  // Determine which function to call on button click
+  const navigate = useNavigate();
   const handleActionClick = () => {
-    if (actionText === "Read Story" && onReadMore) {
-      onReadMore();
-    } else if (actionText === "View Full Size" && onViewDrawing) {
+    if (type === "story" || type === "other") {
+      navigate(`/story/${id}`);
+    } else if (type === "drawing") {
       onViewDrawing();
     }
   };
@@ -56,7 +63,7 @@ const ContentCard = ({
           </button>
         </div>
         <p className="text-gray-600 mb-4">{description}</p>
-        
+
         {/* Action Button (Dynamically Handles Stories & Drawings) */}
         <div className="flex justify-between items-center">
           <button
@@ -64,7 +71,10 @@ const ContentCard = ({
             className="bg-primary-50 text-primary-600 px-4 py-2 rounded-full hover:bg-primary-100 transition-colors flex items-center gap-1"
           >
             <span>{actionText}</span>
-            <FontAwesomeIcon icon={type === "story" ? faArrowRight : faExpandAlt} className="text-xs" />
+            <FontAwesomeIcon
+              icon={type === "story" ? faArrowRight : faExpandAlt}
+              className="text-xs"
+            />
           </button>
 
           <div className="flex items-center text-gray-500 text-sm">

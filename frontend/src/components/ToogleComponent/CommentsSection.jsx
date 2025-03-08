@@ -58,7 +58,9 @@ const CommentsSection = () => {
   const toggleReplyInput = (id) => {
     setComments((prevComments) =>
       prevComments.map((comment) =>
-        comment.id === id ? { ...comment, showReplyInput: !comment.showReplyInput } : comment
+        comment.id === id
+          ? { ...comment, showReplyInput: !comment.showReplyInput }
+          : comment
       )
     );
   };
@@ -73,7 +75,12 @@ const CommentsSection = () => {
                 ...comment,
                 replies: [
                   ...comment.replies,
-                  { id: Date.now(), name: "Anonymous User", text: replyText, date: "Just now" },
+                  {
+                    id: Date.now(),
+                    name: "Anonymous User",
+                    text: replyText,
+                    date: "Just now",
+                  },
                 ],
                 showReplyInput: false,
               }
@@ -127,7 +134,11 @@ const Comment = ({ comment, onLike, onReply, onPostReply }) => {
 
   return (
     <div className="flex gap-3">
-      <img src="/api/placeholder/40/40" alt="User" className="w-10 h-10 rounded-full" />
+      <img
+        src="/api/placeholder/40/40"
+        alt="User"
+        className="w-10 h-10 rounded-full"
+      />
       <div className="flex-1">
         <div className="bg-gray-50 p-3 rounded-lg">
           <p className="font-medium">{comment.name}</p>
@@ -135,11 +146,17 @@ const Comment = ({ comment, onLike, onReply, onPostReply }) => {
         </div>
         <div className="flex text-sm text-gray-500 mt-1 space-x-4">
           <span>{comment.date}</span>
-          <button onClick={onLike} className="hover:text-red-500 flex items-center space-x-1">
+          <button
+            onClick={onLike}
+            className="hover:text-red-500 flex items-center space-x-1"
+          >
             <FontAwesomeIcon icon={faHeart} />
             <span>{comment.likes}</span>
           </button>
-          <button onClick={onReply} className="hover:text-primary-600 flex items-center space-x-1">
+          <button
+            onClick={onReply}
+            className="hover:text-primary-600 flex items-center space-x-1"
+          >
             <FontAwesomeIcon icon={faReply} />
             <span>Reply</span>
           </button>
@@ -173,7 +190,11 @@ const Comment = ({ comment, onLike, onReply, onPostReply }) => {
           <div className="mt-3 ml-8 space-y-2">
             {comment.replies.map((reply) => (
               <div key={reply.id} className="flex gap-3">
-                <img src="/api/placeholder/30/30" alt="User" className="w-8 h-8 rounded-full" />
+                <img
+                  src="/api/placeholder/30/30"
+                  alt="User"
+                  className="w-8 h-8 rounded-full"
+                />
                 <div className="bg-gray-100 p-2 rounded-lg">
                   <p className="font-medium text-sm">{reply.name}</p>
                   <p className="text-gray-700 text-sm">{reply.text}</p>

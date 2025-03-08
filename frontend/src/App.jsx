@@ -9,6 +9,7 @@ import ContactUs from "./pages/ContactUs";
 import Dashboard from "./pages/user/Dashboard";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import Story from "./pages/Story";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route index path="" element={<Home />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<ContactUs />} />
+          <Route path="story/:storyId" element={<Story />} />
         </Route>
 
         {/* Public route with Different configuration for Login and Register page */}
