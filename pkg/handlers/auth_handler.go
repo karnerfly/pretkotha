@@ -91,10 +91,9 @@ func (h *AuthHandler) HandleUserRegister(ctx *gin.Context) {
 		if errors.Is(err, db.ErrRecordAlreadyExists) {
 			utils.SendErrorResponse(ctx, "account already exists", http.StatusBadRequest)
 			return
-		} else {
-			utils.SendServerErrorResponse(ctx, err)
-			return
 		}
+		utils.SendServerErrorResponse(ctx, err)
+		return
 	}
 
 	utils.SendSuccessResponse(ctx, map[string]string{
@@ -104,8 +103,30 @@ func (h *AuthHandler) HandleUserRegister(ctx *gin.Context) {
 }
 
 func (h *AuthHandler) HandleUserLogin(ctx *gin.Context) {
+	data, exists := ctx.Get("data")
+	if !exists {
+		utils.SendServerErrorResponse(ctx, ErrInternalServer)
+		return
+	}
+
+	req := data.(*models.LoginUserPayload)
+
+	token, sessionId, err := h.authService.Login(req)
+	if err != nil {
+		if errors.Is(err, db.ErrRecordNotFound) {
+			utils.SendErrorResponse(ctx, "invalid credentials", http.StatusBadRequest)
+			return
+		}
+		utils.SendServerErrorResponse(ctx, err)
+		return
+	}
+
+	ctx.SetCookie("auth_token", token, h.config.AuthCookieExpiry, "/", h.config.Domain, false, true)
+	ctx.SetCookie("user_session", sessionId, h.config.SessionCookieExpiry, "/", h.config.Domain, false, true)
+
 	ctx.JSON(http.StatusOK, map[string]any{
-		"status": "ok",
-		"page":   "login",
+		"status":     "ok",
+		"page":       "login",
+		"auth_token": token,
 	})
 }

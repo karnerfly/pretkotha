@@ -85,6 +85,7 @@ func main() {
 		IdleTimeout:  cfg.ServerIdleTimeout * time.Second,
 	}
 
+	fmt.Printf("%d\n", time.Second)
 	// listen in another go routine
 	go func() {
 		logger.INFO("Server Listing at " + cfg.ServerAddress)

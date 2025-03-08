@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/karnerfly/pretkotha/pkg/configs"
 	"github.com/karnerfly/pretkotha/pkg/db"
 	"github.com/karnerfly/pretkotha/pkg/models"
 	"github.com/karnerfly/pretkotha/pkg/queue/mailqueue"
@@ -23,16 +24,18 @@ type AuthServiceInterface interface {
 	SendOtp(req *models.SendOtpPayload) error
 	VerifyOtp(req *models.VerifyOtpPayload) error
 	Register(req *models.CreateUserPayload) error
-	Login(req *models.LoginUserPayload) error
+	Login(req *models.LoginUserPayload) (string, string, error)
 }
 
 type AuthService struct {
 	userRepo repositories.UserRepositoryInterface
+	config   *configs.Config
 }
 
 func NewAuthService(userRepo repositories.UserRepositoryInterface) *AuthService {
 	return &AuthService{
 		userRepo: userRepo,
+		config:   configs.New(),
 	}
 }
 
@@ -112,9 +115,8 @@ func (s *AuthService) VerifyOtp(req *models.VerifyOtpPayload) error {
 	if err != nil {
 		if errors.Is(err, session.Nil) {
 			return ErrInvalidOtp
-		} else {
-			return err
 		}
+		return err
 	}
 
 	if req.Otp != otp {
@@ -131,6 +133,34 @@ func (s *AuthService) VerifyOtp(req *models.VerifyOtpPayload) error {
 	return session.Remove(sctx, key)
 }
 
-func (s *AuthService) Login(req *models.LoginUserPayload) error {
-	return nil
+func (s *AuthService) Login(req *models.LoginUserPayload) (string, string, error) {
+	hash := utils.HashPassword(req.Hash)
+
+	ctx, cancle := db.GetIdleTimeoutContext()
+	defer cancle()
+	id, err := s.userRepo.SearchUserByEmailPassword(ctx, req.Email, hash)
+	if err != nil {
+		return "", "", err
+	}
+
+	token := utils.GenerateJwtToken(id)
+	sessionId, err := utils.GenerateUrlEncodedToken(24)
+	if err != nil {
+		return "", "", err
+	}
+
+	data := map[string]any{
+		"token":      token,
+		"created_at": time.Now().Unix(),
+		"expires_at": time.Now().Add(s.config.JwtExpiry).Unix(),
+	}
+
+	sctx, sc := session.GetIdleTimeoutContext()
+	defer sc()
+	err = session.Serialize(sctx, sessionId, data, 30*24*time.Hour)
+	if err != nil {
+		return "", "", err
+	}
+
+	return token, sessionId, nil
 }
