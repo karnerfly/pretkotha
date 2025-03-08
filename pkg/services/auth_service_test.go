@@ -39,6 +39,14 @@ func (m *mockUserRepo) ActivateUser(ctx context.Context, email string) error {
 	return nil
 }
 
+func (m *mockUserRepo) IsActiveUser(ctx context.Context, email string) (bool, error) {
+	return true, nil
+}
+
+func (m *mockUserRepo) SearchUserByEmailPassword(ctx context.Context, email, password string) (string, error) {
+	return "e898194f-c64b-46d4-a263-9fc0c2e65637", nil
+}
+
 func (m *mockUserRepo) GetUserById(ctx context.Context, id string) (*models.User, error) {
 	if id != "e898194f-c64b-46d4-a263-9fc0c2e65637" {
 		return nil, fmt.Errorf("user not found")

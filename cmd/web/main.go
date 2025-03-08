@@ -80,9 +80,9 @@ func main() {
 	server := &http.Server{
 		Addr:         cfg.ServerAddress,
 		Handler:      r,
-		ReadTimeout:  cfg.ServerReadTimeout * time.Second,
-		WriteTimeout: cfg.ServerWriteTimeout * time.Second,
-		IdleTimeout:  cfg.ServerIdleTimeout * time.Second,
+		ReadTimeout:  time.Duration(cfg.ServerReadTimeout) * time.Second,
+		WriteTimeout: time.Duration(cfg.ServerWriteTimeout) * time.Second,
+		IdleTimeout:  time.Duration(cfg.ServerIdleTimeout) * time.Second,
 	}
 
 	// listen in another go routine

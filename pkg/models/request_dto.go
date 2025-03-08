@@ -1,5 +1,7 @@
 package models
 
+import "github.com/karnerfly/pretkotha/pkg/enum"
+
 type SendOtpPayload struct {
 	Email string `json:"email" validate:"required,email"`
 }
@@ -37,4 +39,11 @@ type LikePayload struct {
 
 type DislikPayload struct {
 	UserId string `json:"user_id"`
+}
+
+type GetPostsParam struct {
+	Page     int
+	Limit    int
+	SortBy   enum.Sort
+	FilterBy enum.Filter
 }

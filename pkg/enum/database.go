@@ -1,9 +1,16 @@
 package enum
 
+type Sort int
 type Filter int
 
 const (
-	PostFilterNewest Filter = iota
-	PostFilterOldest
-	PostFilterMostPopular
+	PostSortNewest Sort = iota
+	PostSortOldest
+	PostSortMostPopular
+)
+
+const (
+	PostFilterStory Filter = iota
+	PostFilterDrawing
+	PostFilterAll
 )

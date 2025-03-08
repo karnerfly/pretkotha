@@ -15,6 +15,7 @@ type UserRepositoryInterface interface {
 	IsActiveUser(ctx context.Context, email string) (bool, error)
 	GetUserById(ctx context.Context, id string) (*models.User, error)
 	ExistsByEmail(ctx context.Context, email string) (bool, error)
+	SearchUserByEmailPassword(ctx context.Context, email, password string) (string, error)
 }
 
 type UserRepo struct {
@@ -104,7 +105,7 @@ func (r *UserRepo) IsActiveUser(ctx context.Context, email string) (bool, error)
 }
 
 func (r *UserRepo) GetUserById(ctx context.Context, id string) (*models.User, error) {
-	stmt, err := r.client.PrepareContext(ctx, `SELECT u.id, u.user_name, u.email,u.is_banned, u.banned_at, u.created_at, u.updated_at, up.bio, up.role, up.avatar_url, up.phone FROM users AS u LEFT JOIN user_profiles AS up ON u.id = up.user_id WHERE u.is_banned=FALSE AND u.id=$1;`)
+	stmt, err := r.client.PrepareContext(ctx, `SELECT u.id, u.user_name, u.email,u.verified, u.is_banned, u.banned_at, u.created_at, u.updated_at, up.bio, up.role, up.avatar_url, up.phone FROM users AS u LEFT JOIN user_profiles AS up ON u.id = up.user_id WHERE u.is_banned=FALSE AND u.id=$1;`)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +119,7 @@ func (r *UserRepo) GetUserById(ctx context.Context, id string) (*models.User, er
 		phone     sql.NullString
 	)
 
-	err = stmt.QueryRowContext(ctx, id).Scan(&user.ID, &user.UserName, &user.Email, &user.IsBanned, &bannedat, &user.CreatedAt, &user.UpdatedAt, &bio, &user.Profile.Role, &avatarurl, &phone)
+	err = stmt.QueryRowContext(ctx, id).Scan(&user.ID, &user.UserName, &user.Email, &user.Verified, &user.IsBanned, &bannedat, &user.CreatedAt, &user.UpdatedAt, &bio, &user.Profile.Role, &avatarurl, &phone)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, db.ErrRecordNotFound
@@ -149,4 +150,23 @@ func (r *UserRepo) ExistsByEmail(ctx context.Context, email string) (bool, error
 	}
 
 	return exists, nil
+}
+
+func (r *UserRepo) SearchUserByEmailPassword(ctx context.Context, email, password string) (string, error) {
+	stmt, err := r.client.PrepareContext(ctx, `SELECT id FROM users WHERE email = $1 AND password_hash = $2;`)
+	if err != nil {
+		return "", err
+	}
+
+	var id string
+	err = stmt.QueryRowContext(ctx, email, password).Scan(&id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", db.ErrRecordNotFound
+		} else {
+			return "", err
+		}
+	}
+
+	return id, nil
 }

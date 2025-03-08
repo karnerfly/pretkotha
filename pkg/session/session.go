@@ -47,7 +47,8 @@ func Init(url string) error {
 	return nil
 }
 
-func Serialize(ctx context.Context, key string, value any, ttl time.Duration) error {
+// serialize the key, value in session for ttl time (second)
+func Serialize(ctx context.Context, key string, value any, ttl int64) error {
 	if s == nil {
 		return ErrNotInitialize
 	}
@@ -57,9 +58,7 @@ func Serialize(ctx context.Context, key string, value any, ttl time.Duration) er
 		return err
 	}
 
-	sc := s.client.SetEx(ctx, key, string(data), ttl)
-
-	return sc.Err()
+	return s.client.SetEx(ctx, key, string(data), time.Duration(ttl)*time.Second).Err()
 }
 
 func DeSerialize(ctx context.Context, key string, value any) error {
@@ -83,4 +82,23 @@ func Remove(ctx context.Context, key string) error {
 	sc := s.client.Del(ctx, key)
 
 	return sc.Err()
+}
+
+func Update(ctx context.Context, key string, value any) error {
+	if s == nil {
+		return ErrNotInitialize
+	}
+
+	data, err := utils.ToJSON(value)
+	if err != nil {
+		return err
+	}
+
+	ttl := s.client.TTL(ctx, key)
+	err = ttl.Err()
+	if err != nil {
+		return err
+	}
+
+	return s.client.SetEx(ctx, key, data, ttl.Val()).Err()
 }

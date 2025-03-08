@@ -32,6 +32,7 @@ func Initialize(router *gin.Engine, client *sql.DB) {
 		utils.SendSuccessResponse(ctx, data, http.StatusOK)
 	})
 
+	// authentication router
 	authRouter := router.Group("/api/auth")
 	authMiddleware := getAuthMiddleware()
 	authHandler := getAuthHandler(client)
@@ -39,7 +40,24 @@ func Initialize(router *gin.Engine, client *sql.DB) {
 	authRouter.POST("/register", authMiddleware.ValidateRegister, authHandler.HandleUserRegister)
 	authRouter.POST("/otp/verify", authMiddleware.ValidateVerifyOtp, authHandler.HandleVerifyOtp)
 	authRouter.POST("/otp/resend", authMiddleware.ValidateSendOtp, authHandler.HandleSendOtp)
-	authRouter.POST("/login", authHandler.HandleUserLogin)
+	authRouter.POST("/login", authMiddleware.ValidateLogin, authHandler.HandleUserLogin)
+	authRouter.POST("/logout", authMiddleware.Protect, authHandler.HandleUserLogout)
+
+	// user router
+	userRouter := router.Group("/api/user")
+	userHandler := getUserHandler(client)
+
+	userRouter.GET("/me", authMiddleware.Protect, userHandler.GetUser)
+
+	// posts router
+	postRouter := router.Group("/api/posts")
+	postHandler := getPostHandler(client)
+	postMiddleware := getPostMiddleware()
+
+	postRouter.GET("", postMiddleware.ValidatePostPagination, postHandler.GetAllPosts)
+	postRouter.GET("/latest", postHandler.GetLatestPosts)
+	postRouter.GET("/popular", postHandler.GetPopularPosts)
+	postRouter.GET("/:postId", postMiddleware.ValidatePostId, postHandler.GetPostById)
 
 	router.NoRoute(func(ctx *gin.Context) {
 		utils.SendNotFoundResponse(ctx, "404 not found")
@@ -55,4 +73,21 @@ func getAuthHandler(client *sql.DB) *handlers.AuthHandler {
 func getAuthMiddleware() *middlewares.AuthMiddleware {
 	v := validators.NewAuthValidator()
 	return middlewares.NewAuthMiddleware(v)
+}
+
+func getUserHandler(client *sql.DB) *handlers.UserHandler {
+	userRepo := repositories.NewUserRepo(client)
+	userService := services.NewUserService(userRepo)
+	return handlers.NewUserHander(userService)
+}
+
+func getPostHandler(client *sql.DB) *handlers.PostHandler {
+	postRepo := repositories.NewPostRepo(client)
+	postService := services.NewPostService(postRepo)
+	return handlers.NewPostHandler(postService)
+}
+
+func getPostMiddleware() *middlewares.PostMiddleware {
+	v := validators.NewPostValidator()
+	return middlewares.NewPostMiddleware(v)
 }
