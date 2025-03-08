@@ -8,6 +8,8 @@ import (
 
 type PostServiceInterface interface {
 	GetLatestPosts(limit int) ([]*models.Post, error)
+	GetPopularPosts(limit int) ([]*models.Post, error)
+	GetPostById(id string) (*models.Post, error)
 }
 
 type PostService struct {
@@ -23,4 +25,18 @@ func (s *PostService) GetLatestPosts(limit int) ([]*models.Post, error) {
 	defer cancle()
 
 	return s.postRepo.GetLatestPosts(ctx, limit)
+}
+
+func (s *PostService) GetPopularPosts(limit int) ([]*models.Post, error) {
+	ctx, cancle := db.GetIdleTimeoutContext()
+	defer cancle()
+
+	return s.postRepo.GetPopularPosts(ctx, limit)
+}
+
+func (s *PostService) GetPostById(id string) (*models.Post, error) {
+	ctx, cancle := db.GetIdleTimeoutContext()
+	defer cancle()
+
+	return s.postRepo.GetPostById(ctx, id)
 }

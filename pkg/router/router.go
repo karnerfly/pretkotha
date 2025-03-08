@@ -51,8 +51,11 @@ func Initialize(router *gin.Engine, client *sql.DB) {
 	// posts router
 	postRouter := router.Group("/api/posts")
 	postHandler := getPostHandler(client)
+	postMiddleware := getPostMiddleware()
 
 	postRouter.GET("/latest", postHandler.GetLatestPosts)
+	postRouter.GET("/popular", postHandler.GetPopularPosts)
+	postRouter.GET("/:postId", postMiddleware.ValidatePostId, postHandler.GetPostById)
 
 	router.NoRoute(func(ctx *gin.Context) {
 		utils.SendNotFoundResponse(ctx, "404 not found")
@@ -80,4 +83,9 @@ func getPostHandler(client *sql.DB) *handlers.PostHandler {
 	postRepo := repositories.NewPostRepo(client)
 	postService := services.NewPostService(postRepo)
 	return handlers.NewPostHandler(postService)
+}
+
+func getPostMiddleware() *middlewares.PostMiddleware {
+	v := validators.NewPostValidator()
+	return middlewares.NewPostMiddleware(v)
 }

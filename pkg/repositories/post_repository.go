@@ -3,15 +3,18 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
+	"github.com/karnerfly/pretkotha/pkg/db"
 	"github.com/karnerfly/pretkotha/pkg/enum"
 	"github.com/karnerfly/pretkotha/pkg/models"
 )
 
 type PostRepositoryInterface interface {
 	GetLatestPosts(ctx context.Context, limit int) ([]*models.Post, error)
-	GetPosts(ctx context.Context, filter enum.Filter, page, limit int) ([]*models.Post, error)
+	GetPopularPosts(ctx context.Context, limit int) ([]*models.Post, error)
+	GetPosts(ctx context.Context, sort enum.Sort, filter enum.Filter, page, limit int) ([]*models.Post, error)
 	GetPostById(ctx context.Context, id string) (*models.Post, error)
 }
 
@@ -39,20 +42,51 @@ func (r *PostRepository) GetLatestPosts(ctx context.Context, limit int) ([]*mode
 	return getPostsFromRow(rows)
 }
 
-func (r *PostRepository) GetPosts(ctx context.Context, filter enum.Filter, page, limit int) ([]*models.Post, error) {
-	var orderBy string
-	switch filter {
-	case enum.PostFilterNewest:
-		orderBy = "ORDER BY p.created_at DESC"
-	case enum.PostFilterOldest:
-		orderBy = "ORDER BY p.created_at ASC"
-	case enum.PostFilterMostPopular:
-		orderBy = "ORDER BY likes DESC"
-	default:
-		orderBy = "ORDER BY p.created_at DESC"
+func (r *PostRepository) GetPopularPosts(ctx context.Context, limit int) ([]*models.Post, error) {
+	stmt, err := r.client.PrepareContext(ctx, `SELECT p.id, p.title, p.slug, p.description, p.thumbnail, p.kind, p.category, p.is_deleted, p.created_at, p.updated_at, COUNT (l.liked_on) as likes FROM posts as p LEFT JOIN likes as l ON p.id = l.liked_on GROUP BY p.id ORDER BY likes DESC LIMIT $1;`)
+	if err != nil {
+		return nil, err
 	}
 
-	query := fmt.Sprintf(`SELECT p.id, p.title, p.slug, p.description, p.thumbnail, p.kind, p.category, p.created_at, p.updated_at, COUNT (l.liked_on) as likes FROM posts as p LEFT JOIN likes as l ON p.id = l.liked_on GROUP BY p.id %s offset $1 LIMIT $2;`, orderBy)
+	rows, err := stmt.QueryContext(ctx, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	posts, err := getPostsFromRow(rows)
+	if err != nil {
+		return nil, err
+	}
+
+	return posts, nil
+}
+
+func (r *PostRepository) GetPosts(ctx context.Context, sort enum.Sort, filter enum.Filter, page, limit int) ([]*models.Post, error) {
+	var orderBy string
+	switch sort {
+	case enum.PostSortNewest:
+		orderBy = "ORDER BY p.created_at DESC"
+	case enum.PostSortOldest:
+		orderBy = "ORDER BY p.created_at ASC"
+	case enum.PostSortMostPopular:
+		orderBy = "ORDER BY likes DESC"
+	default:
+		return nil, fmt.Errorf("invalid sort parameter")
+	}
+
+	var filterBy string
+	switch filter {
+	case enum.PostFilterStory:
+		filterBy = "WHERE p.kind = 'story'"
+	case enum.PostFilterDrawing:
+		filterBy = "WHERE p.kind = 'drawing'"
+	case enum.PostFilterAll:
+		filterBy = "WHERE 1 = 1"
+	default:
+		return nil, fmt.Errorf("invalid filter parameter")
+	}
+
+	query := fmt.Sprintf(`SELECT p.id, p.title, p.slug, p.description, p.thumbnail, p.kind, p.category, p.is_deleted, p.created_at, p.updated_at, COUNT (l.liked_on) as likes FROM posts as p LEFT JOIN likes as l ON p.id = l.liked_on %s GROUP BY p.id %s offset $1 LIMIT $2;`, filterBy, orderBy)
 
 	stmt, err := r.client.PrepareContext(ctx, query)
 	if err != nil {
@@ -85,6 +119,10 @@ func (r *PostRepository) GetPostById(ctx context.Context, id string) (*models.Po
 
 	err = stmt.QueryRowContext(ctx, id).Scan(&post.ID, &post.Title, &post.Slug, &description, &thumbnail, &post.Kind, &post.Category, &post.IsDeleted, &post.CreatedAt, &post.UpdatedAt, &post.Author.UserName, &post.Author.Profile.AvatarUrl, &post.Likes)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, db.ErrRecordNotFound
+		}
+
 		return nil, err
 	}
 
