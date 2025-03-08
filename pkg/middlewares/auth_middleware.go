@@ -170,7 +170,7 @@ func (m *AuthMiddleware) Protect(ctx *gin.Context) {
 		data := map[string]any{
 			"token":      newToken,
 			"created_at": time.Now().Unix(),
-			"expires_at": time.Now().Add(m.config.JwtExpiry).Unix(),
+			"expires_at": time.Now().Add(time.Duration(m.config.JwtExpiry) * time.Second).Unix(),
 		}
 		err := session.Update(sctx, sessionId, data)
 		if err != nil {
@@ -178,7 +178,7 @@ func (m *AuthMiddleware) Protect(ctx *gin.Context) {
 			ctx.Abort()
 			return
 		}
-		ctx.SetCookie("auth_token", newToken, m.config.AuthCookieExpiry, "/", m.config.Domain, false, true)
+		ctx.SetCookie("auth_token", newToken, int(m.config.AuthCookieExpiry), "/", m.config.Domain, false, true)
 	}
 
 	ctx.Set("data", sub)

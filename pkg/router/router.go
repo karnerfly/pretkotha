@@ -53,6 +53,7 @@ func Initialize(router *gin.Engine, client *sql.DB) {
 	postHandler := getPostHandler(client)
 	postMiddleware := getPostMiddleware()
 
+	postRouter.GET("", postMiddleware.ValidatePostPagination, postHandler.GetAllPosts)
 	postRouter.GET("/latest", postHandler.GetLatestPosts)
 	postRouter.GET("/popular", postHandler.GetPopularPosts)
 	postRouter.GET("/:postId", postMiddleware.ValidatePostId, postHandler.GetPostById)

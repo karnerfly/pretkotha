@@ -58,7 +58,7 @@ func (s *AuthService) SendOtp(req *models.SendOtpPayload) error {
 
 	sctx, sc := session.GetIdleTimeoutContext()
 	defer sc()
-	err = session.Serialize(sctx, key, otp, time.Hour)
+	err = session.Serialize(sctx, key, otp, 1800) // serialize for 30min
 	if err != nil {
 		return err
 	}
@@ -94,7 +94,7 @@ func (s *AuthService) Register(req *models.CreateUserPayload) error {
 
 	sctx, sc := session.GetIdleTimeoutContext()
 	defer sc()
-	err = session.Serialize(sctx, key, otp, time.Hour)
+	err = session.Serialize(sctx, key, otp, 1800) // serialize for 30 min
 	if err != nil {
 		return err
 	}
@@ -106,9 +106,10 @@ func (s *AuthService) Register(req *models.CreateUserPayload) error {
 }
 
 func (s *AuthService) VerifyOtp(req *models.VerifyOtpPayload) error {
-	key := utils.ConvertToBase64(req.Email)
 	sctx, sc := session.GetIdleTimeoutContext()
 	defer sc()
+
+	key := utils.ConvertToBase64(req.Email)
 
 	var otp string
 	err := session.DeSerialize(sctx, key, &otp)
@@ -152,12 +153,12 @@ func (s *AuthService) Login(req *models.LoginUserPayload) (string, string, error
 	data := map[string]any{
 		"token":      token,
 		"created_at": time.Now().Unix(),
-		"expires_at": time.Now().Add(s.config.JwtExpiry).Unix(),
+		"expires_at": time.Now().Add(time.Duration(s.config.JwtExpiry) * time.Second).Unix(),
 	}
 
 	sctx, sc := session.GetIdleTimeoutContext()
 	defer sc()
-	err = session.Serialize(sctx, sessionId, data, 30*24*time.Hour)
+	err = session.Serialize(sctx, sessionId, data, s.config.SessionCookieExpiry)
 	if err != nil {
 		return "", "", err
 	}

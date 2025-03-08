@@ -9,6 +9,7 @@ import (
 type PostServiceInterface interface {
 	GetLatestPosts(limit int) ([]*models.Post, error)
 	GetPopularPosts(limit int) ([]*models.Post, error)
+	GetAllPosts(p *models.GetPostsParam) ([]*models.Post, error)
 	GetPostById(id string) (*models.Post, error)
 }
 
@@ -23,7 +24,6 @@ func NewPostService(postRepo repositories.PostRepositoryInterface) *PostService 
 func (s *PostService) GetLatestPosts(limit int) ([]*models.Post, error) {
 	ctx, cancle := db.GetIdleTimeoutContext()
 	defer cancle()
-
 	return s.postRepo.GetLatestPosts(ctx, limit)
 }
 
@@ -34,9 +34,14 @@ func (s *PostService) GetPopularPosts(limit int) ([]*models.Post, error) {
 	return s.postRepo.GetPopularPosts(ctx, limit)
 }
 
+func (s *PostService) GetAllPosts(p *models.GetPostsParam) ([]*models.Post, error) {
+	ctx, cancle := db.GetIdleTimeoutContext()
+	defer cancle()
+	return s.postRepo.GetPosts(ctx, p.SortBy, p.FilterBy, p.Page, p.Limit)
+}
+
 func (s *PostService) GetPostById(id string) (*models.Post, error) {
 	ctx, cancle := db.GetIdleTimeoutContext()
 	defer cancle()
-
 	return s.postRepo.GetPostById(ctx, id)
 }

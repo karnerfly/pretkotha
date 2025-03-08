@@ -121,8 +121,8 @@ func (h *AuthHandler) HandleUserLogin(ctx *gin.Context) {
 		return
 	}
 
-	ctx.SetCookie("auth_token", token, h.config.AuthCookieExpiry, "/", h.config.Domain, false, true)
-	ctx.SetCookie("user_session", sessionId, h.config.SessionCookieExpiry, "/", h.config.Domain, false, true)
+	ctx.SetCookie("auth_token", token, int(h.config.AuthCookieExpiry), "/", h.config.Domain, false, true)
+	ctx.SetCookie("user_session", sessionId, int(h.config.SessionCookieExpiry), "/", h.config.Domain, false, true)
 
 	ctx.JSON(http.StatusOK, map[string]any{
 		"status":     "ok",
