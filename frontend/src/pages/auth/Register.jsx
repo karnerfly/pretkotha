@@ -17,7 +17,7 @@ const RegisterForm = () => {
   // Country codes for dropdown
   const countryCodes = [
     { code: "+91", name: "India" },
-    { code: "+880",name: "Bangladesh "},
+    { code: "+880", name: "Bangladesh" },
     { code: "+44", name: "UK" },
     { code: "+61", name: "Australia" },
     { code: "+33", name: "France" },
@@ -32,6 +32,14 @@ const RegisterForm = () => {
     // Auto-focus to the next input
     if (value && index < 5) {
       document.getElementById(`otp-${index + 1}`).focus();
+    }
+  };
+
+  // Handle Backspace key press
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      // Move focus to the previous input box
+      document.getElementById(`otp-${index - 1}`).focus();
     }
   };
 
@@ -81,17 +89,16 @@ const RegisterForm = () => {
       <div className="container mx-auto px-6 py-4">
         <nav className="text-gray-600 text-sm flex items-center">
           <Link to="/" className="hover:text-primary-600 flex items-center">
-          <FontAwesomeIcon icon={faHome} className="mr-1" />
+            <FontAwesomeIcon icon={faHome} className="mr-1" />
             Home
           </Link>
           <span className="mx-2">/</span>
           <span className="text-primary-700 font-semibold flex items-center">
-          <FontAwesomeIcon icon={faUserPlus} className="mr-1" />
-          Register
+            <FontAwesomeIcon icon={faUserPlus} className="mr-1" />
+            Register
           </span>
         </nav>
-    </div>
-
+      </div>
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-16">
@@ -169,6 +176,7 @@ const RegisterForm = () => {
                         id={`otp-${index}`}
                         value={digit}
                         onChange={(e) => handleOtpChange(index, e.target.value)}
+                        onKeyDown={(e) => handleOtpKeyDown(index, e)}
                         className="w-12 h-12 text-center text-gray-800 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
                         maxLength={1}
                         required
@@ -281,14 +289,13 @@ const RegisterForm = () => {
                     Back
                   </button>
                   <Link to="/auth/login" className="w-1/2">
-                  <button
-                    type="button"
-                    className="bg-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-indigo-700 transition-all w-full"
-                  >
-                    Register
-                  </button>
+                    <button
+                      type="button"
+                      className="bg-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-indigo-700 transition-all w-full"
+                    >
+                      Register
+                    </button>
                   </Link>
-
                 </div>
               </div>
             )}
