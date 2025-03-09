@@ -135,7 +135,7 @@ const RegisterForm = () => {
                 </div>
                 <p className="text-sm text-gray-600 text-center">
                   Already have an account?{" "}
-                  <Link to="/login" className="text-indigo-600 hover:underline">
+                  <Link to="/auth/login" className="text-indigo-600 hover:underline">
                     Login here
                   </Link>
                 </p>
