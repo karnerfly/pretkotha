@@ -17,37 +17,43 @@ var (
 
 const Nil = redis.Nil
 
+type SessionInterface interface {
+	Serialize(ctx context.Context, key string, value any, ttl int64) error
+	DeSerialize(ctx context.Context, key string, value any) error
+	Update(ctx context.Context, key string, value any) error
+	Remove(ctx context.Context, key string) error
+	Shutdown() error
+}
+
 type Session struct {
 	client *redis.Client
 }
 
-var s *Session
-
-func GetIdleTimeoutContext() (context.Context, context.CancelFunc) {
-	return context.WithTimeout(context.Background(), 5*time.Second)
+func GetIdleTimeoutContext(base context.Context) (context.Context, context.CancelFunc) {
+	return context.WithTimeout(base, 2*time.Second)
 }
 
-func Init(url string) error {
+func New(url string) (*Session, error) {
 	opts, err := redis.ParseURL(url)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	s = &Session{
+	s := &Session{
 		client: redis.NewClient(opts),
 	}
 
-	ctx, cancle := GetIdleTimeoutContext()
+	ctx, cancle := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancle()
-	sc := s.client.Ping(ctx)
-	if sc.Err() != nil {
-		return errors.New("Session cannot initialized")
+	if s.client.Ping(ctx).Err() != nil {
+		return nil, ErrNotInitialize
 	}
 
-	return nil
+	return s, nil
 }
 
-func Serialize(ctx context.Context, key string, value any, ttl time.Duration) error {
+// serialize the key, value in session for ttl time (second)
+func (s *Session) Serialize(ctx context.Context, key string, value any, ttl int64) error {
 	if s == nil {
 		return ErrNotInitialize
 	}
@@ -57,12 +63,10 @@ func Serialize(ctx context.Context, key string, value any, ttl time.Duration) er
 		return err
 	}
 
-	sc := s.client.SetEx(ctx, key, string(data), ttl)
-
-	return sc.Err()
+	return s.client.SetEx(ctx, key, string(data), time.Duration(ttl)*time.Second).Err()
 }
 
-func DeSerialize(ctx context.Context, key string, value any) error {
+func (s *Session) DeSerialize(ctx context.Context, key string, value any) error {
 	if s == nil {
 		return ErrNotInitialize
 	}
@@ -76,11 +80,28 @@ func DeSerialize(ctx context.Context, key string, value any) error {
 	return utils.FromJSON([]byte(data), value)
 }
 
-func Remove(ctx context.Context, key string) error {
+func (s *Session) Update(ctx context.Context, key string, value any) error {
+	if s == nil {
+		return ErrNotInitialize
+	}
+
+	data, err := utils.ToJSON(value)
+	if err != nil {
+		return err
+	}
+
+	return s.client.Set(ctx, key, data, redis.KeepTTL).Err()
+}
+
+func (s *Session) Remove(ctx context.Context, key string) error {
 	if s == nil {
 		return ErrNotInitialize
 	}
 	sc := s.client.Del(ctx, key)
 
 	return sc.Err()
+}
+
+func (s *Session) Shutdown() error {
+	return s.client.Close()
 }

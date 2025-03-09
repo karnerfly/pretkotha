@@ -71,7 +71,7 @@ func (s *MailService) SendOtpMail(ctx context.Context, to, otp string) error {
 	}
 
 	attempAfter := 1
-	remainingTry := 5
+	remainingTry := 3
 	after := time.After(time.Duration(attempAfter) * time.Second)
 
 	for {

@@ -34,7 +34,7 @@ func TestGetPosts(t *testing.T) {
 
 	pr := NewPostRepo(db.Client())
 
-	posts, err := pr.GetPosts(context.TODO(), enum.PostFilterOldest, 1, 2)
+	posts, err := pr.GetPosts(context.TODO(), enum.PostSortMostPopular, enum.PostFilterAll, 1, 3)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -57,5 +57,5 @@ func TestGetPostById(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	t.Logf("POSTS: %+v\n", post.Author)
+	t.Logf("POSTS: %+v\n", post.PostBy)
 }

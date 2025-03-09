@@ -41,8 +41,9 @@ type mailQueue struct {
 var queue *mailQueue
 
 // Initialize the queue with buffered channels
-func Init(bufferSize int) {
+func init() {
 	ctx, cancel := context.WithCancel(context.Background())
+	bufferSize := 10
 	queue = &mailQueue{
 		ch: [maxQueueType]chan *MailPayload{
 			make(chan *MailPayload, bufferSize),

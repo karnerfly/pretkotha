@@ -3,27 +3,31 @@ package configs
 import (
 	"os"
 	"strconv"
-	"time"
 
 	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	Domain             string
-	Version            string
-	JwtSecret          string
-	JwtExpiry          time.Duration
-	ServerAddress      string
-	ServerReadTimeout  time.Duration
-	ServerWriteTimeout time.Duration
-	ServerIdleTimeout  time.Duration
-	DatabaseURL        string
-	SmtpUsername       string
-	SmtpPassword       string
-	SmtpHost           string
-	SmtpServerAddr     string
-	From               string
-	RedisUrl           string
+	ServerAddress       string
+	Domain              string
+	Version             string
+	AvatarFilesBaseDir  string
+	JwtSecret           string
+	DatabaseURL         string
+	SmtpUsername        string
+	SmtpPassword        string
+	SmtpHost            string
+	SmtpServerAddr      string
+	From                string
+	StaticServerBaseUrl string
+	RedisUrl            string
+
+	JwtExpiry           int64
+	ServerReadTimeout   int64
+	ServerWriteTimeout  int64
+	ServerIdleTimeout   int64
+	AuthCookieExpiry    int64
+	SessionCookieExpiry int64
 }
 
 func Load() error {
@@ -33,39 +37,45 @@ func Load() error {
 	return nil
 }
 
-func New() *Config {
-	return &Config{
-		ServerAddress:      getEnv("SERVER_ADDRERSS", ":3000").(string),
-		Version:            getEnv("VERSION", "v0.1-alpha").(string),
-		Domain:             getEnv("DOMAIN", "localhost").(string),
-		JwtSecret:          getEnv("JWT_SECRET", "random_jwt_secret").(string),
-		JwtExpiry:          getEnv("JWT_EXPIRY", time.Duration(30*24*time.Hour)).(time.Duration),
-		ServerReadTimeout:  getEnv("SERVER_READ_TIMEOUT", time.Duration(20)).(time.Duration),
-		ServerWriteTimeout: getEnv("SERVER_WRITE_TIMEOUT", time.Duration(15)).(time.Duration),
-		ServerIdleTimeout:  getEnv("SERVER_IDLE_TIMEOUT", time.Duration(90)).(time.Duration),
-		DatabaseURL:        getEnv("DATABASE_URL", "").(string),
-		SmtpUsername:       getEnv("SMTP_USERNAME", "").(string),
-		SmtpPassword:       getEnv("SMTP_PASSWORD", "").(string),
-		SmtpHost:           getEnv("SMTP_HOST", "").(string),
-		SmtpServerAddr:     getEnv("SMTP_SERVER_ADDRESS", "").(string),
-		From:               getEnv("SMTP_FROM", "").(string),
-		RedisUrl:           getEnv("REDIS_URL", "").(string),
+func New() Config {
+	return Config{
+		ServerAddress:       getEnvString("SERVER_ADDRERSS", ":3000"),
+		Version:             getEnvString("VERSION", "v0.1-alpha"),
+		AvatarFilesBaseDir:  getEnvString("AVATAR_FILES_BASE_PATH", "./static/images"),
+		Domain:              getEnvString("DOMAIN", ""),
+		JwtSecret:           getEnvString("JWT_SECRET", ""),
+		DatabaseURL:         getEnvString("DATABASE_URL", ""),
+		SmtpUsername:        getEnvString("SMTP_USERNAME", ""),
+		SmtpPassword:        getEnvString("SMTP_PASSWORD", ""),
+		SmtpHost:            getEnvString("SMTP_HOST", ""),
+		SmtpServerAddr:      getEnvString("SMTP_SERVER_ADDRESS", ""),
+		From:                getEnvString("SMTP_FROM", ""),
+		StaticServerBaseUrl: getEnvString("STATIC_SERVER_BASE_URL", ""),
+		RedisUrl:            getEnvString("REDIS_URL", ""),
+
+		// time in second
+		JwtExpiry:           getEnvInt64("JWT_EXPIRY", 604800),             // 7 days
+		ServerReadTimeout:   getEnvInt64("SERVER_READ_TIMEOUT", 20),        // 20 seconds
+		ServerWriteTimeout:  getEnvInt64("SERVER_WRITE_TIMEOUT", 15),       // 15 seconds
+		ServerIdleTimeout:   getEnvInt64("SERVER_IDLE_TIMEOUT", 90),        // 1 minute 30 seconds
+		AuthCookieExpiry:    getEnvInt64("AUTH_COOKIE_EXPIRY", 604800),     // 7 days
+		SessionCookieExpiry: getEnvInt64("SESSION_COOKIE_EXPIRY", 2592000), // 30 days
 	}
 }
 
-func getEnv(name string, defaultValue any) any {
+func getEnvString(name, defaultValue string) string {
 	if value, exists := os.LookupEnv(name); exists {
-		switch defaultValue.(type) {
-		case string:
-			return value
-		case time.Duration:
-			v, err := strconv.Atoi(value)
-			if err != nil {
-				return defaultValue
-			}
-			return time.Duration(v)
+		return value
+	}
+	return defaultValue
+}
+
+func getEnvInt64(name string, defaultValue int64) int64 {
+	if value, exists := os.LookupEnv(name); exists {
+		n, err := strconv.Atoi(value)
+		if err == nil {
+			return int64(n)
 		}
 	}
-
 	return defaultValue
 }

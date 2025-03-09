@@ -1,9 +1,11 @@
 package services
 
 import (
+	"context"
 	"errors"
 	"time"
 
+	"github.com/karnerfly/pretkotha/pkg/configs"
 	"github.com/karnerfly/pretkotha/pkg/db"
 	"github.com/karnerfly/pretkotha/pkg/models"
 	"github.com/karnerfly/pretkotha/pkg/queue/mailqueue"
@@ -20,28 +22,33 @@ var (
 )
 
 type AuthServiceInterface interface {
-	SendOtp(req *models.SendOtpPayload) error
-	VerifyOtp(req *models.VerifyOtpPayload) error
-	Register(req *models.CreateUserPayload) error
-	Login(req *models.LoginUserPayload) error
+	SendOtp(ctx context.Context, req *models.SendOtpPayload) error
+	VerifyOtp(ctx context.Context, req *models.VerifyOtpPayload) error
+	Register(ctx context.Context, req *models.CreateUserPayload) error
+	Login(ctx context.Context, req *models.LoginUserPayload) (string, string, error)
+	Logout(ctx context.Context, sessionId string) error
 }
 
 type AuthService struct {
-	userRepo repositories.UserRepositoryInterface
+	userRepo    repositories.UserRepositoryInterface
+	config      configs.Config
+	authSession session.SessionInterface
 }
 
-func NewAuthService(userRepo repositories.UserRepositoryInterface) *AuthService {
+func NewAuthService(userRepo repositories.UserRepositoryInterface, s session.SessionInterface) *AuthService {
 	return &AuthService{
-		userRepo: userRepo,
+		userRepo:    userRepo,
+		config:      configs.New(),
+		authSession: s,
 	}
 }
 
 /* returns ErrRecordAlreadyExists if any duplicate record found */
-func (s *AuthService) SendOtp(req *models.SendOtpPayload) error {
-	dctx, dcancle := db.GetIdleTimeoutContext()
-	defer dcancle()
+func (service *AuthService) SendOtp(ctx context.Context, req *models.SendOtpPayload) error {
+	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
+	defer dbCancle()
 
-	activeUser, err := s.userRepo.IsActiveUser(dctx, req.Email)
+	activeUser, err := service.userRepo.IsActiveUser(dbCtx, req.Email)
 	if err != nil {
 		return err
 	}
@@ -53,9 +60,9 @@ func (s *AuthService) SendOtp(req *models.SendOtpPayload) error {
 	otp := utils.GenerateRandomNumber()
 	key := utils.ConvertToBase64(req.Email)
 
-	sctx, sc := session.GetIdleTimeoutContext()
+	sctx, sc := session.GetIdleTimeoutContext(ctx)
 	defer sc()
-	err = session.Serialize(sctx, key, otp, time.Hour)
+	err = service.authSession.Serialize(sctx, key, otp, 1800) // serialize for 30min
 	if err != nil {
 		return err
 	}
@@ -66,11 +73,11 @@ func (s *AuthService) SendOtp(req *models.SendOtpPayload) error {
 	})
 }
 
-func (s *AuthService) Register(req *models.CreateUserPayload) error {
-	dctx, dcancle := db.GetIdleTimeoutContext()
-	defer dcancle()
+func (service *AuthService) Register(ctx context.Context, req *models.CreateUserPayload) error {
+	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
+	defer dbCancle()
 
-	exists, err := s.userRepo.ExistsByEmail(dctx, req.Email)
+	exists, err := service.userRepo.ExistsByEmail(dbCtx, req.Email)
 	if err != nil {
 		return err
 	}
@@ -81,7 +88,7 @@ func (s *AuthService) Register(req *models.CreateUserPayload) error {
 
 	req.Hash = utils.HashPassword(req.Hash)
 
-	_, err = s.userRepo.CreateUser(dctx, req)
+	_, err = service.userRepo.CreateUser(dbCtx, req)
 	if err != nil {
 		return err
 	}
@@ -89,9 +96,9 @@ func (s *AuthService) Register(req *models.CreateUserPayload) error {
 	key := utils.ConvertToBase64(req.Email)
 	otp := utils.GenerateRandomNumber()
 
-	sctx, sc := session.GetIdleTimeoutContext()
-	defer sc()
-	err = session.Serialize(sctx, key, otp, time.Hour)
+	sessionCtx, sessionCancle := session.GetIdleTimeoutContext(ctx)
+	defer sessionCancle()
+	err = service.authSession.Serialize(sessionCtx, key, otp, 1800) // serialize for 30 min
 	if err != nil {
 		return err
 	}
@@ -102,35 +109,70 @@ func (s *AuthService) Register(req *models.CreateUserPayload) error {
 	})
 }
 
-func (s *AuthService) VerifyOtp(req *models.VerifyOtpPayload) error {
+func (service *AuthService) VerifyOtp(ctx context.Context, req *models.VerifyOtpPayload) error {
+	sessionCtx, sessionCancle := session.GetIdleTimeoutContext(ctx)
+	defer sessionCancle()
+
 	key := utils.ConvertToBase64(req.Email)
-	sctx, sc := session.GetIdleTimeoutContext()
-	defer sc()
 
 	var otp string
-	err := session.DeSerialize(sctx, key, &otp)
+	err := service.authSession.DeSerialize(sessionCtx, key, &otp)
 	if err != nil {
 		if errors.Is(err, session.Nil) {
 			return ErrInvalidOtp
-		} else {
-			return err
 		}
+		return err
 	}
 
 	if req.Otp != otp {
 		return ErrOtpNotMatch
 	}
 
-	dctx, dcancle := db.GetIdleTimeoutContext()
-	defer dcancle()
-	err = s.userRepo.ActivateUser(dctx, req.Email)
+	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
+	defer dbCancle()
+	err = service.userRepo.ActivateUser(dbCtx, req.Email)
 	if err != nil {
 		return err
 	}
 
-	return session.Remove(sctx, key)
+	return service.authSession.Remove(sessionCtx, key)
 }
 
-func (s *AuthService) Login(req *models.LoginUserPayload) error {
-	return nil
+func (service *AuthService) Login(ctx context.Context, req *models.LoginUserPayload) (string, string, error) {
+	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
+	defer dbCancle()
+
+	hash := utils.HashPassword(req.Hash)
+
+	id, err := service.userRepo.SearchUserByEmailPassword(dbCtx, req.Email, hash)
+	if err != nil {
+		return "", "", err
+	}
+
+	token := utils.GenerateJwtToken(id)
+	sessionId, err := utils.GenerateUrlEncodedToken(24)
+	if err != nil {
+		return "", "", err
+	}
+
+	data := map[string]any{
+		"token":      token,
+		"created_at": time.Now().Unix(),
+		"expires_at": time.Now().Add(time.Duration(service.config.JwtExpiry) * time.Second).Unix(),
+	}
+
+	sessionCtx, sessionCancle := session.GetIdleTimeoutContext(ctx)
+	defer sessionCancle()
+	err = service.authSession.Serialize(sessionCtx, sessionId, data, service.config.SessionCookieExpiry)
+	if err != nil {
+		return "", "", err
+	}
+
+	return token, sessionId, nil
+}
+
+func (service *AuthService) Logout(ctx context.Context, sessionId string) error {
+	sessionCtx, cancle := session.GetIdleTimeoutContext(ctx)
+	defer cancle()
+	return service.authSession.Remove(sessionCtx, sessionId)
 }

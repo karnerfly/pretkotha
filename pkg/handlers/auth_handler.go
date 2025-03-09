@@ -14,7 +14,7 @@ import (
 
 type AuthHandler struct {
 	authService services.AuthServiceInterface
-	config      *configs.Config
+	config      configs.Config
 }
 
 func NewAuthHander(userService services.AuthServiceInterface) *AuthHandler {
@@ -32,7 +32,7 @@ func (h *AuthHandler) HandleSendOtp(ctx *gin.Context) {
 	}
 	req := data.(*models.SendOtpPayload)
 
-	err := h.authService.SendOtp(req)
+	err := h.authService.SendOtp(ctx.Request.Context(), req)
 	if err != nil {
 		switch err {
 		case db.ErrRecordNotFound:
@@ -59,7 +59,7 @@ func (h *AuthHandler) HandleVerifyOtp(ctx *gin.Context) {
 	}
 	req := data.(*models.VerifyOtpPayload)
 
-	err := h.authService.VerifyOtp(req)
+	err := h.authService.VerifyOtp(ctx.Request.Context(), req)
 	if err != nil {
 		switch err {
 		case services.ErrInvalidOtp:
@@ -86,26 +86,69 @@ func (h *AuthHandler) HandleUserRegister(ctx *gin.Context) {
 	}
 	req := data.(*models.CreateUserPayload)
 
-	err := h.authService.Register(req)
+	err := h.authService.Register(ctx.Request.Context(), req)
 	if err != nil {
 		if errors.Is(err, db.ErrRecordAlreadyExists) {
 			utils.SendErrorResponse(ctx, "account already exists", http.StatusBadRequest)
 			return
-		} else {
-			utils.SendServerErrorResponse(ctx, err)
-			return
 		}
+		utils.SendServerErrorResponse(ctx, err)
+		return
 	}
 
 	utils.SendSuccessResponse(ctx, map[string]string{
 		"message": "OK",
 		"page":    "register",
-	}, http.StatusOK)
+	}, http.StatusCreated)
 }
 
 func (h *AuthHandler) HandleUserLogin(ctx *gin.Context) {
+	data, exists := ctx.Get("data")
+	if !exists {
+		utils.SendServerErrorResponse(ctx, ErrInternalServer)
+		return
+	}
+
+	req := data.(*models.LoginUserPayload)
+
+	token, sessionId, err := h.authService.Login(ctx.Request.Context(), req)
+	if err != nil {
+		if errors.Is(err, db.ErrRecordNotFound) {
+			utils.SendErrorResponse(ctx, "invalid credentials", http.StatusBadRequest)
+			return
+		}
+		utils.SendServerErrorResponse(ctx, err)
+		return
+	}
+
+	ctx.SetCookie("auth_token", token, int(h.config.AuthCookieExpiry), "/", h.config.Domain, false, true)
+	ctx.SetCookie("user_session", sessionId, int(h.config.SessionCookieExpiry), "/", h.config.Domain, false, true)
+
 	ctx.JSON(http.StatusOK, map[string]any{
-		"status": "ok",
-		"page":   "login",
+		"status":     "ok",
+		"page":       "login",
+		"auth_token": token,
 	})
+}
+
+func (h *AuthHandler) HandleUserLogout(ctx *gin.Context) {
+	sessionId, err := ctx.Cookie("user_session")
+	if err != nil {
+		utils.SendErrorResponse(ctx, ErrForbidden.Error(), http.StatusForbidden)
+		return
+	}
+
+	err = h.authService.Logout(ctx.Request.Context(), sessionId)
+	if err != nil {
+		utils.SendServerErrorResponse(ctx, ErrInternalServer)
+		return
+	}
+
+	ctx.SetCookie("auth_token", "", -1, "/", h.config.Domain, false, true)
+	ctx.SetCookie("user_session", "", -1, "/", h.config.Domain, false, true)
+
+	utils.SendSuccessResponse(ctx, map[string]string{
+		"message": "OK",
+		"page":    "logout",
+	}, http.StatusOK)
 }

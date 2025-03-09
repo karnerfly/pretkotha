@@ -46,7 +46,7 @@ func GenerateJwtToken(sub string) string {
 		"iss": cfg.Domain,
 		"aud": enum.UserRole,
 		"iat": time.Now().Unix(),
-		"exp": cfg.JwtExpiry,
+		"exp": time.Now().Add(time.Duration(cfg.JwtExpiry) * time.Second).Unix(),
 	})
 
 	tokenString, err := claims.SignedString([]byte(cfg.JwtSecret))
@@ -57,19 +57,15 @@ func GenerateJwtToken(sub string) string {
 	return tokenString
 }
 
-func VerifyJwtToken(tokenString string) *jwt.Token {
+func VerifyJwtToken(tokenString string) (*jwt.Token, error) {
 	cfg := configs.New()
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		return []byte(cfg.JwtSecret), nil
 	})
 
 	if err != nil {
-		return nil
+		return token, err
 	}
 
-	if !token.Valid {
-		return nil
-	}
-
-	return token
+	return token, nil
 }

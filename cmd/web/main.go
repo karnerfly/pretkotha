@@ -28,7 +28,8 @@ func main() {
 	cfg := configs.New()
 
 	// initialize session
-	if err := session.Init(cfg.RedisUrl); err != nil {
+	redisSession, err := session.New(cfg.RedisUrl)
+	if err != nil {
 		logger.Fatal(err)
 	}
 
@@ -51,9 +52,6 @@ func main() {
 		logger.ERROR(err.Error())
 	}
 
-	// initialize mail queue for OTP mail channel and EVENT mail channel
-	mailqueue.Init(10)
-
 	// register worker for send OTP mail
 	err = mailqueue.RegisterWorker(mailqueue.TypeOtp, func(payload *mailqueue.MailPayload) error {
 		ctx, cancle := context.WithTimeout(context.Background(), 10*time.Second)
@@ -74,20 +72,30 @@ func main() {
 	// create ServeMux with gin
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
-	router.Initialize(r, db.Client())
+	router.Initialize(r, db.Client(), redisSession)
+
+	// create static server to to serve static files
+	staticServer := NewStaticServer()
 
 	// create server
 	server := &http.Server{
 		Addr:         cfg.ServerAddress,
 		Handler:      r,
-		ReadTimeout:  cfg.ServerReadTimeout * time.Second,
-		WriteTimeout: cfg.ServerWriteTimeout * time.Second,
-		IdleTimeout:  cfg.ServerIdleTimeout * time.Second,
+		ReadTimeout:  time.Duration(cfg.ServerReadTimeout) * time.Second,
+		WriteTimeout: time.Duration(cfg.ServerWriteTimeout) * time.Second,
+		IdleTimeout:  time.Duration(cfg.ServerIdleTimeout) * time.Second,
 	}
 
-	// listen in another go routine
+	// listen static server in port 3001
 	go func() {
-		logger.INFO("Server Listing at " + cfg.ServerAddress)
+		if err := staticServer.Start(); err != nil {
+			logger.ERROR(err.Error())
+		}
+	}()
+
+	// listen api server in port 3000
+	go func() {
+		logger.INFO("Api Server Listing on " + cfg.ServerAddress)
 		if err := server.ListenAndServe(); err != nil {
 			logger.Fatal(err)
 		}
@@ -99,6 +107,11 @@ func main() {
 	signal.Notify(sig, syscall.SIGTERM)
 
 	s := <-sig
+	// close session
+	if err := redisSession.Shutdown(); err != nil {
+		logger.ERROR(err.Error())
+	}
+
 	// close database
 	if err := db.Close(); err != nil {
 		logger.ERROR(err.Error())
@@ -109,6 +122,11 @@ func main() {
 
 	ctx, cancle := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancle()
+
+	// shutdown the static server
+	if err := staticServer.Shutdown(); err != nil {
+		logger.ERROR(err.Error())
+	}
 
 	// shutdown the server
 	logger.INFO(fmt.Sprintf("shutting down the server:[SIGNAL=%s]", s))
