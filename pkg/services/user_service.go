@@ -17,6 +17,7 @@ type UserServiceInterface interface {
 	GetUser(ctx context.Context, id string) (*models.User, error)
 	UploadAvatar(ctx context.Context, id, extension string, body io.Reader) error
 	DeleteAvatar(ctx context.Context, id string) error
+	UpdateUserProfile(ctx context.Context, id string, req *models.UpdateUserPayload) error
 }
 
 type UserService struct {
@@ -71,4 +72,10 @@ func (service *UserService) DeleteAvatar(ctx context.Context, id string) error {
 	}
 
 	return nil
+}
+
+func (service *UserService) UpdateUserProfile(ctx context.Context, id string, req *models.UpdateUserPayload) error {
+	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
+	defer dbCancle()
+	return service.userRepo.UpdateUserProfile(dbCtx, id, req)
 }

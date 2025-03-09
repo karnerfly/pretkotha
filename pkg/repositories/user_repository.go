@@ -18,6 +18,7 @@ type UserRepositoryInterface interface {
 	SearchUserByEmailPassword(ctx context.Context, email, password string) (string, error)
 	UpdateUserAvatar(ctx context.Context, id, url string) error
 	DeleteUserAvatar(ctx context.Context, id string) (string, error)
+	UpdateUserProfile(ctx context.Context, id string, user *models.UpdateUserPayload) error
 }
 
 type UserRepo struct {
@@ -40,14 +41,14 @@ func (r *UserRepo) CreateUser(ctx context.Context, req *models.CreateUserPayload
 		}
 	}()
 
-	stmt, err := tx.PrepareContext(ctx, `INSERT INTO users (user_name, email, password_hash) VALUES ($1, $2, $3) RETURNING id;`)
+	stmt1, err := tx.PrepareContext(ctx, `INSERT INTO users (user_name, email, password_hash) VALUES ($1, $2, $3) RETURNING id;`)
 	if err != nil {
 		return "", err
 	}
-	defer stmt.Close()
+	defer stmt1.Close()
 
 	var id string
-	if err = stmt.QueryRowContext(ctx, req.UserName, req.Email, req.Hash).Scan(&id); err != nil {
+	if err = stmt1.QueryRowContext(ctx, req.UserName, req.Email, req.Hash).Scan(&id); err != nil {
 		return "", err
 	}
 
@@ -74,10 +75,17 @@ func (r *UserRepo) ActivateUser(ctx context.Context, email string) error {
 		return err
 	}
 
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+
 	stmt, err := tx.PrepareContext(ctx, `UPDATE users SET verified = TRUE WHERE email = $1;`)
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 
 	_, err = stmt.ExecContext(ctx, email)
 	if err != nil {
@@ -92,6 +100,7 @@ func (r *UserRepo) IsActiveUser(ctx context.Context, email string) (bool, error)
 	if err != nil {
 		return false, err
 	}
+	defer stmt.Close()
 
 	var active bool
 	err = stmt.QueryRowContext(ctx, email).Scan(&active)
@@ -159,6 +168,7 @@ func (r *UserRepo) SearchUserByEmailPassword(ctx context.Context, email, passwor
 	if err != nil {
 		return "", err
 	}
+	defer stmt.Close()
 
 	var id string
 	err = stmt.QueryRowContext(ctx, email, password).Scan(&id)
@@ -179,10 +189,17 @@ func (r *UserRepo) UpdateUserAvatar(ctx context.Context, id, url string) error {
 		return err
 	}
 
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+
 	stmt, err := tx.PrepareContext(ctx, `UPDATE user_profiles SET avatar_url = $1 WHERE user_id = $2;`)
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 
 	_, err = stmt.ExecContext(ctx, url, id)
 	if err != nil {
@@ -197,10 +214,18 @@ func (r *UserRepo) DeleteUserAvatar(ctx context.Context, id string) (string, err
 	if err != nil {
 		return "", err
 	}
+
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+
 	stmt1, err := tx.PrepareContext(ctx, `SELECT avatar_url FROM user_profiles WHERE user_id = $1;`)
 	if err != nil {
 		return "", err
 	}
+	defer stmt1.Close()
 
 	var avatar_url string
 	err = stmt1.QueryRowContext(ctx, id).Scan(&avatar_url)
@@ -208,10 +233,11 @@ func (r *UserRepo) DeleteUserAvatar(ctx context.Context, id string) (string, err
 		return "", err
 	}
 
-	stmt2, err := tx.PrepareContext(ctx, `UPDATE user_profiles SET avatar_url = NULL WHERE user_id = $1;`)
+	stmt2, err := tx.PrepareContext(ctx, `UPDATE user_profiles SET avatar_url = '' WHERE user_id = $1;`)
 	if err != nil {
 		return "", err
 	}
+	defer stmt2.Close()
 
 	_, err = stmt2.ExecContext(ctx, id)
 	if err != nil {
@@ -224,4 +250,41 @@ func (r *UserRepo) DeleteUserAvatar(ctx context.Context, id string) (string, err
 	}
 
 	return avatar_url, nil
+}
+
+func (r *UserRepo) UpdateUserProfile(ctx context.Context, id string, user *models.UpdateUserPayload) error {
+	tx, err := r.client.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+
+	stmt1, err := tx.PrepareContext(ctx, `UPDATE users SET user_name = COALESCE(NULLIF($1, ''), user_name) WHERE id = $2;`)
+	if err != nil {
+		return err
+	}
+	defer stmt1.Close()
+
+	_, err = stmt1.ExecContext(ctx, user.UserName, id)
+	if err != nil {
+		return err
+	}
+
+	stmt2, err := tx.PrepareContext(ctx, `UPDATE user_profiles SET bio = COALESCE(NULLIF($1, ''), bio), phone = COALESCE(NULLIF($2, ''), phone) WHERE user_id = $3;`)
+	if err != nil {
+		return err
+	}
+	defer stmt2.Close()
+
+	_, err = stmt2.ExecContext(ctx, user.Bio, user.Phone, id)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }

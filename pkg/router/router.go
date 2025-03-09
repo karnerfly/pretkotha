@@ -52,6 +52,7 @@ func Initialize(router *gin.Engine, client *sql.DB, s session.SessionInterface) 
 	userHandler := getUserHandler(client)
 
 	userRouter.GET("/me", authMiddleware.Protect, userHandler.GetUser)
+	userRouter.PATCH("/me", authMiddleware.Protect, userHandler.UpdateUserProfile)
 	userRouter.PUT("/avatar", userMiddleware.ValidateAvatarUpload, authMiddleware.Protect, userHandler.UploadUserAvatar)
 	userRouter.DELETE("/avatar", authMiddleware.Protect, userHandler.DeleteUserAvatar)
 

@@ -64,6 +64,7 @@ func (h *PostHandler) GetPostById(ctx *gin.Context) {
 	if err != nil {
 		if errors.Is(err, db.ErrRecordNotFound) {
 			utils.SendErrorResponse(ctx, ErrNotFound.Error(), http.StatusNotFound)
+			return
 		}
 		utils.SendServerErrorResponse(ctx, err)
 		return

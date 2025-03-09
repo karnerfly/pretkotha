@@ -47,6 +47,7 @@ func (r *PostRepository) GetPopularPosts(ctx context.Context, limit int) ([]*mod
 	if err != nil {
 		return nil, err
 	}
+	defer stmt.Close()
 
 	rows, err := stmt.QueryContext(ctx, limit)
 	if err != nil {
@@ -109,15 +110,16 @@ func (r *PostRepository) GetPostById(ctx context.Context, id string) (*models.Po
 	if err != nil {
 		return nil, err
 	}
+	defer stmt.Close()
 
 	var (
 		post        = models.NewPost()
 		thumbnail   sql.NullString
 		description sql.NullString
 	)
-	post.Author = models.NewUser()
+	post.PostBy = &models.StoryUser{}
 
-	err = stmt.QueryRowContext(ctx, id).Scan(&post.ID, &post.Title, &post.Slug, &description, &thumbnail, &post.Kind, &post.Category, &post.IsDeleted, &post.CreatedAt, &post.UpdatedAt, &post.Author.UserName, &post.Author.Profile.AvatarUrl, &post.Likes)
+	err = stmt.QueryRowContext(ctx, id).Scan(&post.ID, &post.Title, &post.Slug, &description, &thumbnail, &post.Kind, &post.Category, &post.IsDeleted, &post.CreatedAt, &post.UpdatedAt, &post.PostBy.UserName, &post.PostBy.AvatarUrl, &post.Likes)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, db.ErrRecordNotFound
@@ -133,6 +135,8 @@ func (r *PostRepository) GetPostById(ctx context.Context, id string) (*models.Po
 }
 
 func getPostsFromRow(rows *sql.Rows) ([]*models.Post, error) {
+	defer rows.Close()
+
 	var (
 		posts       = make([]*models.Post, 0)
 		thumbnail   sql.NullString

@@ -57,5 +57,5 @@ func TestGetPostById(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	t.Logf("POSTS: %+v\n", post.Author)
+	t.Logf("POSTS: %+v\n", post.PostBy)
 }

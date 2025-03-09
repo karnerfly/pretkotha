@@ -13,6 +13,11 @@ type User struct {
 	UpdatedAt string      `json:"updated_at"`
 }
 
+type StoryUser struct {
+	UserName  string `json:"user_name"`
+	AvatarUrl string `json:"avatar_url"`
+}
+
 func NewUser() *User {
 	return &User{}
 }

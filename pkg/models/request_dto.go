@@ -15,13 +15,19 @@ type CreateUserPayload struct {
 	UserName string `json:"user_name" validate:"required,min=4,max=20"`
 	Email    string `json:"email" validate:"required,email"`
 	Hash     string `json:"password" validate:"required,min=8,max=25"`
-	Bio      string `json:"bio"`
-	Phone    string `json:"phone"`
+	Bio      string `json:"bio" validate:"max=60"`
+	Phone    string `json:"phone" validate:"numeric,len=10"`
 }
 
 type LoginUserPayload struct {
 	Email string `json:"email" validate:"required,email"`
 	Hash  string `json:"password" validate:"required"`
+}
+
+type UpdateUserPayload struct {
+	UserName string `json:"user_name" validate:"required,min=4,max=20"`
+	Bio      string `json:"bio" validate:"max=60"`
+	Phone    string `json:"phone" validate:"numeric,len=10"`
 }
 
 type CreatePostPayload struct {
