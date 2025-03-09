@@ -6,10 +6,15 @@ import Protected from "./pages/layouts/Protected";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import ContactUs from "./pages/ContactUs";
+import Faq from "./pages/Faq";
 import Dashboard from "./pages/user/Dashboard";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import ForgotPassword from "./pages/auth/ForgotPassword";
 import Story from "./pages/Story";
+
+import Search from "./pages/Search";
+import Newsletter from "./pages/Newsletter";
 
 function App() {
   return (
@@ -20,7 +25,11 @@ function App() {
           <Route index path="" element={<Home />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<ContactUs />} />
+          <Route path="faq" element={<Faq />} />
+          <Route path="newsletter" element={<Newsletter />} />
+          <Route path="search" element={<Search />} />
           <Route path="story/:storyId" element={<Story />} />
+
         </Route>
 
         {/* Public route with Different configuration for Login and Register page */}
@@ -30,6 +39,7 @@ function App() {
         >
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
+          <Route path="forgotpassword" element={<ForgotPassword />} />
         </Route>
 
         {/* protected routes for authenticated users */}

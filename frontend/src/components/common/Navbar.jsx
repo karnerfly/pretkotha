@@ -23,6 +23,10 @@ const Navbar = () => {
       name: "Login",
       path: "/auth/login",
     },
+    {
+      name: "Register",
+      path: "/auth/register",
+    },
   ];
 
   return (
@@ -51,9 +55,11 @@ const Navbar = () => {
               <span className="absolute inset-x-0 bottom-0 h-0.5 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
             </Link>
           ))}
-          <button className="bg-white text-primary-600 px-4 py-2 rounded-full hover:bg-primary-100 transition-colors duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-            Subscribe
-          </button>
+          <Link to="/newsletter">
+            <button className="bg-white text-primary-600 px-4 py-2 rounded-full hover:bg-primary-100 transition-colors duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+              Subscribe
+            </button>
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
