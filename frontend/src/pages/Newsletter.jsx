@@ -1,21 +1,23 @@
+import { Link } from "react-router";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faHome, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope, faCheckCircle, faHome } from "@fortawesome/free-solid-svg-icons";
 
-const ForgotPasswordPage = () => {
+const NewsletterPage = () => {
   const [email, setEmail] = useState(""); // Email input
   const [showAlert, setShowAlert] = useState(false); // Popup alert state
 
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simulate sending a password reset link
-    console.log("Password reset link sent to:", email);
+    // Simulate newsletter subscription
+    console.log("Subscribed email:", email);
     // Show the popup alert
     setShowAlert(true);
     // Hide the alert after 3 seconds
     setTimeout(() => setShowAlert(false), 3000);
+    // Clear the input field
+    setEmail("");
   };
 
   return (
@@ -28,23 +30,38 @@ const ForgotPasswordPage = () => {
             Home
           </Link>
           <span className="mx-2">/</span>
-          <span className="text-primary-700 font-semibold">
-            <FontAwesomeIcon icon={faArrowLeft} className="mr-1" />
-            Forgot Password
-          </span>
+          <span className="text-primary-700 font-semibold">Newsletter</span>
         </nav>
       </div>
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-16">
         {/* Form Container */}
-        <div className="max-w-lg mx-auto bg-white rounded-xl shadow-xl p-8">
-          {/* Form Heading */}
+        <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-xl p-8">
+          {/* Section Heading */}
           <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-            Forgot Password
+            Subscribe to Our Newsletter
           </h1>
 
-          {/* Forgot Password Form */}
+          {/* Newsletter Description */}
+          <div className="text-gray-600 mb-8">
+            <p className="mb-4">
+              Stay updated with the latest news, tips, and exclusive offers by subscribing to our
+              newsletter. Our newsletter is designed to provide you with valuable insights and
+              resources to help you make the most of our services.
+            </p>
+            <p className="mb-4">
+              By subscribing, you'll receive:
+            </p>
+            <ul className="list-disc list-inside space-y-2">
+              <li>Exclusive discounts and promotions.</li>
+              <li>Early access to new features and updates.</li>
+              <li>Helpful tips and tutorials to enhance your experience.</li>
+              <li>Curated content tailored to your interests.</li>
+            </ul>
+          </div>
+
+          {/* Newsletter Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Input */}
             <div>
@@ -63,36 +80,26 @@ const ForgotPasswordPage = () => {
               />
             </div>
 
-            {/* Send Reset Link Button */}
+            {/* Subscribe Button */}
             <button
               type="submit"
               className="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-indigo-700 transition-all"
             >
-              Send Password Reset Link
+              Subscribe
             </button>
           </form>
-
-          {/* Back to Login Link */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Remember your password?{" "}
-              <Link to="/auth/login" className="text-indigo-600 hover:underline">
-                <FontAwesomeIcon icon={faArrowLeft} className="mr-1" />
-                Back to Login
-              </Link>
-            </p>
-          </div>
         </div>
       </div>
 
       {/* Popup Alert */}
       {showAlert && (
         <div className="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-fade-in">
-          <p>Check your email for the password reset link.</p>
+          <FontAwesomeIcon icon={faCheckCircle} className="mr-2" />
+          Thank you for subscribing! Please check your email.
         </div>
       )}
     </div>
   );
 };
 
-export default ForgotPasswordPage;
+export default NewsletterPage;

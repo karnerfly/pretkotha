@@ -14,6 +14,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import Story from "./pages/Story";
 
 import Search from "./pages/Search";
+import Newsletter from "./pages/Newsletter";
 
 function App() {
   return (
@@ -25,8 +26,10 @@ function App() {
           <Route path="about" element={<About />} />
           <Route path="contact" element={<ContactUs />} />
           <Route path="faq" element={<Faq />} />
+          <Route path="newsletter" element={<Newsletter />} />
           <Route path="search" element={<Search />} />
           <Route path="story/:storyId" element={<Story />} />
+
         </Route>
 
         {/* Public route with Different configuration for Login and Register page */}
