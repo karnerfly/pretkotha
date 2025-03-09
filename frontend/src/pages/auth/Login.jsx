@@ -27,7 +27,7 @@ const LoginPage = () => {
             Home
           </Link>
           <span className="mx-2">/</span>
-          <Link to="/register" className="hover:text-primary-600">
+          <Link to="/auth/register" className="hover:text-primary-600">
             <FontAwesomeIcon icon={faUserPlus} className="mr-1" />
             Register
           </Link>
