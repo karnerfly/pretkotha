@@ -274,12 +274,15 @@ const RegisterForm = () => {
                   >
                     Back
                   </button>
+                  <Link to="/auth/login" className="w-1/2">
                   <button
-                    type="submit"
-                    className="w-1/2 bg-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-indigo-700 transition-all"
+                    type="button"
+                    className="bg-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-indigo-700 transition-all w-full"
                   >
                     Register
                   </button>
+                  </Link>
+
                 </div>
               </div>
             )}
