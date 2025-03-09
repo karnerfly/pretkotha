@@ -10,6 +10,7 @@ import Faq from "./pages/Faq";
 import Dashboard from "./pages/user/Dashboard";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import ForgotPassword from "./pages/auth/ForgotPassword";
 import Story from "./pages/Story";
 
 import Search from "./pages/Search";
@@ -35,6 +36,7 @@ function App() {
         >
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
+          <Route path="forgotpassword" element={<ForgotPassword />} />
         </Route>
 
         {/* protected routes for authenticated users */}
