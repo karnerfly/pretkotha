@@ -10,13 +10,9 @@ const NewsletterPage = () => {
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simulate newsletter subscription
     console.log("Subscribed email:", email);
-    // Show the popup alert
     setShowAlert(true);
-    // Hide the alert after 3 seconds
     setTimeout(() => setShowAlert(false), 3000);
-    // Clear the input field
     setEmail("");
   };
 
