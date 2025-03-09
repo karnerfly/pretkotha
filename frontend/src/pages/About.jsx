@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle, faClock, faHeart, faLightbulb } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faClock, faHeart, faLightbulb, faHome, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
@@ -82,14 +82,21 @@ const AboutUs = () => {
 
   return (
     <div className="bg-gray-50 text-gray-800 min-h-screen">
-      {/* Breadcrumb Navigation */}
-      <div className="container mx-auto px-6 py-4">
-        <nav className="text-gray-600 text-sm">
-          <Link to="/" className="hover:text-primary-600">Home</Link>
-          <span className="mx-2">/</span>
-          <span className="text-primary-700 font-semibold">About Us</span>
-        </nav>
-      </div>
+     {/* Breadcrumb Navigation */}
+<div className="container mx-auto px-6 py-4">
+  <nav className="text-gray-600 text-sm flex items-center">
+    <Link to="/" className="hover:text-primary-600 flex items-center">
+      <FontAwesomeIcon icon={faHome} className="mr-1" />
+      Home
+    </Link>
+    <span className="mx-2">/</span>
+    <span className="text-primary-700 font-semibold flex items-center">
+      <FontAwesomeIcon icon={faInfoCircle} className="mr-1" />
+      About Us
+    </span>
+  </nav>
+</div>
+
     
       {/* Main Content */}
       <div className="container mx-auto px-6 py-16">
