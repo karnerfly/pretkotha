@@ -17,6 +17,7 @@ type UserServiceInterface interface {
 	GetUser(ctx context.Context, id string) (*models.User, error)
 	UploadAvatar(ctx context.Context, id, extension string, body io.Reader) error
 	DeleteAvatar(ctx context.Context, id string) error
+	UpdateUserProfile(ctx context.Context, id string, req *models.UpdateUserPayload) error
 }
 
 type UserService struct {
@@ -41,7 +42,7 @@ func (service *UserService) GetUser(ctx context.Context, id string) (*models.Use
 
 func (service *UserService) UploadAvatar(ctx context.Context, id, extension string, body io.Reader) error {
 	path := fmt.Sprintf("avatars/%s.%s", id, extension)
-	err := service.imgUtility.ResizeAndSave(path, body)
+	err := service.imgUtility.ResizeAndSave(path, 200, 0, body)
 	if err != nil {
 		return err
 	}
@@ -71,4 +72,10 @@ func (service *UserService) DeleteAvatar(ctx context.Context, id string) error {
 	}
 
 	return nil
+}
+
+func (service *UserService) UpdateUserProfile(ctx context.Context, id string, req *models.UpdateUserPayload) error {
+	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
+	defer dbCancle()
+	return service.userRepo.UpdateUserProfile(dbCtx, id, req)
 }

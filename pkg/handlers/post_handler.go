@@ -64,10 +64,39 @@ func (h *PostHandler) GetPostById(ctx *gin.Context) {
 	if err != nil {
 		if errors.Is(err, db.ErrRecordNotFound) {
 			utils.SendErrorResponse(ctx, ErrNotFound.Error(), http.StatusNotFound)
+			return
 		}
 		utils.SendServerErrorResponse(ctx, err)
 		return
 	}
 
 	utils.SendSuccessResponse(ctx, posts, http.StatusOK)
+}
+
+func (h *PostHandler) CreatePost(ctx *gin.Context) {
+	data, exists := ctx.Get("data")
+	if !exists {
+		utils.SendServerErrorResponse(ctx, ErrInternalServer)
+		return
+	}
+	sub, exists := ctx.Get("sub")
+	if !exists {
+		utils.SendServerErrorResponse(ctx, ErrInternalServer)
+		return
+	}
+
+	req := data.(*models.CreatePostPayload)
+	id := sub.(string)
+
+	id, err := h.postService.CreatePost(ctx.Request.Context(), id, req)
+	if err != nil {
+		utils.SendServerErrorResponse(ctx, err)
+		return
+	}
+
+	utils.SendSuccessResponse(ctx, map[string]string{
+		"id":      id,
+		"message": "CREATED",
+		"page":    "create_post",
+	}, http.StatusCreated)
 }

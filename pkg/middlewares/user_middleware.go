@@ -2,9 +2,11 @@ package middlewares
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/karnerfly/pretkotha/pkg/handlers"
+	"github.com/karnerfly/pretkotha/pkg/models"
 	"github.com/karnerfly/pretkotha/pkg/utils"
 )
 
@@ -16,8 +18,6 @@ func NewUserMiddleware() *UserMiddleware {
 }
 
 func (middleware *UserMiddleware) ValidateAvatarUpload(ctx *gin.Context) {
-	// body := ctx.Request.Body
-
 	contentType := ctx.GetHeader("Content-Type")
 
 	if contentType == "" && contentType != "image/png" && contentType != "image/jpg" && contentType != "image/jpeg" {
@@ -33,4 +33,25 @@ func (middleware *UserMiddleware) ValidateAvatarUpload(ctx *gin.Context) {
 	}
 
 	ctx.Next()
+}
+
+func (middleware *UserMiddleware) ValidateUpdateUserProfile(ctx *gin.Context) {
+	req := &models.UpdateUserPayload{}
+	err := utils.ValidateJSON(ctx, req)
+	if err != nil {
+		utils.SendErrorResponse(ctx, handlers.ErrBadRequest.Error(), http.StatusBadRequest)
+		ctx.Abort()
+		return
+	}
+
+	sanitizeUserProfileUpdateInput(req)
+
+	ctx.Set("data", req)
+	ctx.Next()
+}
+
+func sanitizeUserProfileUpdateInput(req *models.UpdateUserPayload) {
+	req.UserName = strings.TrimSpace(req.UserName)
+	req.Bio = strings.TrimSpace(req.Bio)
+	req.Phone = strings.TrimSpace(req.Phone)
 }

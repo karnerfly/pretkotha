@@ -22,7 +22,7 @@ var (
 )
 
 type ImageUtilityInterface interface {
-	ResizeAndSave(path string, body io.Reader) error
+	ResizeAndSave(path string, width uint, height uint, body io.Reader) error
 	Remove(path string) error
 	ImageToReader(img image.Image, format string) (io.Reader, error)
 }
@@ -41,7 +41,7 @@ func NewImageUtility(s store.Storage) *ImageUtility {
 	return &ImageUtility{s}
 }
 
-func (utility *ImageUtility) ResizeAndSave(path string, body io.Reader) error {
+func (utility *ImageUtility) ResizeAndSave(path string, width uint, height uint, body io.Reader) error {
 	var (
 		img image.Image
 		err error
@@ -67,7 +67,7 @@ func (utility *ImageUtility) ResizeAndSave(path string, body io.Reader) error {
 		return err
 	}
 
-	resizedImg := resize.Resize(200, 0, img, resize.Lanczos3)
+	resizedImg := resize.Resize(width, height, img, resize.Lanczos3)
 	imgReader, err := utility.ImageToReader(resizedImg, format)
 	if err != nil {
 		return err

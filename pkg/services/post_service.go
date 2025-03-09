@@ -6,6 +6,7 @@ import (
 	"github.com/karnerfly/pretkotha/pkg/db"
 	"github.com/karnerfly/pretkotha/pkg/models"
 	"github.com/karnerfly/pretkotha/pkg/repositories"
+	"github.com/karnerfly/pretkotha/pkg/utils"
 )
 
 type PostServiceInterface interface {
@@ -13,6 +14,7 @@ type PostServiceInterface interface {
 	GetPopularPosts(ctx context.Context, limit int) ([]*models.Post, error)
 	GetAllPosts(ctx context.Context, p *models.GetPostsParam) ([]*models.Post, error)
 	GetPostById(ctx context.Context, id string) (*models.Post, error)
+	CreatePost(ctx context.Context, id string, req *models.CreatePostPayload) (string, error)
 }
 
 type PostService struct {
@@ -45,4 +47,12 @@ func (service *PostService) GetPostById(ctx context.Context, id string) (*models
 	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
 	defer dbCancle()
 	return service.postRepo.GetPostById(dbCtx, id)
+}
+
+func (service *PostService) CreatePost(ctx context.Context, id string, req *models.CreatePostPayload) (string, error) {
+	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
+	defer dbCancle()
+
+	slug := utils.CreateSlug(req.Title)
+	return service.postRepo.CreatePost(dbCtx, id, slug, req)
 }

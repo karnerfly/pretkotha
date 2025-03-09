@@ -115,3 +115,24 @@ func (middleware *PostMiddleware) ValidatePostPagination(ctx *gin.Context) {
 	ctx.Set("data", param)
 	ctx.Next()
 }
+
+func (middleware *PostMiddleware) ValidateCreatePost(ctx *gin.Context) {
+	req := &models.CreatePostPayload{}
+
+	err := utils.ValidateJSON(ctx, req)
+	if err != nil {
+		utils.SendErrorResponse(ctx, "invalid json payload", http.StatusBadRequest)
+		ctx.Abort()
+		return
+	}
+
+	err = middleware.validator.ValidateCreatePost(req)
+	if err != nil {
+		utils.SendErrorResponse(ctx, "invalid json payload", http.StatusBadRequest)
+		ctx.Abort()
+		return
+	}
+
+	ctx.Set("data", req)
+	ctx.Next()
+}
