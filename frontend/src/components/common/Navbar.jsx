@@ -20,8 +20,8 @@ const Navbar = () => {
       path: "/contact",
     },
     {
-      name: "Login",
-      path: "/auth/login",
+      name: "Register",
+      path: "/auth/register",
     },
   ];
 
