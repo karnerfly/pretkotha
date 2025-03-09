@@ -6,6 +6,7 @@ import Protected from "./pages/layouts/Protected";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import ContactUs from "./pages/ContactUs";
+import Faq from "./pages/Faq";
 import Dashboard from "./pages/user/Dashboard";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
@@ -20,6 +21,7 @@ function App() {
           <Route index path="" element={<Home />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<ContactUs />} />
+          <Route path="faq" element={<Faq />} />
           <Route path="story/:storyId" element={<Story />} />
         </Route>
 
