@@ -52,7 +52,7 @@ func Initialize(router *gin.Engine, client *sql.DB, s session.SessionInterface) 
 	userHandler := getUserHandler(client)
 
 	userRouter.GET("/me", authMiddleware.Protect, userHandler.GetUser)
-	userRouter.PATCH("/me", authMiddleware.Protect, userHandler.UpdateUserProfile)
+	userRouter.PATCH("/me", userMiddleware.ValidateUpdateUserProfile, authMiddleware.Protect, userHandler.UpdateUserProfile)
 	userRouter.PUT("/avatar", userMiddleware.ValidateAvatarUpload, authMiddleware.Protect, userHandler.UploadUserAvatar)
 	userRouter.DELETE("/avatar", authMiddleware.Protect, userHandler.DeleteUserAvatar)
 
@@ -61,6 +61,7 @@ func Initialize(router *gin.Engine, client *sql.DB, s session.SessionInterface) 
 	postHandler := getPostHandler(client)
 	postMiddleware := getPostMiddleware()
 
+	postRouter.POST("", postMiddleware.ValidateCreatePost, authMiddleware.Protect, postHandler.CreatePost)
 	postRouter.GET("", postMiddleware.ValidatePostPagination, postHandler.GetAllPosts)
 	postRouter.GET("/latest", postHandler.GetLatestPosts)
 	postRouter.GET("/popular", postHandler.GetPopularPosts)

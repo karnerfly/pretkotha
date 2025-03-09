@@ -16,6 +16,7 @@ type PostRepositoryInterface interface {
 	GetPopularPosts(ctx context.Context, limit int) ([]*models.Post, error)
 	GetPosts(ctx context.Context, sort enum.Sort, filter enum.Filter, page, limit int) ([]*models.Post, error)
 	GetPostById(ctx context.Context, id string) (*models.Post, error)
+	CreatePost(ctx context.Context, postBy, slug string, req *models.CreatePostPayload) (string, error)
 }
 
 type PostRepository struct {
@@ -132,6 +133,38 @@ func (r *PostRepository) GetPostById(ctx context.Context, id string) (*models.Po
 	post.Description = description.String
 
 	return post, nil
+}
+
+func (r *PostRepository) CreatePost(ctx context.Context, postBy, slug string, req *models.CreatePostPayload) (string, error) {
+	tx, err := r.client.BeginTx(ctx, nil)
+	if err != nil {
+		return "", err
+	}
+
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+
+	stmt, err := tx.PrepareContext(ctx, `INSERT INTO posts (slug, title, description, content, kind, category, post_by) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`)
+	if err != nil {
+		return "", err
+	}
+	defer stmt.Close()
+
+	var id string
+	err = stmt.QueryRowContext(ctx, slug, req.Title, req.Description, req.Content, req.Kind, req.Category, postBy).Scan(&id)
+	if err != nil {
+		return "", err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return "", err
+	}
+
+	return id, nil
 }
 
 func getPostsFromRow(rows *sql.Rows) ([]*models.Post, error) {

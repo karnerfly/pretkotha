@@ -183,6 +183,6 @@ func (middleware *AuthMiddleware) Protect(ctx *gin.Context) {
 		ctx.SetCookie("auth_token", newToken, int(middleware.config.AuthCookieExpiry), "/", middleware.config.Domain, false, true)
 	}
 
-	ctx.Set("data", sub)
+	ctx.Set("sub", sub)
 	ctx.Next()
 }

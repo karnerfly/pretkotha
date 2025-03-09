@@ -42,7 +42,7 @@ func (service *UserService) GetUser(ctx context.Context, id string) (*models.Use
 
 func (service *UserService) UploadAvatar(ctx context.Context, id, extension string, body io.Reader) error {
 	path := fmt.Sprintf("avatars/%s.%s", id, extension)
-	err := service.imgUtility.ResizeAndSave(path, body)
+	err := service.imgUtility.ResizeAndSave(path, 200, 0, body)
 	if err != nil {
 		return err
 	}

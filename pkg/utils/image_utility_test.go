@@ -17,7 +17,7 @@ func TestResizeAndSave(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = utility.ResizeAndSave("compressed/e.png", bytes.NewReader(data))
+	err = utility.ResizeAndSave("compressed/e.png", 200, 0, bytes.NewReader(data))
 	if err != nil {
 		t.Error(err)
 	}

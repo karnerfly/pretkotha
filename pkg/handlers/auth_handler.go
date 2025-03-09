@@ -99,7 +99,7 @@ func (h *AuthHandler) HandleUserRegister(ctx *gin.Context) {
 	utils.SendSuccessResponse(ctx, map[string]string{
 		"message": "OK",
 		"page":    "register",
-	}, http.StatusOK)
+	}, http.StatusCreated)
 }
 
 func (h *AuthHandler) HandleUserLogin(ctx *gin.Context) {

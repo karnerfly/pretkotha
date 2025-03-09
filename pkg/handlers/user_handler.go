@@ -19,7 +19,7 @@ func NewUserHander(userService services.UserServiceInterface) *UserHandler {
 }
 
 func (handler *UserHandler) GetUser(ctx *gin.Context) {
-	data, exists := ctx.Get("data")
+	data, exists := ctx.Get("sub")
 	if !exists {
 		utils.SendServerErrorResponse(ctx, ErrInternalServer)
 		return
@@ -35,7 +35,7 @@ func (handler *UserHandler) GetUser(ctx *gin.Context) {
 }
 
 func (handler *UserHandler) UploadUserAvatar(ctx *gin.Context) {
-	data, exists := ctx.Get("data")
+	data, exists := ctx.Get("sub")
 	if !exists {
 		utils.SendServerErrorResponse(ctx, ErrInternalServer)
 		return
@@ -58,7 +58,7 @@ func (handler *UserHandler) UploadUserAvatar(ctx *gin.Context) {
 }
 
 func (handler *UserHandler) DeleteUserAvatar(ctx *gin.Context) {
-	data, exists := ctx.Get("data")
+	data, exists := ctx.Get("sub")
 	if !exists {
 		utils.SendServerErrorResponse(ctx, ErrInternalServer)
 		return
@@ -84,16 +84,17 @@ func (handler *UserHandler) UpdateUserProfile(ctx *gin.Context) {
 		utils.SendServerErrorResponse(ctx, ErrInternalServer)
 		return
 	}
-	req := &models.UpdateUserPayload{}
-	err := utils.FromJSONRequest(ctx.Request.Body, req)
-	if err != nil {
-		utils.SendErrorResponse(ctx, "invalid json payload", http.StatusBadRequest)
+
+	sub, exists := ctx.Get("sub")
+	if !exists {
+		utils.SendServerErrorResponse(ctx, ErrInternalServer)
 		return
 	}
 
-	id := data.(string)
+	req := data.(*models.UpdateUserPayload)
+	id := sub.(string)
 
-	err = handler.userService.UpdateUserProfile(ctx.Request.Context(), id, req)
+	err := handler.userService.UpdateUserProfile(ctx.Request.Context(), id, req)
 	if err != nil {
 		utils.SendServerErrorResponse(ctx, err)
 		return
