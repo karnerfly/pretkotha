@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faPhone, faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope, faPhone, faMapMarkerAlt, faHome, } from "@fortawesome/free-solid-svg-icons";
 import { faFacebook, faLinkedin, faTwitter, faInstagram } from "@fortawesome/free-brands-svg-icons";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -29,12 +29,19 @@ const ContactUs = () => {
     <div className="bg-gray-50 text-gray-800 min-h-screen">
       {/* Breadcrumb Navigation */}
       <div className="container mx-auto px-6 py-4">
-        <nav className="text-gray-600 text-sm">
-          <Link to="/" className="hover:text-primary-600">Home</Link>
-          <span className="mx-2">/</span>
-          <span className="text-primary-700 font-semibold">Contact Us</span>
+        <nav className="text-gray-600 text-sm flex items-center">
+        <Link to="/" className="hover:text-primary-600 flex items-center">
+        <FontAwesomeIcon icon={faHome} className="mr-1" />
+          Home
+        </Link>
+        <span className="mx-2">/</span>
+        <span className="text-primary-700 font-semibold flex items-center">
+       <FontAwesomeIcon icon={faEnvelope} className="mr-1" />
+          Contact Us
+        </span>
         </nav>
-      </div>
+    </div>
+
     
       {/* Main Content */}
       <div className="container mx-auto px-6 py-16">
