@@ -22,6 +22,7 @@ type SessionInterface interface {
 	DeSerialize(ctx context.Context, key string, value any) error
 	Update(ctx context.Context, key string, value any) error
 	Remove(ctx context.Context, key string) error
+	Shutdown() error
 }
 
 type Session struct {
@@ -99,4 +100,8 @@ func (s *Session) Remove(ctx context.Context, key string) error {
 	sc := s.client.Del(ctx, key)
 
 	return sc.Err()
+}
+
+func (s *Session) Shutdown() error {
+	return s.client.Close()
 }

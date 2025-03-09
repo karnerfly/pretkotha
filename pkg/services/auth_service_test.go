@@ -98,3 +98,7 @@ func (s *mockUserSession) Remove(ctx context.Context, key string) error {
 func (s *mockUserSession) Update(ctx context.Context, key string, value any) error {
 	return nil
 }
+
+func (s *mockUserSession) Shutdown() error {
+	return nil
+}

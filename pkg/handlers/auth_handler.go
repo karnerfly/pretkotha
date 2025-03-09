@@ -14,7 +14,7 @@ import (
 
 type AuthHandler struct {
 	authService services.AuthServiceInterface
-	config      *configs.Config
+	config      configs.Config
 }
 
 func NewAuthHander(userService services.AuthServiceInterface) *AuthHandler {

@@ -16,6 +16,8 @@ type UserRepositoryInterface interface {
 	GetUserById(ctx context.Context, id string) (*models.User, error)
 	ExistsByEmail(ctx context.Context, email string) (bool, error)
 	SearchUserByEmailPassword(ctx context.Context, email, password string) (string, error)
+	UpdateUserAvatar(ctx context.Context, id, url string) error
+	DeleteUserAvatar(ctx context.Context, id string) (string, error)
 }
 
 type UserRepo struct {
@@ -169,4 +171,57 @@ func (r *UserRepo) SearchUserByEmailPassword(ctx context.Context, email, passwor
 	}
 
 	return id, nil
+}
+
+func (r *UserRepo) UpdateUserAvatar(ctx context.Context, id, url string) error {
+	tx, err := r.client.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	stmt, err := tx.PrepareContext(ctx, `UPDATE user_profiles SET avatar_url = $1 WHERE user_id = $2;`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.ExecContext(ctx, url, id)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (r *UserRepo) DeleteUserAvatar(ctx context.Context, id string) (string, error) {
+	tx, err := r.client.BeginTx(ctx, nil)
+	if err != nil {
+		return "", err
+	}
+	stmt1, err := tx.PrepareContext(ctx, `SELECT avatar_url FROM user_profiles WHERE user_id = $1;`)
+	if err != nil {
+		return "", err
+	}
+
+	var avatar_url string
+	err = stmt1.QueryRowContext(ctx, id).Scan(&avatar_url)
+	if err != nil {
+		return "", err
+	}
+
+	stmt2, err := tx.PrepareContext(ctx, `UPDATE user_profiles SET avatar_url = NULL WHERE user_id = $1;`)
+	if err != nil {
+		return "", err
+	}
+
+	_, err = stmt2.ExecContext(ctx, id)
+	if err != nil {
+		return "", err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return "", nil
+	}
+
+	return avatar_url, nil
 }

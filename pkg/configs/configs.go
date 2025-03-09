@@ -8,17 +8,19 @@ import (
 )
 
 type Config struct {
-	Domain         string
-	Version        string
-	JwtSecret      string
-	ServerAddress  string
-	DatabaseURL    string
-	SmtpUsername   string
-	SmtpPassword   string
-	SmtpHost       string
-	SmtpServerAddr string
-	From           string
-	RedisUrl       string
+	ServerAddress       string
+	Domain              string
+	Version             string
+	AvatarFilesBaseDir  string
+	JwtSecret           string
+	DatabaseURL         string
+	SmtpUsername        string
+	SmtpPassword        string
+	SmtpHost            string
+	SmtpServerAddr      string
+	From                string
+	StaticServerBaseUrl string
+	RedisUrl            string
 
 	JwtExpiry           int64
 	ServerReadTimeout   int64
@@ -35,19 +37,21 @@ func Load() error {
 	return nil
 }
 
-func New() *Config {
-	return &Config{
-		ServerAddress:  getEnvString("SERVER_ADDRERSS", ":3000"),
-		Version:        getEnvString("VERSION", "v0.1-alpha"),
-		Domain:         getEnvString("DOMAIN", "localhost"),
-		JwtSecret:      getEnvString("JWT_SECRET", "random_jwt_secret"),
-		DatabaseURL:    getEnvString("DATABASE_URL", ""),
-		SmtpUsername:   getEnvString("SMTP_USERNAME", ""),
-		SmtpPassword:   getEnvString("SMTP_PASSWORD", ""),
-		SmtpHost:       getEnvString("SMTP_HOST", ""),
-		SmtpServerAddr: getEnvString("SMTP_SERVER_ADDRESS", ""),
-		From:           getEnvString("SMTP_FROM", ""),
-		RedisUrl:       getEnvString("REDIS_URL", ""),
+func New() Config {
+	return Config{
+		ServerAddress:       getEnvString("SERVER_ADDRERSS", ":3000"),
+		Version:             getEnvString("VERSION", "v0.1-alpha"),
+		AvatarFilesBaseDir:  getEnvString("AVATAR_FILES_BASE_PATH", "./static/images"),
+		Domain:              getEnvString("DOMAIN", ""),
+		JwtSecret:           getEnvString("JWT_SECRET", ""),
+		DatabaseURL:         getEnvString("DATABASE_URL", ""),
+		SmtpUsername:        getEnvString("SMTP_USERNAME", ""),
+		SmtpPassword:        getEnvString("SMTP_PASSWORD", ""),
+		SmtpHost:            getEnvString("SMTP_HOST", ""),
+		SmtpServerAddr:      getEnvString("SMTP_SERVER_ADDRESS", ""),
+		From:                getEnvString("SMTP_FROM", ""),
+		StaticServerBaseUrl: getEnvString("STATIC_SERVER_BASE_URL", ""),
+		RedisUrl:            getEnvString("REDIS_URL", ""),
 
 		// time in second
 		JwtExpiry:           getEnvInt64("JWT_EXPIRY", 604800),             // 7 days

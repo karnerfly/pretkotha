@@ -31,7 +31,7 @@ type AuthServiceInterface interface {
 
 type AuthService struct {
 	userRepo    repositories.UserRepositoryInterface
-	config      *configs.Config
+	config      configs.Config
 	authSession session.SessionInterface
 }
 

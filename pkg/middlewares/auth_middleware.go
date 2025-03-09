@@ -17,7 +17,7 @@ import (
 
 type AuthMiddleware struct {
 	validator   validators.AuthValidatorInterface
-	config      *configs.Config
+	config      configs.Config
 	authSession session.SessionInterface
 }
 

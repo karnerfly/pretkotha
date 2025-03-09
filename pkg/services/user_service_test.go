@@ -11,7 +11,7 @@ import (
 
 func TestGetUser(t *testing.T) {
 	mr := &mockUserRepo{}
-	us := NewUserService(mr)
+	us := NewUserService(mr, nil)
 
 	user, err := us.GetUser(context.TODO(), "e898194f-c64b-46d4-a263-9fc0c2e65637")
 	if err != nil {
@@ -68,4 +68,12 @@ func (m *mockUserRepo) ExistsByEmail(ctx context.Context, email string) (bool, e
 		return true, nil
 	}
 	return false, nil
+}
+
+func (m *mockUserRepo) UpdateUserAvatar(ctx context.Context, id, url string) error {
+	return nil
+}
+
+func (m *mockUserRepo) DeleteUserAvatar(ctx context.Context, id string) (string, error) {
+	return "", nil
 }

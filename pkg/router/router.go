@@ -5,12 +5,14 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/karnerfly/pretkotha/pkg/configs"
 	"github.com/karnerfly/pretkotha/pkg/handlers"
 	"github.com/karnerfly/pretkotha/pkg/middlewares"
 	"github.com/karnerfly/pretkotha/pkg/repositories"
 	"github.com/karnerfly/pretkotha/pkg/services"
 	"github.com/karnerfly/pretkotha/pkg/session"
 	"github.com/karnerfly/pretkotha/pkg/utils"
+	"github.com/karnerfly/pretkotha/pkg/utils/store"
 	"github.com/karnerfly/pretkotha/pkg/validators"
 )
 
@@ -46,9 +48,12 @@ func Initialize(router *gin.Engine, client *sql.DB, s session.SessionInterface) 
 
 	// user router
 	userRouter := router.Group("/api/users")
+	userMiddleware := getUserMiddleware()
 	userHandler := getUserHandler(client)
 
 	userRouter.GET("/me", authMiddleware.Protect, userHandler.GetUser)
+	userRouter.PUT("/avatar", userMiddleware.ValidateAvatarUpload, authMiddleware.Protect, userHandler.UploadUserAvatar)
+	userRouter.DELETE("/avatar", authMiddleware.Protect, userHandler.DeleteUserAvatar)
 
 	// posts router
 	postRouter := router.Group("/api/posts")
@@ -77,9 +82,16 @@ func getAuthMiddleware(s session.SessionInterface) *middlewares.AuthMiddleware {
 }
 
 func getUserHandler(client *sql.DB) *handlers.UserHandler {
+	cfg := configs.New()
+	localStore := store.NewLocalStorage(cfg.AvatarFilesBaseDir, 3145728)
+	imgUtility := utils.NewImageUtility(localStore)
 	userRepo := repositories.NewUserRepo(client)
-	userService := services.NewUserService(userRepo)
+	userService := services.NewUserService(userRepo, imgUtility)
 	return handlers.NewUserHander(userService)
+}
+
+func getUserMiddleware() *middlewares.UserMiddleware {
+	return middlewares.NewUserMiddleware()
 }
 
 func getPostHandler(client *sql.DB) *handlers.PostHandler {
