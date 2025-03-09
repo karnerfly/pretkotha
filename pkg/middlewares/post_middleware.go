@@ -20,9 +20,9 @@ func NewPostMiddleware(v validators.PostValidatorInterface) *PostMiddleware {
 	return &PostMiddleware{validator: v}
 }
 
-func (m *PostMiddleware) ValidatePostId(ctx *gin.Context) {
+func (middleware *PostMiddleware) ValidatePostId(ctx *gin.Context) {
 	postId := ctx.Param("postId")
-	err := m.validator.ValidatePostId(postId)
+	err := middleware.validator.ValidatePostId(postId)
 	if err != nil {
 		utils.SendNotFoundResponse(ctx, handlers.ErrNotFound.Error())
 		ctx.Abort()
@@ -32,7 +32,7 @@ func (m *PostMiddleware) ValidatePostId(ctx *gin.Context) {
 	ctx.Next()
 }
 
-func (m *PostMiddleware) ValidatePostPagination(ctx *gin.Context) {
+func (middleware *PostMiddleware) ValidatePostPagination(ctx *gin.Context) {
 
 	var (
 		err       error

@@ -9,7 +9,7 @@ import (
 func TestSendOtpMail(t *testing.T) {
 	opt := Option{}
 	m := NewMailService(opt)
-	ctx, cancle := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancle := context.WithTimeout(context.TODO(), 10*time.Second)
 	defer cancle()
 
 	err := m.SendOtpMail(ctx, "toufique26ajay@gmail.com", "123456")
