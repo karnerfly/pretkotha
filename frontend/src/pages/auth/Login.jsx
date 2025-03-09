@@ -27,7 +27,7 @@ const LoginPage = () => {
             Home
           </Link>
           <span className="mx-2">/</span>
-          <Link to="/auth/register" className="hover:text-primary-600">
+          <Link to="/register" className="hover:text-primary-600">
             <FontAwesomeIcon icon={faUserPlus} className="mr-1" />
             Register
           </Link>
@@ -84,11 +84,12 @@ const LoginPage = () => {
               />
             </div>
 
-            {/* Submit Button */}
+            {/* Login Button */}
             <button
               type="submit"
               className="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-indigo-700 transition-all"
             >
+              <FontAwesomeIcon icon={faSignInAlt} className="mr-2" />
               Login
             </button>
           </form>
@@ -97,13 +98,15 @@ const LoginPage = () => {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}
-              <Link to="/register" className="text-indigo-600 hover:text-indigo-700 font-medium">
-                Register
+              <Link to="/auth/register" className="text-indigo-600 hover:underline">
+                <FontAwesomeIcon icon={faUserPlus} className="mr-1" />
+                Register here
               </Link>
             </p>
             <p className="text-sm text-gray-600 mt-2">
-              <Link to="/" className="text-indigo-600 hover:text-indigo-700 font-medium">
-                Back to Home
+              <Link to="/forgot-password" className="text-indigo-600 hover:underline">
+                <FontAwesomeIcon icon={faLock} className="mr-1" />
+                Forgot your password?
               </Link>
             </p>
           </div>
