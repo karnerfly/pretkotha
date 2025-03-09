@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import FilterSection from "../components/FilterSection"; // Correct path for FilterSection
 
 const SearchPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -54,6 +55,11 @@ const SearchPage = () => {
           </form>
         </div>
 
+        {/* Filter Section */}
+        <div className="mt-8 max-w-3xl mx-auto">
+          <FilterSection />
+        </div>
+
         {/* Section for Future References (Cards) */}
         <div className="mt-16">
           <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
@@ -68,7 +74,7 @@ const SearchPage = () => {
               <CardComponent />
             */}
             <div className="text-center text-gray-600">
-              Your cards will appear here.
+              Cards will appear here.
             </div>
           </div>
         </div>
