@@ -9,11 +9,12 @@ import (
 	"github.com/karnerfly/pretkotha/pkg/middlewares"
 	"github.com/karnerfly/pretkotha/pkg/repositories"
 	"github.com/karnerfly/pretkotha/pkg/services"
+	"github.com/karnerfly/pretkotha/pkg/session"
 	"github.com/karnerfly/pretkotha/pkg/utils"
 	"github.com/karnerfly/pretkotha/pkg/validators"
 )
 
-func Initialize(router *gin.Engine, client *sql.DB) {
+func Initialize(router *gin.Engine, client *sql.DB, s session.SessionInterface) {
 	router.Use(gin.Recovery())
 
 	router.GET("/_health", func(ctx *gin.Context) {
@@ -34,8 +35,8 @@ func Initialize(router *gin.Engine, client *sql.DB) {
 
 	// authentication router
 	authRouter := router.Group("/api/auth")
-	authMiddleware := getAuthMiddleware()
-	authHandler := getAuthHandler(client)
+	authMiddleware := getAuthMiddleware(s)
+	authHandler := getAuthHandler(client, s)
 
 	authRouter.POST("/register", authMiddleware.ValidateRegister, authHandler.HandleUserRegister)
 	authRouter.POST("/otp/verify", authMiddleware.ValidateVerifyOtp, authHandler.HandleVerifyOtp)
@@ -44,7 +45,7 @@ func Initialize(router *gin.Engine, client *sql.DB) {
 	authRouter.POST("/logout", authMiddleware.Protect, authHandler.HandleUserLogout)
 
 	// user router
-	userRouter := router.Group("/api/user")
+	userRouter := router.Group("/api/users")
 	userHandler := getUserHandler(client)
 
 	userRouter.GET("/me", authMiddleware.Protect, userHandler.GetUser)
@@ -64,15 +65,15 @@ func Initialize(router *gin.Engine, client *sql.DB) {
 	})
 }
 
-func getAuthHandler(client *sql.DB) *handlers.AuthHandler {
+func getAuthHandler(client *sql.DB, s session.SessionInterface) *handlers.AuthHandler {
 	userRepo := repositories.NewUserRepo(client)
-	authService := services.NewAuthService(userRepo)
+	authService := services.NewAuthService(userRepo, s)
 	return handlers.NewAuthHander(authService)
 }
 
-func getAuthMiddleware() *middlewares.AuthMiddleware {
+func getAuthMiddleware(s session.SessionInterface) *middlewares.AuthMiddleware {
 	v := validators.NewAuthValidator()
-	return middlewares.NewAuthMiddleware(v)
+	return middlewares.NewAuthMiddleware(v, s)
 }
 
 func getUserHandler(client *sql.DB) *handlers.UserHandler {

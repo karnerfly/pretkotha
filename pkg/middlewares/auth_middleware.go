@@ -16,18 +16,20 @@ import (
 )
 
 type AuthMiddleware struct {
-	validator validators.AuthValidatorInterface
-	config    *configs.Config
+	validator   validators.AuthValidatorInterface
+	config      *configs.Config
+	authSession session.SessionInterface
 }
 
-func NewAuthMiddleware(v validators.AuthValidatorInterface) *AuthMiddleware {
+func NewAuthMiddleware(v validators.AuthValidatorInterface, s session.SessionInterface) *AuthMiddleware {
 	return &AuthMiddleware{
-		validator: v,
-		config:    configs.New(),
+		validator:   v,
+		config:      configs.New(),
+		authSession: s,
 	}
 }
 
-func (m *AuthMiddleware) ValidateSendOtp(ctx *gin.Context) {
+func (middleware *AuthMiddleware) ValidateSendOtp(ctx *gin.Context) {
 	req := &models.SendOtpPayload{}
 
 	err := utils.ValidateJSON(ctx, req)
@@ -37,7 +39,7 @@ func (m *AuthMiddleware) ValidateSendOtp(ctx *gin.Context) {
 		return
 	}
 
-	err = m.validator.ValidateSendOtp(req)
+	err = middleware.validator.ValidateSendOtp(req)
 	if err != nil {
 		ctx.Abort()
 		utils.SendErrorResponse(ctx, "invalid credentials", http.StatusBadRequest)
@@ -48,7 +50,7 @@ func (m *AuthMiddleware) ValidateSendOtp(ctx *gin.Context) {
 	ctx.Next()
 }
 
-func (m *AuthMiddleware) ValidateVerifyOtp(ctx *gin.Context) {
+func (middleware *AuthMiddleware) ValidateVerifyOtp(ctx *gin.Context) {
 	req := &models.VerifyOtpPayload{}
 
 	err := utils.ValidateJSON(ctx, req)
@@ -58,7 +60,7 @@ func (m *AuthMiddleware) ValidateVerifyOtp(ctx *gin.Context) {
 		return
 	}
 
-	err = m.validator.ValidateVerifyOtp(req)
+	err = middleware.validator.ValidateVerifyOtp(req)
 	if err != nil {
 		ctx.Abort()
 		utils.SendErrorResponse(ctx, "invalid credentials", http.StatusBadRequest)
@@ -69,7 +71,7 @@ func (m *AuthMiddleware) ValidateVerifyOtp(ctx *gin.Context) {
 	ctx.Next()
 }
 
-func (m *AuthMiddleware) ValidateRegister(ctx *gin.Context) {
+func (middleware *AuthMiddleware) ValidateRegister(ctx *gin.Context) {
 	req := &models.CreateUserPayload{}
 
 	err := utils.ValidateJSON(ctx, req)
@@ -79,7 +81,7 @@ func (m *AuthMiddleware) ValidateRegister(ctx *gin.Context) {
 		return
 	}
 
-	err = m.validator.ValidateUserRegister(req)
+	err = middleware.validator.ValidateUserRegister(req)
 	if err != nil {
 		ctx.Abort()
 		utils.SendErrorResponse(ctx, "invalid credentials", http.StatusBadRequest)
@@ -90,7 +92,7 @@ func (m *AuthMiddleware) ValidateRegister(ctx *gin.Context) {
 	ctx.Next()
 }
 
-func (m *AuthMiddleware) ValidateLogin(ctx *gin.Context) {
+func (middleware *AuthMiddleware) ValidateLogin(ctx *gin.Context) {
 	req := &models.LoginUserPayload{}
 
 	err := utils.ValidateJSON(ctx, req)
@@ -100,7 +102,7 @@ func (m *AuthMiddleware) ValidateLogin(ctx *gin.Context) {
 		return
 	}
 
-	err = m.validator.ValidateUserLogin(req)
+	err = middleware.validator.ValidateUserLogin(req)
 	if err != nil {
 		ctx.Abort()
 		utils.SendErrorResponse(ctx, "invalid credentials", http.StatusBadRequest)
@@ -111,7 +113,7 @@ func (m *AuthMiddleware) ValidateLogin(ctx *gin.Context) {
 	ctx.Next()
 }
 
-func (m *AuthMiddleware) Protect(ctx *gin.Context) {
+func (middleware *AuthMiddleware) Protect(ctx *gin.Context) {
 	authToken, err := ctx.Cookie("auth_token")
 	if err != nil {
 		utils.SendErrorResponse(ctx, handlers.ErrForbidden.Error(), http.StatusForbidden)
@@ -129,11 +131,11 @@ func (m *AuthMiddleware) Protect(ctx *gin.Context) {
 
 	sessionCtx, sessionCancle := session.GetIdleTimeoutContext(ctx.Request.Context())
 	defer sessionCancle()
-	err = session.DeSerialize(sessionCtx, sessionId, &data)
+	err = middleware.authSession.DeSerialize(sessionCtx, sessionId, &data)
 	if err != nil {
 		if err == session.Nil {
-			ctx.SetCookie("auth_token", "", -1, "/", m.config.Domain, false, true)
-			ctx.SetCookie("user_session", "", -1, "/", m.config.Domain, false, true)
+			ctx.SetCookie("auth_token", "", -1, "/", middleware.config.Domain, false, true)
+			ctx.SetCookie("user_session", "", -1, "/", middleware.config.Domain, false, true)
 			utils.SendErrorResponse(ctx, handlers.ErrUnAuthorized.Error(), http.StatusUnauthorized)
 			ctx.Abort()
 			return
@@ -145,7 +147,7 @@ func (m *AuthMiddleware) Protect(ctx *gin.Context) {
 
 	storedToken, ok := data["token"]
 	if !ok || authToken != storedToken {
-		ctx.SetCookie("auth_token", "", -1, "/", m.config.Domain, false, true)
+		ctx.SetCookie("auth_token", "", -1, "/", middleware.config.Domain, false, true)
 		utils.SendErrorResponse(ctx, handlers.ErrUnAuthorized.Error(), http.StatusUnauthorized)
 		ctx.Abort()
 		return
@@ -170,15 +172,15 @@ func (m *AuthMiddleware) Protect(ctx *gin.Context) {
 		data := map[string]any{
 			"token":      newToken,
 			"created_at": time.Now().Unix(),
-			"expires_at": time.Now().Add(time.Duration(m.config.JwtExpiry) * time.Second).Unix(),
+			"expires_at": time.Now().Add(time.Duration(middleware.config.JwtExpiry) * time.Second).Unix(),
 		}
-		err := session.Update(sessionCtx, sessionId, data)
+		err := middleware.authSession.Update(sessionCtx, sessionId, data)
 		if err != nil {
 			utils.SendErrorResponse(ctx, handlers.ErrForbidden.Error(), http.StatusForbidden)
 			ctx.Abort()
 			return
 		}
-		ctx.SetCookie("auth_token", newToken, int(m.config.AuthCookieExpiry), "/", m.config.Domain, false, true)
+		ctx.SetCookie("auth_token", newToken, int(middleware.config.AuthCookieExpiry), "/", middleware.config.Domain, false, true)
 	}
 
 	ctx.Set("data", sub)

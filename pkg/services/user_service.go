@@ -20,8 +20,8 @@ func NewUserService(userRepo repositories.UserRepositoryInterface) *UserService 
 	return &UserService{userRepo}
 }
 
-func (s *UserService) GetUser(ctx context.Context, id string) (*models.User, error) {
+func (service *UserService) GetUser(ctx context.Context, id string) (*models.User, error) {
 	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
 	defer dbCancle()
-	return s.userRepo.GetUserById(dbCtx, id)
+	return service.userRepo.GetUserById(dbCtx, id)
 }

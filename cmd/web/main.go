@@ -28,7 +28,8 @@ func main() {
 	cfg := configs.New()
 
 	// initialize session
-	if err := session.Init(cfg.RedisUrl); err != nil {
+	redisSession, err := session.New(cfg.RedisUrl)
+	if err != nil {
 		logger.Fatal(err)
 	}
 
@@ -51,8 +52,8 @@ func main() {
 		logger.ERROR(err.Error())
 	}
 
-	// initialize mail queue for OTP mail channel and EVENT mail channel
-	mailqueue.Init(10)
+	// // initialize mail queue for OTP mail channel and EVENT mail channel
+	// mailqueue.Init(10)
 
 	// register worker for send OTP mail
 	err = mailqueue.RegisterWorker(mailqueue.TypeOtp, func(payload *mailqueue.MailPayload) error {
@@ -74,7 +75,7 @@ func main() {
 	// create ServeMux with gin
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
-	router.Initialize(r, db.Client())
+	router.Initialize(r, db.Client(), redisSession)
 
 	// create server
 	server := &http.Server{

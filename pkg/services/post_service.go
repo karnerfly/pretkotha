@@ -23,26 +23,26 @@ func NewPostService(postRepo repositories.PostRepositoryInterface) *PostService 
 	return &PostService{postRepo}
 }
 
-func (s *PostService) GetLatestPosts(ctx context.Context, limit int) ([]*models.Post, error) {
+func (service *PostService) GetLatestPosts(ctx context.Context, limit int) ([]*models.Post, error) {
 	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
 	defer dbCancle()
-	return s.postRepo.GetLatestPosts(dbCtx, limit)
+	return service.postRepo.GetLatestPosts(dbCtx, limit)
 }
 
-func (s *PostService) GetPopularPosts(ctx context.Context, limit int) ([]*models.Post, error) {
+func (service *PostService) GetPopularPosts(ctx context.Context, limit int) ([]*models.Post, error) {
 	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
 	defer dbCancle()
-	return s.postRepo.GetPopularPosts(dbCtx, limit)
+	return service.postRepo.GetPopularPosts(dbCtx, limit)
 }
 
-func (s *PostService) GetAllPosts(ctx context.Context, p *models.GetPostsParam) ([]*models.Post, error) {
+func (service *PostService) GetAllPosts(ctx context.Context, p *models.GetPostsParam) ([]*models.Post, error) {
 	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
 	defer dbCancle()
-	return s.postRepo.GetPosts(dbCtx, p.SortBy, p.FilterBy, p.Page, p.Limit)
+	return service.postRepo.GetPosts(dbCtx, p.SortBy, p.FilterBy, p.Page, p.Limit)
 }
 
-func (s *PostService) GetPostById(ctx context.Context, id string) (*models.Post, error) {
+func (service *PostService) GetPostById(ctx context.Context, id string) (*models.Post, error) {
 	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
 	defer dbCancle()
-	return s.postRepo.GetPostById(dbCtx, id)
+	return service.postRepo.GetPostById(dbCtx, id)
 }
