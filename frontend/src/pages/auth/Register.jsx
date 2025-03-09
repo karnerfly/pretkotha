@@ -4,15 +4,15 @@ import { faHome, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
 const RegisterForm = () => {
-  const [step, setStep] = useState(1); // Current step of the form
-  const [email, setEmail] = useState(""); // Email input
-  const [otp, setOtp] = useState(Array(6).fill("")); // OTP input (6 boxes)
-  const [username, setUsername] = useState(""); // Username input
-  const [password, setPassword] = useState(""); // Password input
-  const [phone, setPhone] = useState(""); // Phone number input
-  const [bio, setBio] = useState(""); // Bio input
-  const [countryCode, setCountryCode] = useState("+1"); // Country code input
-  const [passwordError, setPasswordError] = useState(""); // Password validation error
+  const [step, setStep] = useState(1);
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState(Array(6).fill(""));
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [bio, setBio] = useState("");
+  const [countryCode, setCountryCode] = useState("+1");
+  const [passwordError, setPasswordError] = useState("");
 
   // Country codes for dropdown
   const countryCodes = [
@@ -53,7 +53,6 @@ const RegisterForm = () => {
     }
 
     if (step === 1) {
-      // Simulate email verification request
       console.log("Email submitted:", email);
       setStep(2); // Move to OTP step
     } else if (step === 2) {

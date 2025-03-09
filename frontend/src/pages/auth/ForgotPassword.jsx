@@ -4,17 +4,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faHome, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 const ForgotPasswordPage = () => {
-  const [email, setEmail] = useState(""); // Email input
-  const [showAlert, setShowAlert] = useState(false); // Popup alert state
+  const [email, setEmail] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
-  // Handle form submission
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simulate sending a password reset link
     console.log("Password reset link sent to:", email);
-    // Show the popup alert
     setShowAlert(true);
-    // Hide the alert after 3 seconds
     setTimeout(() => setShowAlert(false), 3000);
   };
 
