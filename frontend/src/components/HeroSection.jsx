@@ -1,5 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencilAlt, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
+
 
 const HeroSection = ({ title, subtitle, primaryBtnText, secondaryBtnText }) => {
   return (
@@ -13,10 +15,12 @@ const HeroSection = ({ title, subtitle, primaryBtnText, secondaryBtnText }) => {
               <FontAwesomeIcon icon={faPencilAlt} />
               {primaryBtnText}
             </button>
+            <Link to="/search">
             <button className="bg-primary-900 bg-opacity-30 text-white border border-white border-opacity-30 px-6 py-3 rounded-full font-medium hover:bg-opacity-50 transition-colors shadow-md hover:shadow-lg flex items-center gap-2">
               <FontAwesomeIcon icon={faSearch} />
-              {secondaryBtnText}
+             {secondaryBtnText}
             </button>
+           </Link>
           </div>
         </div>
       </div>

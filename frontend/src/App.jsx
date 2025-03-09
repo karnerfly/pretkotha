@@ -12,6 +12,8 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Story from "./pages/Story";
 
+import Search from "./pages/Search";
+
 function App() {
   return (
     <Routes>
@@ -22,6 +24,7 @@ function App() {
           <Route path="about" element={<About />} />
           <Route path="contact" element={<ContactUs />} />
           <Route path="faq" element={<Faq />} />
+          <Route path="search" element={<Search />} />
           <Route path="story/:storyId" element={<Story />} />
         </Route>
 
