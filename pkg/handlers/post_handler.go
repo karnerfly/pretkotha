@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/karnerfly/pretkotha/pkg/db"
@@ -19,7 +20,7 @@ func NewPostHandler(postService services.PostServiceInterface) *PostHandler {
 	return &PostHandler{postService}
 }
 
-func (h *PostHandler) GetLatestPosts(ctx *gin.Context) {
+func (h *PostHandler) HandleGetLatestPosts(ctx *gin.Context) {
 	posts, err := h.postService.GetLatestPosts(ctx.Request.Context(), 12)
 	if err != nil {
 		utils.SendServerErrorResponse(ctx, err)
@@ -29,7 +30,7 @@ func (h *PostHandler) GetLatestPosts(ctx *gin.Context) {
 	utils.SendSuccessResponse(ctx, posts, http.StatusOK)
 }
 
-func (h *PostHandler) GetPopularPosts(ctx *gin.Context) {
+func (h *PostHandler) HandleGetPopularPosts(ctx *gin.Context) {
 	posts, err := h.postService.GetPopularPosts(ctx.Request.Context(), 12)
 	if err != nil {
 		utils.SendServerErrorResponse(ctx, err)
@@ -39,7 +40,7 @@ func (h *PostHandler) GetPopularPosts(ctx *gin.Context) {
 	utils.SendSuccessResponse(ctx, posts, http.StatusOK)
 }
 
-func (h *PostHandler) GetAllPosts(ctx *gin.Context) {
+func (h *PostHandler) HandleGetAllPosts(ctx *gin.Context) {
 	data, exists := ctx.Get("data")
 	if !exists {
 		utils.SendServerErrorResponse(ctx, ErrInternalServer)
@@ -57,7 +58,7 @@ func (h *PostHandler) GetAllPosts(ctx *gin.Context) {
 	utils.SendSuccessResponse(ctx, posts, http.StatusOK)
 }
 
-func (h *PostHandler) GetPostById(ctx *gin.Context) {
+func (h *PostHandler) HandleGetPostById(ctx *gin.Context) {
 	postId := ctx.Param("postId")
 
 	posts, err := h.postService.GetPostById(ctx.Request.Context(), postId)
@@ -73,7 +74,7 @@ func (h *PostHandler) GetPostById(ctx *gin.Context) {
 	utils.SendSuccessResponse(ctx, posts, http.StatusOK)
 }
 
-func (h *PostHandler) CreatePost(ctx *gin.Context) {
+func (h *PostHandler) HandleCreatePost(ctx *gin.Context) {
 	data, exists := ctx.Get("data")
 	if !exists {
 		utils.SendServerErrorResponse(ctx, ErrInternalServer)
@@ -99,4 +100,39 @@ func (h *PostHandler) CreatePost(ctx *gin.Context) {
 		"message": "CREATED",
 		"page":    "create_post",
 	}, http.StatusCreated)
+}
+
+func (h *PostHandler) HandleUploadThumbnail(ctx *gin.Context) {
+	data, exists := ctx.Get("sub")
+	if !exists {
+		utils.SendServerErrorResponse(ctx, ErrInternalServer)
+		return
+	}
+
+	postId, exists := ctx.Get("postId")
+	if !exists {
+		utils.SendServerErrorResponse(ctx, ErrInternalServer)
+		return
+	}
+
+	id := data.(string)
+	pId := postId.(string)
+	body := ctx.Request.Body
+	extension := strings.Split(ctx.GetHeader("Content-Type"), "/")[1]
+
+	err := h.postService.UpdatePostThumbnail(ctx.Request.Context(), id, pId, extension, body)
+	if err != nil {
+		if errors.Is(err, db.ErrRecordNotFound) {
+			utils.SendErrorResponse(ctx, ErrBadRequest.Error(), http.StatusBadRequest)
+			return
+		}
+
+		utils.SendServerErrorResponse(ctx, err)
+		return
+	}
+
+	utils.SendSuccessResponse(ctx, map[string]string{
+		"message": "OK",
+		"page":    "upload_thumbnail",
+	}, http.StatusOK)
 }

@@ -18,6 +18,7 @@ type UserServiceInterface interface {
 	UploadAvatar(ctx context.Context, id, extension string, body io.Reader) error
 	DeleteAvatar(ctx context.Context, id string) error
 	UpdateUserProfile(ctx context.Context, id string, req *models.UpdateUserPayload) error
+	GetUserRole(ctx context.Context, id string) (string, error)
 }
 
 type UserService struct {
@@ -26,11 +27,11 @@ type UserService struct {
 	imgUtility utils.ImageUtilityInterface
 }
 
-func NewUserService(userRepo repositories.UserRepositoryInterface, imgUtility utils.ImageUtilityInterface) *UserService {
+func NewUserService(userRepo repositories.UserRepositoryInterface, u utils.ImageUtilityInterface) *UserService {
 	return &UserService{
 		userRepo:   userRepo,
 		config:     configs.New(),
-		imgUtility: imgUtility,
+		imgUtility: u,
 	}
 }
 
@@ -41,16 +42,16 @@ func (service *UserService) GetUser(ctx context.Context, id string) (*models.Use
 }
 
 func (service *UserService) UploadAvatar(ctx context.Context, id, extension string, body io.Reader) error {
+	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
+	defer dbCancle()
+
 	path := fmt.Sprintf("avatars/%s.%s", id, extension)
-	err := service.imgUtility.ResizeAndSave(path, 200, 0, body)
+	err := service.imgUtility.ResizeAndSave(path, 200, 0, 60, body)
 	if err != nil {
 		return err
 	}
 
 	url := fmt.Sprintf("%s/static/images/%s", service.config.StaticServerBaseUrl, path)
-
-	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
-	defer dbCancle()
 	return service.userRepo.UpdateUserAvatar(dbCtx, id, url)
 }
 
@@ -78,4 +79,10 @@ func (service *UserService) UpdateUserProfile(ctx context.Context, id string, re
 	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
 	defer dbCancle()
 	return service.userRepo.UpdateUserProfile(dbCtx, id, req)
+}
+
+func (service *UserService) GetUserRole(ctx context.Context, id string) (string, error) {
+	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
+	defer dbCancle()
+	return service.userRepo.GetUserRole(dbCtx, id)
 }

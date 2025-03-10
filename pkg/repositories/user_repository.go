@@ -19,6 +19,7 @@ type UserRepositoryInterface interface {
 	UpdateUserAvatar(ctx context.Context, id, url string) error
 	DeleteUserAvatar(ctx context.Context, id string) (string, error)
 	UpdateUserProfile(ctx context.Context, id string, user *models.UpdateUserPayload) error
+	GetUserRole(ctx context.Context, id string) (string, error)
 }
 
 type UserRepo struct {
@@ -148,7 +149,7 @@ func (r *UserRepo) GetUserById(ctx context.Context, id string) (*models.User, er
 }
 
 func (r *UserRepo) ExistsByEmail(ctx context.Context, email string) (bool, error) {
-	stmt, err := r.client.PrepareContext(ctx, `SELECT EXISTS(SELECT 1 FROM users WHERE users.email = $1);`)
+	stmt, err := r.client.PrepareContext(ctx, `SELECT EXISTS(SELECT 1 FROM users WHERE email = $1);`)
 	if err != nil {
 		return false, err
 	}
@@ -287,4 +288,20 @@ func (r *UserRepo) UpdateUserProfile(ctx context.Context, id string, user *model
 	}
 
 	return tx.Commit()
+}
+
+func (r *UserRepo) GetUserRole(ctx context.Context, id string) (string, error) {
+	stmt, err := r.client.PrepareContext(ctx, `SELECT role FROM user_profiles WHERE user_id = $1;`)
+	if err != nil {
+		return "", err
+	}
+	defer stmt.Close()
+
+	var role string
+	err = stmt.QueryRowContext(ctx, id).Scan(&role)
+	if err != nil {
+		return "", err
+	}
+
+	return role, nil
 }

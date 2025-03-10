@@ -136,3 +136,30 @@ func (middleware *PostMiddleware) ValidateCreatePost(ctx *gin.Context) {
 	ctx.Set("data", req)
 	ctx.Next()
 }
+
+func (middleware *PostMiddleware) ValidateThumbnailUpload(ctx *gin.Context) {
+	postId := ctx.Param("postId")
+	err := middleware.validator.ValidatePostId(postId)
+	if err != nil {
+		utils.SendNotFoundResponse(ctx, handlers.ErrNotFound.Error())
+		ctx.Abort()
+		return
+	}
+
+	contentType := ctx.GetHeader("Content-Type")
+
+	if contentType == "" && contentType != "image/png" && contentType != "image/jpg" && contentType != "image/jpeg" {
+		utils.SendErrorResponse(ctx, handlers.ErrBadRequest.Error(), http.StatusBadRequest)
+		ctx.Abort()
+		return
+	}
+
+	if ctx.Request.ContentLength == 0 {
+		utils.SendErrorResponse(ctx, handlers.ErrBadRequest.Error(), http.StatusBadRequest)
+		ctx.Abort()
+		return
+	}
+
+	ctx.Set("postId", postId)
+	ctx.Next()
+}

@@ -2,7 +2,10 @@ package services
 
 import (
 	"context"
+	"fmt"
+	"io"
 
+	"github.com/karnerfly/pretkotha/pkg/configs"
 	"github.com/karnerfly/pretkotha/pkg/db"
 	"github.com/karnerfly/pretkotha/pkg/models"
 	"github.com/karnerfly/pretkotha/pkg/repositories"
@@ -15,14 +18,21 @@ type PostServiceInterface interface {
 	GetAllPosts(ctx context.Context, p *models.GetPostsParam) ([]*models.Post, error)
 	GetPostById(ctx context.Context, id string) (*models.Post, error)
 	CreatePost(ctx context.Context, id string, req *models.CreatePostPayload) (string, error)
+	UpdatePostThumbnail(ctx context.Context, id, postId, extension string, body io.Reader) error
 }
 
 type PostService struct {
-	postRepo repositories.PostRepositoryInterface
+	postRepo   repositories.PostRepositoryInterface
+	imgUtility utils.ImageUtilityInterface
+	config     configs.Config
 }
 
-func NewPostService(postRepo repositories.PostRepositoryInterface) *PostService {
-	return &PostService{postRepo}
+func NewPostService(postRepo repositories.PostRepositoryInterface, u utils.ImageUtilityInterface) *PostService {
+	return &PostService{
+		postRepo:   postRepo,
+		imgUtility: u,
+		config:     configs.New(),
+	}
 }
 
 func (service *PostService) GetLatestPosts(ctx context.Context, limit int) ([]*models.Post, error) {
@@ -55,4 +65,27 @@ func (service *PostService) CreatePost(ctx context.Context, id string, req *mode
 
 	slug := utils.CreateSlug(req.Title)
 	return service.postRepo.CreatePost(dbCtx, id, slug, req)
+}
+
+func (service *PostService) UpdatePostThumbnail(ctx context.Context, id, postId, extension string, body io.Reader) error {
+	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
+	defer dbCancle()
+
+	yes, err := service.postRepo.IsPostOfUser(dbCtx, id, postId)
+	if err != nil {
+		return err
+	}
+
+	if !yes {
+		return db.ErrRecordNotFound
+	}
+
+	path := fmt.Sprintf("thumbnails/%s/%s.%s", id, postId, extension)
+	err = service.imgUtility.ResizeAndSave(path, 300, 0, 85, body)
+	if err != nil {
+		return err
+	}
+
+	url := fmt.Sprintf("%s/static/images/%s", service.config.StaticServerBaseUrl, path)
+	return service.postRepo.UpdatePostThumbnail(dbCtx, id, postId, url)
 }
