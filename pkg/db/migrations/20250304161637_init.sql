@@ -3,7 +3,7 @@
 -- create types
 CREATE TYPE user_role AS ENUM ('user', 'admin');
 CREATE TYPE post_type AS ENUM ('story', 'drawing');
-CREATE TYPE categories AS ENUM('horror', 'biography', 'thriller', 'others');
+CREATE TYPE categories AS ENUM('horror', 'thriller', 'other');
 
 -- create user table
 CREATE TABLE IF NOT EXISTS users (

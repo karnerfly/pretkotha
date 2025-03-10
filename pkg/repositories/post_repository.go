@@ -17,6 +17,8 @@ type PostRepositoryInterface interface {
 	GetPosts(ctx context.Context, sort enum.Sort, filter enum.Filter, page, limit int) ([]*models.Post, error)
 	GetPostById(ctx context.Context, id string) (*models.Post, error)
 	CreatePost(ctx context.Context, postBy, slug string, req *models.CreatePostPayload) (string, error)
+	IsPostOfUser(ctx context.Context, id, postId string) (bool, error)
+	UpdatePostThumbnail(ctx context.Context, id, postId, url string) error
 }
 
 type PostRepository struct {
@@ -28,7 +30,7 @@ func NewPostRepo(client *sql.DB) *PostRepository {
 }
 
 func (r *PostRepository) GetLatestPosts(ctx context.Context, limit int) ([]*models.Post, error) {
-	stmt, err := r.client.PrepareContext(ctx, `SELECT p.id, p.title, p.slug, p.description, p.thumbnail, p.kind, p.category, p.is_deleted, p.created_at, p.updated_at, COUNT (l.liked_on) as likes FROM posts as p LEFT JOIN likes as l ON p.id = l.liked_on GROUP BY p.id ORDER BY p.created_at DESC LIMIT $1;`)
+	stmt, err := r.client.PrepareContext(ctx, `SELECT p.id, p.title, p.slug, p.description, p.thumbnail, p.kind, p.category, p.is_deleted, p.created_at, p.updated_at, COUNT (l.liked_on) as likes FROM posts as p LEFT JOIN likes as l ON p.id = l.liked_on WHERE is_deleted = FALSE GROUP BY p.id ORDER BY p.created_at DESC LIMIT $1;`)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +46,7 @@ func (r *PostRepository) GetLatestPosts(ctx context.Context, limit int) ([]*mode
 }
 
 func (r *PostRepository) GetPopularPosts(ctx context.Context, limit int) ([]*models.Post, error) {
-	stmt, err := r.client.PrepareContext(ctx, `SELECT p.id, p.title, p.slug, p.description, p.thumbnail, p.kind, p.category, p.is_deleted, p.created_at, p.updated_at, COUNT (l.liked_on) as likes FROM posts as p LEFT JOIN likes as l ON p.id = l.liked_on GROUP BY p.id ORDER BY likes DESC LIMIT $1;`)
+	stmt, err := r.client.PrepareContext(ctx, `SELECT p.id, p.title, p.slug, p.description, p.thumbnail, p.kind, p.category, p.is_deleted, p.created_at, p.updated_at, COUNT (l.liked_on) as likes FROM posts as p LEFT JOIN likes as l ON p.id = l.liked_on WHERE is_deleted = FALSE GROUP BY p.id ORDER BY likes DESC LIMIT $1;`)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +90,7 @@ func (r *PostRepository) GetPosts(ctx context.Context, sort enum.Sort, filter en
 		return nil, fmt.Errorf("invalid filter parameter")
 	}
 
-	query := fmt.Sprintf(`SELECT p.id, p.title, p.slug, p.description, p.thumbnail, p.kind, p.category, p.is_deleted, p.created_at, p.updated_at, COUNT (l.liked_on) as likes FROM posts as p LEFT JOIN likes as l ON p.id = l.liked_on %s GROUP BY p.id %s offset $1 LIMIT $2;`, filterBy, orderBy)
+	query := fmt.Sprintf(`SELECT p.id, p.title, p.slug, p.description, p.thumbnail, p.kind, p.category, p.is_deleted, p.created_at, p.updated_at, COUNT (l.liked_on) as likes FROM posts as p LEFT JOIN likes as l ON p.id = l.liked_on %s AND is_deleted = FALSE GROUP BY p.id %s offset $1 LIMIT $2;`, filterBy, orderBy)
 
 	stmt, err := r.client.PrepareContext(ctx, query)
 	if err != nil {
@@ -107,7 +109,7 @@ func (r *PostRepository) GetPosts(ctx context.Context, sort enum.Sort, filter en
 }
 
 func (r *PostRepository) GetPostById(ctx context.Context, id string) (*models.Post, error) {
-	stmt, err := r.client.PrepareContext(ctx, `SELECT p.id, p.title, p.slug, p.description, p.thumbnail, p.kind, p.category, p.is_deleted, p.created_at, p.updated_at, u.user_name, up.avatar_url, COUNT(l.liked_on) AS likes FROM posts AS p LEFT JOIN users AS u ON p.post_by = u.id LEFT JOIN user_profiles AS up ON u.id = up.user_id LEFT JOIN likes AS l ON l.liked_on = p.id WHERE p.id = $1 GROUP BY p.id, u.user_name, up.avatar_url;`)
+	stmt, err := r.client.PrepareContext(ctx, `SELECT p.id, p.title, p.slug, p.description, p.thumbnail, p.kind, p.category, p.is_deleted, p.created_at, p.updated_at, u.user_name, up.avatar_url, COUNT(l.liked_on) AS likes FROM posts AS p LEFT JOIN users AS u ON p.post_by = u.id LEFT JOIN user_profiles AS up ON u.id = up.user_id LEFT JOIN likes AS l ON l.liked_on = p.id WHERE p.id = $1 AND is_deleted = FALSE GROUP BY p.id, u.user_name, up.avatar_url;`)
 	if err != nil {
 		return nil, err
 	}
@@ -165,6 +167,48 @@ func (r *PostRepository) CreatePost(ctx context.Context, postBy, slug string, re
 	}
 
 	return id, nil
+}
+
+func (r *PostRepository) IsPostOfUser(ctx context.Context, id, postId string) (bool, error) {
+	stmt, err := r.client.PrepareContext(ctx, `SELECT EXISTS(SELECT 1 FROM posts WHERE id = $1 AND post_by = $2 AND is_deleted = FALSE);`)
+	if err != nil {
+		return false, err
+	}
+	defer stmt.Close()
+
+	var exists bool
+	err = stmt.QueryRowContext(ctx, postId, id).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+
+	return exists, nil
+}
+
+func (r *PostRepository) UpdatePostThumbnail(ctx context.Context, id, postId, url string) error {
+	tx, err := r.client.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+
+	stmt, err := tx.PrepareContext(ctx, `UPDATE posts SET thumbnail = $1 WHERE id = $2 AND post_by = $3;`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.ExecContext(ctx, url, postId, id)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func getPostsFromRow(rows *sql.Rows) ([]*models.Post, error) {

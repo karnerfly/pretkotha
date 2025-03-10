@@ -51,21 +51,25 @@ func Initialize(router *gin.Engine, client *sql.DB, s session.SessionInterface) 
 	userMiddleware := getUserMiddleware()
 	userHandler := getUserHandler(client)
 
-	userRouter.GET("/me", authMiddleware.Protect, userHandler.GetUser)
-	userRouter.PATCH("/me", userMiddleware.ValidateUpdateUserProfile, authMiddleware.Protect, userHandler.UpdateUserProfile)
-	userRouter.PUT("/avatar", userMiddleware.ValidateAvatarUpload, authMiddleware.Protect, userHandler.UploadUserAvatar)
-	userRouter.DELETE("/avatar", authMiddleware.Protect, userHandler.DeleteUserAvatar)
+	userRouter.GET("/me", authMiddleware.Protect, userHandler.HandleGetUser)
+	userRouter.PATCH("/me", userMiddleware.ValidateUpdateUserProfile, authMiddleware.Protect, userHandler.HandleUpdateUserProfile)
+	userRouter.GET("/me/stats", authMiddleware.Protect, userHandler.HandleGetUserStatus)
+	userRouter.PUT("/avatar", userMiddleware.ValidateAvatarUpload, authMiddleware.Protect, userHandler.HandleUploadUserAvatar)
+	userRouter.DELETE("/avatar", authMiddleware.Protect, userHandler.HandleDeleteUserAvatar)
 
 	// posts router
 	postRouter := router.Group("/api/posts")
 	postHandler := getPostHandler(client)
 	postMiddleware := getPostMiddleware()
 
-	postRouter.POST("", postMiddleware.ValidateCreatePost, authMiddleware.Protect, postHandler.CreatePost)
-	postRouter.GET("", postMiddleware.ValidatePostPagination, postHandler.GetAllPosts)
-	postRouter.GET("/latest", postHandler.GetLatestPosts)
-	postRouter.GET("/popular", postHandler.GetPopularPosts)
-	postRouter.GET("/:postId", postMiddleware.ValidatePostId, postHandler.GetPostById)
+	postRouter.POST("/story", postMiddleware.ValidateUploadStory, authMiddleware.Protect, postHandler.HandleUploadStory)
+	postRouter.POST("/drawing", postMiddleware.ValidateUploadDrawing, authMiddleware.Protect, postHandler.HandleUploadDrawing)
+	postRouter.GET("", postMiddleware.ValidatePostPagination, postHandler.HandleGetAllPosts)
+	postRouter.GET("/latest", postHandler.HandleGetLatestPosts)
+	postRouter.GET("/popular", postHandler.HandleGetPopularPosts)
+	postRouter.GET("/:postId", postMiddleware.ValidatePostId, postHandler.HandleGetPostById)
+	postRouter.PATCH("/:postId")
+	postRouter.PUT("/:postId/thumbnail", postMiddleware.ValidateThumbnailUpload, authMiddleware.Protect, postHandler.HandleUploadThumbnail)
 
 	router.NoRoute(func(ctx *gin.Context) {
 		utils.SendNotFoundResponse(ctx, "404 not found")
@@ -97,8 +101,11 @@ func getUserMiddleware() *middlewares.UserMiddleware {
 }
 
 func getPostHandler(client *sql.DB) *handlers.PostHandler {
+	cfg := configs.New()
+	localStore := store.NewLocalStorage(cfg.AvatarFilesBaseDir, 3145728)
+	imgUtility := utils.NewImageUtility(localStore)
 	postRepo := repositories.NewPostRepo(client)
-	postService := services.NewPostService(postRepo)
+	postService := services.NewPostService(postRepo, imgUtility)
 	return handlers.NewPostHandler(postService)
 }
 

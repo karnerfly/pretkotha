@@ -81,3 +81,7 @@ func (m *mockUserRepo) DeleteUserAvatar(ctx context.Context, id string) (string,
 func (m *mockUserRepo) UpdateUserProfile(ctx context.Context, id string, req *models.UpdateUserPayload) error {
 	return nil
 }
+
+func (m *mockUserRepo) GetUserRole(ctx context.Context, id string) (string, error) {
+	return "", nil
+}

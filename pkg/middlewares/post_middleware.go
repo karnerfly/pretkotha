@@ -3,6 +3,7 @@ package middlewares
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/karnerfly/pretkotha/pkg/enum"
@@ -116,7 +117,7 @@ func (middleware *PostMiddleware) ValidatePostPagination(ctx *gin.Context) {
 	ctx.Next()
 }
 
-func (middleware *PostMiddleware) ValidateCreatePost(ctx *gin.Context) {
+func (middleware *PostMiddleware) ValidateUploadStory(ctx *gin.Context) {
 	req := &models.CreatePostPayload{}
 
 	err := utils.ValidateJSON(ctx, req)
@@ -126,7 +127,7 @@ func (middleware *PostMiddleware) ValidateCreatePost(ctx *gin.Context) {
 		return
 	}
 
-	err = middleware.validator.ValidateCreatePost(req)
+	err = middleware.validator.ValidateUploadStory(req)
 	if err != nil {
 		utils.SendErrorResponse(ctx, "invalid json payload", http.StatusBadRequest)
 		ctx.Abort()
@@ -134,5 +135,77 @@ func (middleware *PostMiddleware) ValidateCreatePost(ctx *gin.Context) {
 	}
 
 	ctx.Set("data", req)
+	ctx.Next()
+}
+
+func (middlware *PostMiddleware) ValidateUploadDrawing(ctx *gin.Context) {
+	form, err := ctx.MultipartForm()
+	if err != nil {
+		utils.SendErrorResponse(ctx, "invalid payload", http.StatusBadRequest)
+		ctx.Abort()
+		return
+	}
+
+	req, err := middlware.validator.ValidateUploadDrawing(form)
+	if err != nil {
+		utils.SendErrorResponse(ctx, "invalid payload", http.StatusBadRequest)
+		ctx.Abort()
+		return
+	}
+
+	f := form.File["content"]
+
+	if len(f) == 0 {
+		utils.SendErrorResponse(ctx, "invalid payload", http.StatusBadRequest)
+		ctx.Abort()
+		return
+	}
+
+	ext := strings.Split(f[0].Filename, ".")[1]
+
+	if ext == "" && ext != "jpg" && ext != "jpeg" && ext != "png" {
+		utils.SendErrorResponse(ctx, handlers.ErrBadRequest.Error(), http.StatusBadRequest)
+		ctx.Abort()
+		return
+	}
+
+	file, err := f[0].Open()
+	if err != nil {
+		utils.SendErrorResponse(ctx, "invalid payload", http.StatusBadRequest)
+		ctx.Abort()
+		return
+	}
+	defer file.Close()
+
+	ctx.Set("fileExt", ext)
+	ctx.Set("file", file)
+	ctx.Set("req", req)
+	ctx.Next()
+}
+
+func (middleware *PostMiddleware) ValidateThumbnailUpload(ctx *gin.Context) {
+	postId := ctx.Param("postId")
+	err := middleware.validator.ValidatePostId(postId)
+	if err != nil {
+		utils.SendNotFoundResponse(ctx, handlers.ErrNotFound.Error())
+		ctx.Abort()
+		return
+	}
+
+	contentType := ctx.GetHeader("Content-Type")
+
+	if contentType == "" && contentType != "image/png" && contentType != "image/jpg" && contentType != "image/jpeg" {
+		utils.SendErrorResponse(ctx, handlers.ErrBadRequest.Error(), http.StatusBadRequest)
+		ctx.Abort()
+		return
+	}
+
+	if ctx.Request.ContentLength == 0 {
+		utils.SendErrorResponse(ctx, handlers.ErrBadRequest.Error(), http.StatusBadRequest)
+		ctx.Abort()
+		return
+	}
+
+	ctx.Set("postId", postId)
 	ctx.Next()
 }

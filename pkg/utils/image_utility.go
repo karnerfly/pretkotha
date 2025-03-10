@@ -22,9 +22,9 @@ var (
 )
 
 type ImageUtilityInterface interface {
-	ResizeAndSave(path string, width uint, height uint, body io.Reader) error
+	ResizeAndSave(path string, width uint, height uint, quality int, body io.Reader) error
 	Remove(path string) error
-	ImageToReader(img image.Image, format string) (io.Reader, error)
+	ImageToReader(img image.Image, format string, quality int) (io.Reader, error)
 }
 
 type ImageUtility struct {
@@ -41,7 +41,7 @@ func NewImageUtility(s store.Storage) *ImageUtility {
 	return &ImageUtility{s}
 }
 
-func (utility *ImageUtility) ResizeAndSave(path string, width uint, height uint, body io.Reader) error {
+func (utility *ImageUtility) ResizeAndSave(path string, width uint, height uint, quality int, body io.Reader) error {
 	var (
 		img image.Image
 		err error
@@ -68,7 +68,7 @@ func (utility *ImageUtility) ResizeAndSave(path string, width uint, height uint,
 	}
 
 	resizedImg := resize.Resize(width, height, img, resize.Lanczos3)
-	imgReader, err := utility.ImageToReader(resizedImg, format)
+	imgReader, err := utility.ImageToReader(resizedImg, format, quality)
 	if err != nil {
 		return err
 	}
@@ -76,7 +76,7 @@ func (utility *ImageUtility) ResizeAndSave(path string, width uint, height uint,
 	return utility.storage.Save(path, imgReader)
 }
 
-func (utility *ImageUtility) ImageToReader(img image.Image, format string) (io.Reader, error) {
+func (utility *ImageUtility) ImageToReader(img image.Image, format string, quality int) (io.Reader, error) {
 	buf := bufferPool.Get().(*bytes.Buffer)
 	buf.Reset()
 
@@ -85,7 +85,7 @@ func (utility *ImageUtility) ImageToReader(img image.Image, format string) (io.R
 	case "png":
 		err = png.Encode(buf, img)
 	case "jpg", "jpeg":
-		err = jpeg.Encode(buf, img, &jpeg.Options{Quality: 60})
+		err = jpeg.Encode(buf, img, &jpeg.Options{Quality: quality})
 	default:
 		err = png.Encode(buf, img)
 	}
