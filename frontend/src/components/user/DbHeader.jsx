@@ -15,7 +15,7 @@ const Header = ({ isSidebarOpen, toggleSidebar }) => {
 
   // Toggle user dropdown
   const toggleUserDropdown = () => {
-    setShowUserDropdown(!showUserDropdown);
+    setShowUserDropdown((prev) => !prev);
   };
 
   // Close dropdown when clicking outside
@@ -94,76 +94,38 @@ const Header = ({ isSidebarOpen, toggleSidebar }) => {
             </button>
 
             {/* Dropdown Menu */}
-            {/* <div
-              className={`absolute right-0 mt-2 w-56 rounded-lg shadow-xl py-2 z-50 transition-all duration-200 transform origin-top-right ${
-                showUserDropdown
-                  ? "scale-100 opacity-100"
-                  : "scale-95 opacity-0 pointer-events-none"
-              } dark:bg-gray-800 border dark:border-gray-700 bg-white`}
-            >
-              <div className="px-4 py-3 border-b dark:border-gray-700 border-gray-100">
-                <p className="`text-sm font-medium dark:text-white text-gray-800">
-                  John Doe
-                </p>
-                <p className="text-xs dark:text-gray-400 text-gray-500 truncate">
-                  john.doe@example.com
-                </p>
+            {showUserDropdown && (
+              <div className="absolute right-0 mt-2 w-56 rounded-lg shadow-xl py-2 z-50 bg-white dark:bg-gray-800 border dark:border-gray-700">
+                <div className="px-4 py-3 border-b dark:border-gray-700 border-gray-100">
+                  <p className="text-sm font-medium dark:text-white text-gray-800">
+                    John Doe
+                  </p>
+                  <p className="text-xs dark:text-gray-400 text-gray-500 truncate">
+                    john.doe@example.com
+                  </p>
+                </div>
+                <Link
+                  to="/dashboard/profile"
+                  className="px-4 py-2 text-sm dark:text-gray-200 hover:dark:bg-gray-700 text-gray-700 hover:bg-gray-100 flex items-center"
+                >
+                  <FontAwesomeIcon icon={faUser} className="mr-3 text-indigo-500" />
+                  Profile
+                </Link>
+                <Link
+                  to="/dashboard/settings"
+                  className="px-4 py-2 text-sm dark:text-gray-200 hover:dark:bg-gray-700 text-gray-700 hover:bg-gray-100 flex items-center"
+                >
+                  <FontAwesomeIcon icon={faCog} className="mr-3 text-indigo-500" />
+                  Settings
+                </Link>
+                <button
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700 flex items-center"
+                >
+                  <FontAwesomeIcon icon={faSignOutAlt} className="mr-3 text-indigo-500" />
+                  Logout
+                </button>
               </div>
-              <Link
-                to="/dashboard/profile"
-                className="px-4 py-2 text-sm dark:text-gray-200 hover:dark:bg-gray-700 text-gray-700 hover:bg-gray-100 flex items-center"
-              >
-                <FontAwesomeIcon
-                  icon={faUser}
-                  className="mr-3 text-indigo-500"
-                />
-                Profile
-              </Link>
-              <Link
-                to="/dashboard/profile"
-                className="px-4 py-2 text-sm dark:text-gray-200 hover:dark:bg-gray-700 text-gray-700 hover:bg-gray-100 flex items-center"
-              >
-                <FontAwesomeIcon
-                  icon={faUser}
-                  className="mr-3 text-indigo-500"
-                />
-                Profile
-              </Link>
-              <Link
-                to="/dashboard/profile"
-                className="px-4 py-2 text-sm dark:text-gray-200 hover:dark:bg-gray-700 text-gray-700 hover:bg-gray-100 flex items-center"
-              >
-                <FontAwesomeIcon
-                  icon={faUser}
-                  className="mr-3 text-indigo-500"
-                />
-                Profile
-              </Link>
-              <Link
-                to="/dashboard/profile"
-                className="px-4 py-2 text-sm dark:text-gray-200 hover:dark:bg-gray-700 text-gray-700 hover:bg-gray-100 flex items-center"
-              >
-                <FontAwesomeIcon
-                  icon={faUser}
-                  className="mr-3 text-indigo-500"
-                />
-                Profile
-              </Link>
-
-              <button
-                className={`w-full text-left px-4 py-2 text-sm ${
-                  isDarkTheme
-                    ? "text-gray-200 hover:bg-gray-700"
-                    : "text-gray-700 hover:bg-gray-100"
-                } flex items-center`}
-              >
-                <FontAwesomeIcon
-                  icon={faSignOutAlt}
-                  className="mr-3 text-indigo-500"
-                />
-                Logout
-              </button>
-            </div> */}
+            )}
           </div>
         </div>
       </div>

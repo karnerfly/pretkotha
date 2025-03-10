@@ -114,6 +114,21 @@ const Navbar = () => {
             >
               {isAuthenticated ? "Dashboard" : "Create Account"}
             </Link>
+
+
+            {/* Theme Changing button */}
+             <button
+               onClick={toggleTheme}
+                className="p-2 rounded-full transition-colors duration-200 
+                 text-gray-800 dark:text-gray-200 bg-gray-200 dark:bg-gray-700"
+              >
+              <FontAwesomeIcon
+                 icon={theme === "light" ? faSun : faMoon}
+                  className="text-xl"
+              />
+            </button>
+
+
             <Link
               to="/newsletter"
               className="bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 mt-2"
