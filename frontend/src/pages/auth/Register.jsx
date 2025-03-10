@@ -49,7 +49,8 @@ const RegisterForm = () => {
 
     // Validate password in Step 3
     if (step === 3) {
-      const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/;
+      const passwordRegex =
+        /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/;
       if (!passwordRegex.test(password)) {
         setPasswordError(
           "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character."
@@ -73,7 +74,13 @@ const RegisterForm = () => {
       setStep(4); // Move to additional info step
     } else if (step === 4) {
       // Simulate final registration
-      console.log("Registration details:", { email, username, password, phone: `${countryCode}${phone}`, bio });
+      console.log("Registration details:", {
+        email,
+        username,
+        password,
+        phone: `${countryCode}${phone}`,
+        bio,
+      });
       alert("Registration successful!");
     }
   };
@@ -133,7 +140,10 @@ const RegisterForm = () => {
             {step === 1 && (
               <div className="space-y-6">
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Email Address
                   </label>
                   <input
@@ -148,7 +158,10 @@ const RegisterForm = () => {
                 </div>
                 <p className="text-sm text-gray-600 text-center">
                   Already have an account?{" "}
-                  <Link to="/auth/login" className="text-indigo-600 hover:underline">
+                  <Link
+                    to="/auth/login"
+                    className="text-indigo-600 hover:underline"
+                  >
                     Login here
                   </Link>
                 </p>
@@ -165,7 +178,10 @@ const RegisterForm = () => {
             {step === 2 && (
               <div className="space-y-6">
                 <div>
-                  <label htmlFor="otp" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="otp"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     OTP (One-Time Password)
                   </label>
                   <div className="flex space-x-2">
@@ -197,7 +213,10 @@ const RegisterForm = () => {
             {step === 3 && (
               <div className="space-y-6">
                 <div>
-                  <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="username"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Username
                   </label>
                   <input
@@ -211,7 +230,10 @@ const RegisterForm = () => {
                   />
                 </div>
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Password
                   </label>
                   <input
@@ -240,7 +262,10 @@ const RegisterForm = () => {
             {step === 4 && (
               <div className="space-y-6">
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="phone"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Phone Number
                   </label>
                   <div className="flex">
@@ -267,7 +292,10 @@ const RegisterForm = () => {
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="bio" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="bio"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Bio
                   </label>
                   <textarea

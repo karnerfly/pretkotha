@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faHome, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEnvelope,
+  faHome,
+  faArrowLeft,
+} from "@fortawesome/free-solid-svg-icons";
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
   const [showAlert, setShowAlert] = useState(false);
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -45,7 +48,10 @@ const ForgotPasswordPage = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Input */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 <FontAwesomeIcon icon={faEnvelope} className="mr-2" />
                 Email Address
               </label>
@@ -73,7 +79,10 @@ const ForgotPasswordPage = () => {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Remember your password?{" "}
-              <Link to="/auth/login" className="text-indigo-600 hover:underline">
+              <Link
+                to="/auth/login"
+                className="text-indigo-600 hover:underline"
+              >
                 <FontAwesomeIcon icon={faArrowLeft} className="mr-1" />
                 Back to Login
               </Link>

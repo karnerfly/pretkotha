@@ -1,6 +1,16 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faPhone, faMapMarkerAlt, faHome, } from "@fortawesome/free-solid-svg-icons";
-import { faFacebook, faLinkedin, faTwitter, faInstagram } from "@fortawesome/free-brands-svg-icons";
+import {
+  faEnvelope,
+  faPhone,
+  faMapMarkerAlt,
+  faHome,
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  faFacebook,
+  faLinkedin,
+  faTwitter,
+  faInstagram,
+} from "@fortawesome/free-brands-svg-icons";
 import { useState } from "react";
 import { Link } from "react-router";
 
@@ -9,7 +19,7 @@ const ContactUs = () => {
     name: "",
     email: "",
     subject: "",
-    message: ""
+    message: "",
   });
 
   const handleChange = (e) => {
@@ -24,25 +34,24 @@ const ContactUs = () => {
     // Reset form after submission
     setFormData({ name: "", email: "", subject: "", message: "" });
   };
-  
+
   return (
     <div className="bg-gray-50 text-gray-800 min-h-screen">
       {/* Breadcrumb Navigation */}
       <div className="container mx-auto px-6 py-4">
         <nav className="text-gray-600 text-sm flex items-center">
-        <Link to="/" className="hover:text-primary-600 flex items-center">
-        <FontAwesomeIcon icon={faHome} className="mr-1" />
-          Home
-        </Link>
-        <span className="mx-2">/</span>
-        <span className="text-primary-700 font-semibold flex items-center">
-       <FontAwesomeIcon icon={faEnvelope} className="mr-1" />
-          Contact Us
-        </span>
+          <Link to="/" className="hover:text-primary-600 flex items-center">
+            <FontAwesomeIcon icon={faHome} className="mr-1" />
+            Home
+          </Link>
+          <span className="mx-2">/</span>
+          <span className="text-primary-700 font-semibold flex items-center">
+            <FontAwesomeIcon icon={faEnvelope} className="mr-1" />
+            Contact Us
+          </span>
         </nav>
-    </div>
+      </div>
 
-    
       {/* Main Content */}
       <div className="container mx-auto px-6 py-16">
         {/* Section Heading directly in the body */}
@@ -50,31 +59,39 @@ const ContactUs = () => {
           Get in Touch
         </h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-12 text-center">
-          We're here to help with any questions you might have.
-          Our team is just a message away.
+          We're here to help with any questions you might have. Our team is just
+          a message away.
         </p>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
           {/* Contact Info Cards */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-xl overflow-hidden transform transition duration-300 hover:shadow-2xl hover:-translate-y-1">
               <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6">
-                <h3 className="text-2xl font-bold text-white">Contact Information</h3>
+                <h3 className="text-2xl font-bold text-white">
+                  Contact Information
+                </h3>
                 <p className="text-indigo-100 mt-2">
                   Reach out to us directly or fill out the form
                 </p>
               </div>
-              
+
               <div className="p-6">
                 {/* Contact Items with enhanced styling */}
                 <div className="flex items-start mb-6 group">
                   <div className="bg-indigo-100 p-3 rounded-full text-indigo-600 mr-4 transition group-hover:bg-indigo-600 group-hover:text-white">
-                    <FontAwesomeIcon icon={faMapMarkerAlt} className="text-xl" />
+                    <FontAwesomeIcon
+                      icon={faMapMarkerAlt}
+                      className="text-xl"
+                    />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-800">Our Location</h4>
-                    <p className="text-gray-600 mt-1">123 Creative Street, Innovation City, 56789</p>
+                    <h4 className="font-semibold text-gray-800">
+                      Our Location
+                    </h4>
+                    <p className="text-gray-600 mt-1">
+                      123 Creative Street, Innovation City, 56789
+                    </p>
                   </div>
                 </div>
 
@@ -83,7 +100,9 @@ const ContactUs = () => {
                     <FontAwesomeIcon icon={faPhone} className="text-xl" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-800">Phone Number</h4>
+                    <h4 className="font-semibold text-gray-800">
+                      Phone Number
+                    </h4>
                     <p className="text-gray-600 mt-1">+1 234 567 8900</p>
                   </div>
                 </div>
@@ -93,25 +112,43 @@ const ContactUs = () => {
                     <FontAwesomeIcon icon={faEnvelope} className="text-xl" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-800">Email Address</h4>
-                    <p className="text-gray-600 mt-1">contact@creativeworld.com</p>
+                    <h4 className="font-semibold text-gray-800">
+                      Email Address
+                    </h4>
+                    <p className="text-gray-600 mt-1">
+                      contact@creativeworld.com
+                    </p>
                   </div>
                 </div>
 
                 {/* Social Media Links with enhanced styling */}
                 <div className="border-t pt-6">
-                  <h4 className="font-semibold text-gray-800 mb-4">Connect With Us</h4>
+                  <h4 className="font-semibold text-gray-800 mb-4">
+                    Connect With Us
+                  </h4>
                   <div className="flex space-x-4">
-                    <a href="#" className="bg-indigo-100 p-3 rounded-full text-indigo-600 transition hover:bg-indigo-600 hover:text-white">
+                    <a
+                      href="#"
+                      className="bg-indigo-100 p-3 rounded-full text-indigo-600 transition hover:bg-indigo-600 hover:text-white"
+                    >
                       <FontAwesomeIcon icon={faFacebook} />
                     </a>
-                    <a href="#" className="bg-indigo-100 p-3 rounded-full text-indigo-600 transition hover:bg-indigo-600 hover:text-white">
+                    <a
+                      href="#"
+                      className="bg-indigo-100 p-3 rounded-full text-indigo-600 transition hover:bg-indigo-600 hover:text-white"
+                    >
                       <FontAwesomeIcon icon={faTwitter} />
                     </a>
-                    <a href="#" className="bg-indigo-100 p-3 rounded-full text-indigo-600 transition hover:bg-indigo-600 hover:text-white">
+                    <a
+                      href="#"
+                      className="bg-indigo-100 p-3 rounded-full text-indigo-600 transition hover:bg-indigo-600 hover:text-white"
+                    >
                       <FontAwesomeIcon icon={faLinkedin} />
                     </a>
-                    <a href="#" className="bg-indigo-100 p-3 rounded-full text-indigo-600 transition hover:bg-indigo-600 hover:text-white">
+                    <a
+                      href="#"
+                      className="bg-indigo-100 p-3 rounded-full text-indigo-600 transition hover:bg-indigo-600 hover:text-white"
+                    >
                       <FontAwesomeIcon icon={faInstagram} />
                     </a>
                   </div>
@@ -123,11 +160,15 @@ const ContactUs = () => {
           {/* Contact Form */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl shadow-xl p-8">
-              <h3 className="text-2xl font-bold text-gray-800 mb-6">Send Us a Message</h3>
+              <h3 className="text-2xl font-bold text-gray-800 mb-6">
+                Send Us a Message
+              </h3>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-gray-700 font-medium mb-2">Full Name</label>
+                    <label className="block text-gray-700 font-medium mb-2">
+                      Full Name
+                    </label>
                     <input
                       type="text"
                       name="name"
@@ -140,7 +181,9 @@ const ContactUs = () => {
                   </div>
 
                   <div>
-                    <label className="block text-gray-700 font-medium mb-2">Email Address</label>
+                    <label className="block text-gray-700 font-medium mb-2">
+                      Email Address
+                    </label>
                     <input
                       type="email"
                       name="email"
@@ -154,7 +197,9 @@ const ContactUs = () => {
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Subject</label>
+                  <label className="block text-gray-700 font-medium mb-2">
+                    Subject
+                  </label>
                   <input
                     type="text"
                     name="subject"
@@ -167,7 +212,9 @@ const ContactUs = () => {
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Message</label>
+                  <label className="block text-gray-700 font-medium mb-2">
+                    Message
+                  </label>
                   <textarea
                     name="message"
                     value={formData.message}
@@ -179,7 +226,7 @@ const ContactUs = () => {
                   ></textarea>
                 </div>
 
-                <button 
+                <button
                   type="submit"
                   className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-6 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all transform hover:-translate-y-1 hover:shadow-lg"
                 >
@@ -192,7 +239,9 @@ const ContactUs = () => {
 
         {/* Google Map with improved styling */}
         <div className="mt-16">
-          <h3 className="text-2xl font-bold text-gray-800 text-center mb-6">Our Location</h3>
+          <h3 className="text-2xl font-bold text-gray-800 text-center mb-6">
+            Our Location
+          </h3>
           <div className="bg-white p-2 rounded-xl shadow-xl overflow-hidden">
             <iframe
               title="Google Map"
@@ -203,8 +252,6 @@ const ContactUs = () => {
             ></iframe>
           </div>
         </div>
-
-
       </div>
     </div>
   );

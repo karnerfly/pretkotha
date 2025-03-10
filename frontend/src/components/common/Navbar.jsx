@@ -1,10 +1,19 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBookOpen, faBars } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBookOpen,
+  faBars,
+  faSun,
+  faMoon,
+} from "@fortawesome/free-solid-svg-icons";
+import { useTheme } from "../../context/ThemeContext";
+import { useAuth } from "../../context/AuthContext";
 import { Link } from "react-router";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
+  const { isAuthenticated } = useAuth();
 
   const navLinks = [
     {
@@ -18,14 +27,6 @@ const Navbar = () => {
     {
       name: "Contact",
       path: "/contact",
-    },
-    {
-      name: "Login",
-      path: "/auth/login",
-    },
-    {
-      name: "Register",
-      path: "/auth/register",
     },
   ];
 
@@ -55,10 +56,31 @@ const Navbar = () => {
               <span className="absolute inset-x-0 bottom-0 h-0.5 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
             </Link>
           ))}
-          <Link to="/newsletter">
-            <button className="bg-white text-primary-600 px-4 py-2 rounded-full hover:bg-primary-100 transition-colors duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-              Subscribe
-            </button>
+
+          <Link
+            to={isAuthenticated ? "/user/dashboard" : "/auth/register"}
+            className="text-white hover:text-primary-100 transition-colors relative group"
+          >
+            {isAuthenticated ? "Dashboard" : "Create Account"}
+            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
+          </Link>
+
+          {/* Theme Changing button */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-full text-white dark:text-gray-700 transition-colors duration-200"
+          >
+            <FontAwesomeIcon
+              icon={theme === "light" ? faSun : faMoon}
+              className="text-xl"
+            />
+          </button>
+
+          <Link
+            to="/newsletter"
+            className="bg-white text-primary-600 px-4 py-2 rounded-full hover:bg-primary-100 transition-colors duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+          >
+            Subscribe
           </Link>
         </div>
 
@@ -80,15 +102,24 @@ const Navbar = () => {
             {navLinks.map((item, index) => (
               <Link
                 key={index}
-                href={item.path}
+                to={item.path}
                 className="text-primary-600 hover:text-primary-800 py-2 px-4 rounded-lg hover:bg-gray-100"
               >
                 {item.name}
               </Link>
             ))}
-            <button className="bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 mt-2">
+            <Link
+              to={isAuthenticated ? "/user/dashboard" : "/auth/register"}
+              className="text-primary-600 hover:text-primary-800 py-2 px-4 rounded-lg hover:bg-gray-100"
+            >
+              {isAuthenticated ? "Dashboard" : "Create Account"}
+            </Link>
+            <Link
+              to="/newsletter"
+              className="bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 mt-2"
+            >
               Subscribe
-            </button>
+            </Link>
           </div>
         </div>
       )}

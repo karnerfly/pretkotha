@@ -1,8 +1,9 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router";
-import isAuthenticated from "../../api/user";
+import { useAuth } from "../../context/AuthContext";
 
 function Public({ accessByAuthenticatedUser = true }) {
+  const { isAuthenticated } = useAuth();
   return HandlePage(accessByAuthenticatedUser, isAuthenticated);
 }
 

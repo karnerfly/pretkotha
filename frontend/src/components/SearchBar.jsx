@@ -5,7 +5,11 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const suggestions = ["The Lost Key", "Midnight Echo", "Ocean Dreams (Drawing)"];
+  const suggestions = [
+    "The Lost Key",
+    "Midnight Echo",
+    "Ocean Dreams (Drawing)",
+  ];
 
   return (
     <div className="bg-white shadow-md py-4 sticky top-0 z-20 border-b">
@@ -32,7 +36,10 @@ const SearchBar = () => {
             <div className="absolute z-10 left-0 right-0 mt-2 bg-white shadow-xl rounded-lg">
               <div className="p-2">
                 {suggestions.map((suggestion, index) => (
-                  <div key={index} className="p-2 hover:bg-gray-100 rounded cursor-pointer">
+                  <div
+                    key={index}
+                    className="p-2 hover:bg-gray-100 rounded cursor-pointer"
+                  >
                     {suggestion}
                   </div>
                 ))}

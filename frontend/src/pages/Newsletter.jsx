@@ -1,7 +1,11 @@
 import { Link } from "react-router";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faCheckCircle, faHome } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEnvelope,
+  faCheckCircle,
+  faHome,
+} from "@fortawesome/free-solid-svg-icons";
 
 const NewsletterPage = () => {
   const [email, setEmail] = useState(""); // Email input
@@ -42,13 +46,12 @@ const NewsletterPage = () => {
           {/* Newsletter Description */}
           <div className="text-gray-600 mb-8">
             <p className="mb-4">
-              Stay updated with the latest news, tips, and exclusive offers by subscribing to our
-              newsletter. Our newsletter is designed to provide you with valuable insights and
-              resources to help you make the most of our services.
+              Stay updated with the latest news, tips, and exclusive offers by
+              subscribing to our newsletter. Our newsletter is designed to
+              provide you with valuable insights and resources to help you make
+              the most of our services.
             </p>
-            <p className="mb-4">
-              By subscribing, you'll receive:
-            </p>
+            <p className="mb-4">By subscribing, you'll receive:</p>
             <ul className="list-disc list-inside space-y-2">
               <li>Exclusive discounts and promotions.</li>
               <li>Early access to new features and updates.</li>
@@ -61,7 +64,10 @@ const NewsletterPage = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Input */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 <FontAwesomeIcon icon={faEnvelope} className="mr-2" />
                 Email Address
               </label>
