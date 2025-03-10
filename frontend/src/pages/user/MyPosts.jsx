@@ -18,7 +18,7 @@ const MyPosts = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-lg font-semibold text-gray-800">Total Stories</h3>
-          <p className="text-3xl font-bold text-indigo-600">42</p>
+          <p className="text-3xl font-bold text-indigo-600">40</p>
         </div>
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-lg font-semibold text-gray-800">Followers</h3>

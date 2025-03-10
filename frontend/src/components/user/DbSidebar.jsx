@@ -5,7 +5,8 @@ import {
   faBook,
   faCog,
   faSignOutAlt,
-  faTimes
+  faTimes,
+  faBookmark
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router";
 
@@ -39,42 +40,70 @@ const Sidebar = ({ isDarkTheme, isSidebarOpen, toggleSidebar }) => {
 
       {/* Sidebar Links */}
       <nav className="space-y-1">
-        <Link
-          to="/dashboard"
-          className={`flex items-center py-3 px-4 rounded-lg ${
-            isDarkTheme ? "text-white hover:bg-gray-700" : "text-gray-700 hover:bg-indigo-50"
-          } transition-colors duration-200 font-medium`}
-        >
-          <FontAwesomeIcon icon={faHome} className="mr-3 text-indigo-500" />
-          Home
-        </Link>
-        <Link
-          to="/dashboard/profile"
-          className={`flex items-center py-3 px-4 rounded-lg ${
-            isDarkTheme ? "text-white hover:bg-gray-700" : "text-gray-700 hover:bg-indigo-50"
-          } transition-colors duration-200 font-medium`}
-        >
-          <FontAwesomeIcon icon={faUser} className="mr-3 text-indigo-500" />
-          Profile
-        </Link>
-        <Link
-          to="/dashboard/stories"
-          className={`flex items-center py-3 px-4 rounded-lg ${
-            isDarkTheme ? "text-white hover:bg-gray-700" : "text-gray-700 hover:bg-indigo-50"
-          } transition-colors duration-200 font-medium`}
-        >
-          <FontAwesomeIcon icon={faBook} className="mr-3 text-indigo-500" />
-          Stories
-        </Link>
-        <Link
-          to="/dashboard/settings"
-          className={`flex items-center py-3 px-4 rounded-lg ${
-            isDarkTheme ? "text-white hover:bg-gray-700" : "text-gray-700 hover:bg-indigo-50"
-          } transition-colors duration-200 font-medium`}
-        >
-          <FontAwesomeIcon icon={faCog} className="mr-3 text-indigo-500" />
-          Settings
-        </Link>
+
+      <Link
+    to="/dashboard"
+    className={`flex items-center py-3 px-4 rounded-lg ${
+      isDarkTheme 
+        ? "text-white hover:bg-gray-700" 
+        : "text-gray-700 hover:bg-indigo-50"
+    } transition-colors duration-200 font-medium`}
+  >
+    <FontAwesomeIcon icon={faHome} className="mr-3 text-indigo-500" />
+    Home
+  </Link>
+
+  {/* My Posts */}
+  <Link
+    to="/dashboard/mypost"
+    className={`flex items-center py-3 px-4 rounded-lg ${
+      isDarkTheme 
+        ? "text-white hover:bg-gray-700" 
+        : "text-gray-700 hover:bg-indigo-50"
+    } transition-colors duration-200 font-medium`}
+  >
+    <FontAwesomeIcon icon={faBook} className="mr-3 text-indigo-500" />
+    My Posts
+  </Link>
+
+  {/* Profile */}
+  <Link
+    to="/dashboard/profile"
+    className={`flex items-center py-3 px-4 rounded-lg ${
+      isDarkTheme 
+        ? "text-white hover:bg-gray-700" 
+        : "text-gray-700 hover:bg-indigo-50"
+    } transition-colors duration-200 font-medium`}
+  >
+    <FontAwesomeIcon icon={faUser} className="mr-3 text-indigo-500" />
+    Profile
+  </Link>
+
+  {/* My Bookmarks */}
+  <Link
+    to="/dashboard/bookmarks"
+    className={`flex items-center py-3 px-4 rounded-lg ${
+      isDarkTheme 
+        ? "text-white hover:bg-gray-700" 
+        : "text-gray-700 hover:bg-indigo-50"
+    } transition-colors duration-200 font-medium`}
+  >
+    <FontAwesomeIcon icon={faBookmark} className="mr-3 text-indigo-500" />
+    My Bookmarks
+  </Link>
+
+  {/* Settings */}
+  <Link
+    to="/dashboard/settings"
+    className={`flex items-center py-3 px-4 rounded-lg ${
+      isDarkTheme 
+        ? "text-white hover:bg-gray-700" 
+        : "text-gray-700 hover:bg-indigo-50"
+    } transition-colors duration-200 font-medium`}
+  >
+    <FontAwesomeIcon icon={faCog} className="mr-3 text-indigo-500" />
+    Settings
+  </Link>
         
         <div className="pt-6 mt-6 border-t border-gray-200">
           <button
