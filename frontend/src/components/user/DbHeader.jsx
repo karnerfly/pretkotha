@@ -38,10 +38,10 @@ const Header = ({ isSidebarOpen, toggleSidebar }) => {
         {/* Logo */}
         <Link to="/dashboard" className="flex items-center space-x-2">
           <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
-            <span className="text-white text-xl font-bold">M</span>
+            <span className="text-white text-xl font-bold">D</span>
           </div>
           <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            User
+            Dashboard
           </span>
         </Link>
 
