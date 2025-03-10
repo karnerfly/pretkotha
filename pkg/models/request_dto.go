@@ -34,8 +34,8 @@ type CreatePostPayload struct {
 	Title       string `json:"title" validate:"required,min=10,max=30"`
 	Description string `json:"description" validate:"omitempty,max=60"`
 	Content     string `json:"content" validate:"required"`
-	Kind        string `json:"kind" validate:"required"`
 	Category    string `json:"category" validate:"required"`
+	Kind        string
 }
 
 type LikePayload struct {

@@ -7,6 +7,7 @@ import (
 
 	"github.com/karnerfly/pretkotha/pkg/configs"
 	"github.com/karnerfly/pretkotha/pkg/db"
+	"github.com/karnerfly/pretkotha/pkg/enum"
 	"github.com/karnerfly/pretkotha/pkg/models"
 	"github.com/karnerfly/pretkotha/pkg/repositories"
 	"github.com/karnerfly/pretkotha/pkg/utils"
@@ -17,7 +18,8 @@ type PostServiceInterface interface {
 	GetPopularPosts(ctx context.Context, limit int) ([]*models.Post, error)
 	GetAllPosts(ctx context.Context, p *models.GetPostsParam) ([]*models.Post, error)
 	GetPostById(ctx context.Context, id string) (*models.Post, error)
-	CreatePost(ctx context.Context, id string, req *models.CreatePostPayload) (string, error)
+	CreateStory(ctx context.Context, id string, req *models.CreatePostPayload) (string, error)
+	CreateDrawing(ctx context.Context, id, extension string, req *models.CreatePostPayload, body io.Reader) (string, error)
 	UpdatePostThumbnail(ctx context.Context, id, postId, extension string, body io.Reader) error
 }
 
@@ -59,11 +61,31 @@ func (service *PostService) GetPostById(ctx context.Context, id string) (*models
 	return service.postRepo.GetPostById(dbCtx, id)
 }
 
-func (service *PostService) CreatePost(ctx context.Context, id string, req *models.CreatePostPayload) (string, error) {
+func (service *PostService) CreateStory(ctx context.Context, id string, req *models.CreatePostPayload) (string, error) {
 	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
 	defer dbCancle()
 
 	slug := utils.CreateSlug(req.Title)
+	req.Kind = string(enum.StoryPostKind)
+	return service.postRepo.CreatePost(dbCtx, id, slug, req)
+}
+
+func (service *PostService) CreateDrawing(ctx context.Context, id, extension string, req *models.CreatePostPayload, body io.Reader) (string, error) {
+	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
+	defer dbCancle()
+
+	pId := utils.GenerateRandomUUID()
+	path := fmt.Sprintf("drawings/%s/%s.%s", id, pId, extension)
+	err := service.imgUtility.ResizeAndSave(path, 0, 0, 100, body)
+	if err != nil {
+		return "", err
+	}
+
+	slug := utils.CreateSlug(req.Title)
+	req.Kind = string(enum.DrawingPostKind)
+	url := fmt.Sprintf("%s/static/images/%s", service.config.StaticServerBaseUrl, path)
+	req.Content = url
+
 	return service.postRepo.CreatePost(dbCtx, id, slug, req)
 }
 

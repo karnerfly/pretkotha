@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"mime/multipart"
 	"net/http"
 	"strings"
 
@@ -74,7 +75,7 @@ func (h *PostHandler) HandleGetPostById(ctx *gin.Context) {
 	utils.SendSuccessResponse(ctx, posts, http.StatusOK)
 }
 
-func (h *PostHandler) HandleCreatePost(ctx *gin.Context) {
+func (h *PostHandler) HandleUploadStory(ctx *gin.Context) {
 	data, exists := ctx.Get("data")
 	if !exists {
 		utils.SendServerErrorResponse(ctx, ErrInternalServer)
@@ -89,7 +90,7 @@ func (h *PostHandler) HandleCreatePost(ctx *gin.Context) {
 	req := data.(*models.CreatePostPayload)
 	id := sub.(string)
 
-	id, err := h.postService.CreatePost(ctx.Request.Context(), id, req)
+	id, err := h.postService.CreateStory(ctx.Request.Context(), id, req)
 	if err != nil {
 		utils.SendServerErrorResponse(ctx, err)
 		return
@@ -98,7 +99,50 @@ func (h *PostHandler) HandleCreatePost(ctx *gin.Context) {
 	utils.SendSuccessResponse(ctx, map[string]string{
 		"id":      id,
 		"message": "CREATED",
-		"page":    "create_post",
+		"page":    "create_story",
+	}, http.StatusCreated)
+}
+
+func (h *PostHandler) HandleUploadDrawing(ctx *gin.Context) {
+	sub, exists := ctx.Get("sub")
+	if !exists {
+		utils.SendServerErrorResponse(ctx, ErrInternalServer)
+		return
+	}
+
+	data, exists := ctx.Get("req")
+	if !exists {
+		utils.SendServerErrorResponse(ctx, ErrInternalServer)
+		return
+	}
+
+	fileExt, exists := ctx.Get("fileExt")
+	if !exists {
+		utils.SendServerErrorResponse(ctx, ErrInternalServer)
+		return
+	}
+
+	f, exists := ctx.Get("file")
+	if !exists {
+		utils.SendServerErrorResponse(ctx, ErrInternalServer)
+		return
+	}
+
+	id := sub.(string)
+	req := data.(*models.CreatePostPayload)
+	file := f.(multipart.File)
+	extension := fileExt.(string)
+
+	drawingId, err := h.postService.CreateDrawing(ctx.Request.Context(), id, extension, req, file)
+	if err != nil {
+		utils.SendServerErrorResponse(ctx, err)
+		return
+	}
+
+	utils.SendSuccessResponse(ctx, map[string]string{
+		"id":      drawingId,
+		"message": "CREATED",
+		"page":    "create_drawing",
 	}, http.StatusCreated)
 }
 
