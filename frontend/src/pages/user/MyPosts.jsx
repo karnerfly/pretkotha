@@ -70,11 +70,11 @@ const MyPost = () => {
       setShowDrawingPopup(false);
     }
   };
-
+  
   return (
     <main className="flex-1 ml-0 md:ml-6 transition-all duration-300 dark:text-white text-gray-800 p-6">
       {/* Heading and Subtext */}
-      <div className="rounded-xl shadow-lg p-6 mb-6 dark:bg-gray-800 border dark:border-gray-700 bg-white transition-colors duration-300">
+      <div className="mb-6">
         <h2 className="text-2xl font-bold mb-2">Your Post Section</h2>
         <p className="text-gray-500">Send your content to get published.</p>
       </div>

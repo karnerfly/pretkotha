@@ -15,7 +15,7 @@ const SettingsPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleDeleteAccount = () => {
-    // Add logic to delete the account
+    // logic to delete the account
     alert("Your account has been deleted.");
     setShowDeleteConfirmation(false);
   };
@@ -25,7 +25,7 @@ const SettingsPage = () => {
       alert("New password and confirm password do not match.");
       return;
     }
-    // Add logic to reset the password
+    // logic to reset the password
     alert("Your password has been reset successfully.");
     setShowResetPassword(false);
     setCurrentPassword("");
