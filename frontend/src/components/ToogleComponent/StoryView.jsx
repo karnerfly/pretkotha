@@ -8,16 +8,25 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import CommentsSection from "./CommentsSection";
 import RelatedStories from "./RelatedStories";
+import { useNavigate, useParams } from "react-router";
+import data from "../../api/cardData.json";
 
-const StoryView = ({ story, onBack }) => {
-  if (!story) return null; // Prevent rendering if no story selected
+const StoryView = () => {
+  const { storyId } = useParams();
+  const navigate = useNavigate();
+
+  // if no storyId or invalid storyId in url then return back to home
+  if (!storyId || storyId >= data.length) return navigate("/");
+
+  // because id starts with 1 and array index starts with 0 hence index = id - 1
+  const story = data[storyId - 1];
 
   return (
     <div className="animate__animated animate__fadeIn">
       {/* Story Header */}
       <div className="flex justify-between items-center mb-6">
         <button
-          onClick={onBack}
+          onClick={() => navigate("/")}
           className="flex items-center text-primary-600 hover:text-primary-800 transition-colors"
         >
           <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
