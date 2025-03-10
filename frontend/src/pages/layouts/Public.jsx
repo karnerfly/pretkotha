@@ -2,19 +2,19 @@ import React from "react";
 import { Navigate, Outlet } from "react-router";
 import isAuthenticated from "../../api/user";
 
-function Public({ children, accessByAuthenticatedUser = true }) {
-  return HandlePage(accessByAuthenticatedUser, isAuthenticated, children);
+function Public({ accessByAuthenticatedUser = true }) {
+  return HandlePage(accessByAuthenticatedUser, isAuthenticated);
 }
 
-function HandlePage(accessByAuthenticatedUser, isAuthenticated, children) {
+function HandlePage(accessByAuthenticatedUser, isAuthenticated) {
   if (isAuthenticated) {
     if (accessByAuthenticatedUser) {
-      return <Outlet>{children}</Outlet>;
+      return <Outlet />;
     } else {
-      return <Navigate to="/user/dashboard" />;
+      return <Navigate to="/user/dashboard/posts" />;
     }
   } else {
-    return <Outlet>{children}</Outlet>;
+    return <Outlet />;
   }
 }
 
