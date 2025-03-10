@@ -1,26 +1,21 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEnvelope,
-  faLock,
   faHome,
-  faUserPlus,
-  faSignInAlt,
+  faArrowLeft,
 } from "@fortawesome/free-solid-svg-icons";
 
-const LoginPage = () => {
-  const [email, setEmail] = useState(""); // Email input
-  const [password, setPassword] = useState(""); // Password input
-  const navigate = useNavigate(); // For navigation
+const ForgotPasswordPage = () => {
+  const [email, setEmail] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
-  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simulate login logic
-    console.log("Login details:", { email, password });
-    // Redirect to /user/dashboard
-    navigate("/user/dashboard");
+    console.log("Password reset link sent to:", email);
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 3000);
   };
 
   return (
@@ -34,8 +29,8 @@ const LoginPage = () => {
           </Link>
           <span className="mx-2">/</span>
           <span className="text-primary-700 font-semibold">
-            <FontAwesomeIcon icon={faSignInAlt} className="mr-1" />
-            Login
+            <FontAwesomeIcon icon={faArrowLeft} className="mr-1" />
+            Forgot Password
           </span>
         </nav>
       </div>
@@ -46,10 +41,10 @@ const LoginPage = () => {
         <div className="max-w-lg mx-auto bg-white rounded-xl shadow-xl p-8">
           {/* Form Heading */}
           <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-            Login
+            Forgot Password
           </h1>
 
-          {/* Login Form */}
+          {/* Forgot Password Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Input */}
             <div>
@@ -71,62 +66,39 @@ const LoginPage = () => {
               />
             </div>
 
-            {/* Password Input */}
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                <FontAwesomeIcon icon={faLock} className="mr-2" />
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                className="w-full px-4 py-3 mt-1 text-gray-800 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
-                required
-              />
-            </div>
-
-            {/* Login Button */}
+            {/* Send Reset Link Button */}
             <button
               type="submit"
               className="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-indigo-700 transition-all"
             >
-              <FontAwesomeIcon icon={faSignInAlt} className="mr-2" />
-              Login
+              Send Password Reset Link
             </button>
           </form>
 
-          {/* Additional Links */}
+          {/* Back to Login Link */}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Don't have an account?{" "}
+              Remember your password?{" "}
               <Link
-                to="/auth/register"
+                to="/auth/login"
                 className="text-indigo-600 hover:underline"
               >
-                <FontAwesomeIcon icon={faUserPlus} className="mr-1" />
-                Register here
-              </Link>
-            </p>
-            <p className="text-sm text-gray-600 mt-2">
-              <Link
-                to="/auth/forgotpassword"
-                className="text-indigo-600 hover:underline"
-              >
-                <FontAwesomeIcon icon={faLock} className="mr-1" />
-                Forgot your password?
+                <FontAwesomeIcon icon={faArrowLeft} className="mr-1" />
+                Back to Login
               </Link>
             </p>
           </div>
         </div>
       </div>
+
+      {/* Popup Alert */}
+      {showAlert && (
+        <div className="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-fade-in">
+          <p>Check your email for the password reset link.</p>
+        </div>
+      )}
     </div>
   );
 };
 
-export default LoginPage;
+export default ForgotPasswordPage;

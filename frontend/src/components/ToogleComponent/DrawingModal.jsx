@@ -1,8 +1,12 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faHeart, faShareAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTimes,
+  faHeart,
+  faShareAlt,
+} from "@fortawesome/free-solid-svg-icons";
 
-const DrawingModal = ({ isOpen, onClose, drawing }) => {
-  if (!isOpen || !drawing) return null; // Don't render if modal is closed
+const DrawingModal = ({ onClose, drawing }) => {
+  if (!drawing) return null; // Don't render if modal is closed
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 animate__animated animate__fadeIn p-4 sm:p-6">
@@ -28,7 +32,9 @@ const DrawingModal = ({ isOpen, onClose, drawing }) => {
         <div className="w-full lg:w-1/3 flex flex-col justify-between p-5">
           {/* Title & Description */}
           <div>
-            <h3 className="text-xl font-semibold text-gray-900">{drawing.title}</h3>
+            <h3 className="text-xl font-semibold text-gray-900">
+              {drawing.title}
+            </h3>
             <p className="text-gray-600 text-sm mt-2">{drawing.description}</p>
           </div>
 
