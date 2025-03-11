@@ -62,7 +62,7 @@ const ContentSection = ({
   };
 
   return (
-    <div id="contentContainer" className="container mx-auto px-4 py-8">
+    <div id="contentContainer" className="container mx-auto px-4 py-8 dark:bg-gray-900">
       <div className={getGridClasses()}>
         {data.map((item, index) => (
           <ContentCard

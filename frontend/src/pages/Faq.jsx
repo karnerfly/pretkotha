@@ -50,16 +50,16 @@ const FAQ = () => {
   ];
 
   return (
-    <div className="bg-gray-50 text-gray-800 min-h-screen">
+    <div className="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
       {/* Breadcrumb Navigation */}
       <div className="container mx-auto px-6 py-4">
-        <nav className="text-gray-600 text-sm flex items-center">
-          <Link to="/" className="hover:text-primary-600 flex items-center">
+        <nav className="text-gray-600 dark:text-gray-400 text-sm flex items-center">
+          <Link to="/" className="hover:text-primary-600 dark:hover:text-primary-400 flex items-center">
             <FontAwesomeIcon icon={faHome} className="mr-1" />
             Home
           </Link>
           <span className="mx-2">/</span>
-          <span className="text-primary-700 font-semibold flex items-center">
+          <span className="text-primary-700 dark:text-primary-500 font-semibold flex items-center">
             <FontAwesomeIcon icon={faQuestionCircle} className="mr-1" />
             FAQ
           </span>
@@ -69,10 +69,10 @@ const FAQ = () => {
       {/* Main Content */}
       <div className="container mx-auto px-6 py-16">
         {/* Section Heading */}
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4 text-center">
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 mb-4 text-center">
           Frequently Asked Questions
         </h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-12 text-center">
+        <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-12 text-center">
           Find answers to common questions about our services, processes, and
           more. If you don't find what you're looking for, feel free to contact
           us.
@@ -83,32 +83,32 @@ const FAQ = () => {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition transform hover:-translate-y-1"
+              className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition transform hover:-translate-y-1"
             >
               <div className="flex items-start mb-4">
-                <div className="bg-indigo-100 p-3 rounded-full text-indigo-600 mr-4">
+                <div className="bg-indigo-100 dark:bg-indigo-900 p-3 rounded-full text-indigo-600 dark:text-indigo-400 mr-4">
                   <FontAwesomeIcon icon={faq.icon} className="text-xl" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-800">
+                <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
                   {faq.question}
                 </h3>
               </div>
-              <p className="text-gray-600 pl-14">{faq.answer}</p>
+              <p className="text-gray-600 dark:text-gray-300 pl-14">{faq.answer}</p>
             </div>
           ))}
         </div>
 
         {/* CTA Section */}
         <div className="mt-16">
-          <h3 className="text-2xl font-bold text-gray-800 text-center mb-6">
+          <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 text-center mb-6">
             Still Have Questions?
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition transform hover:-translate-y-1">
-              <h4 className="text-lg font-semibold text-gray-800 mb-2">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition transform hover:-translate-y-1">
+              <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">
                 Contact Our Support Team
               </h4>
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-300">
                 Our support team is here to help you with any additional
                 questions or concerns. Reach out to us, and we'll get back to
                 you promptly.
@@ -122,11 +122,11 @@ const FAQ = () => {
                 </Link>
               </div>
             </div>
-            <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition transform hover:-translate-y-1">
-              <h4 className="text-lg font-semibold text-gray-800 mb-2">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition transform hover:-translate-y-1">
+              <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">
                 Schedule a Consultation
               </h4>
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-300">
                 Interested in learning more about our services? Schedule a free
                 consultation with one of our experts to discuss your needs and
                 how we can help.

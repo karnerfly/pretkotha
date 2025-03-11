@@ -32,7 +32,7 @@ const ContentCard = ({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 group">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 group">
       <div className="relative">
         <img
           src={image}
@@ -55,14 +55,14 @@ const ContentCard = ({
       </div>
       <div className="p-5">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="text-xl font-semibold text-gray-800 group-hover:text-primary-600 transition-colors">
+          <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 group-hover:text-primary-600 transition-colors">
             {title}
           </h3>
           <button className="text-gray-400 hover:text-primary-500">
             <FontAwesomeIcon icon={faBookmark} />
           </button>
         </div>
-        <p className="text-gray-600 mb-4">{description}</p>
+        <p className="text-gray-600 dark:text-gray-400 mb-4">{description}</p>
 
         {/* Action Button (Dynamically Handles Stories & Drawings) */}
         <div className="flex justify-between items-center">
@@ -77,7 +77,7 @@ const ContentCard = ({
             />
           </button>
 
-          <div className="flex items-center text-gray-500 text-sm">
+          <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
             <FontAwesomeIcon icon={faEye} className="mr-1" />
             <span>{views}</span>
             <FontAwesomeIcon icon={faHeart} className="mx-1 ml-3" />

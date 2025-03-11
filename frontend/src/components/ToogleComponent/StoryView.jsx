@@ -27,37 +27,37 @@ const StoryView = () => {
       <div className="flex justify-between items-center mb-6">
         <button
           onClick={() => navigate("/")}
-          className="flex items-center text-primary-600 hover:text-primary-800 transition-colors"
+          className="flex items-center text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 transition-colors"
         >
           <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
           Back to list
         </button>
         <div className="flex gap-3">
-          <button className="text-gray-500 hover:text-primary-600 transition-colors">
+          <button className="text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
             <FontAwesomeIcon icon={faBookmark} />
           </button>
-          <button className="text-gray-500 hover:text-primary-600 transition-colors">
+          <button className="text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
             <FontAwesomeIcon icon={faHeart} />
           </button>
-          <button className="text-gray-500 hover:text-primary-600 transition-colors">
+          <button className="text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
             <FontAwesomeIcon icon={faShareAlt} />
           </button>
         </div>
       </div>
 
       {/* Story Content */}
-      <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-3 text-gray-800">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8">
+        <h1 className="text-3xl md:text-4xl font-bold mb-3 text-gray-800 dark:text-gray-100">
           {story.title}
         </h1>
-        <div className="flex items-center text-gray-500 mb-6">
+        <div className="flex items-center text-gray-500 dark:text-gray-400 mb-6">
           <img
             src={story.authorAvatar || "/api/placeholder/40/40"}
             alt="Author"
             className="w-10 h-10 rounded-full mr-3"
           />
           <div>
-            <p className="font-medium text-gray-700">{story.author}</p>
+            <p className="font-medium text-gray-700 dark:text-gray-300">{story.author}</p>
             <p className="text-sm">{story.date}</p>
           </div>
           <div className="ml-auto flex items-center">
@@ -67,7 +67,7 @@ const StoryView = () => {
             <span>{story.likes}</span>
           </div>
         </div>
-        <div className="prose max-w-none text-gray-700 mb-8">
+        <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 mb-8">
           {story.content}
         </div>
       </div>
