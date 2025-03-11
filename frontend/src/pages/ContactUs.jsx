@@ -36,16 +36,19 @@ const ContactUs = () => {
   };
 
   return (
-    <div className="bg-gray-50 text-gray-800 min-h-screen">
+    <div className="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
       {/* Breadcrumb Navigation */}
       <div className="container mx-auto px-6 py-4">
-        <nav className="text-gray-600 text-sm flex items-center">
-          <Link to="/" className="hover:text-primary-600 flex items-center">
+        <nav className="text-gray-600 dark:text-gray-400 text-sm flex items-center">
+          <Link
+            to="/"
+            className="hover:text-primary-600 dark:hover:text-primary-400 flex items-center"
+          >
             <FontAwesomeIcon icon={faHome} className="mr-1" />
             Home
           </Link>
           <span className="mx-2">/</span>
-          <span className="text-primary-700 font-semibold flex items-center">
+          <span className="text-primary-700 dark:text-primary-400 font-semibold flex items-center">
             <FontAwesomeIcon icon={faEnvelope} className="mr-1" />
             Contact Us
           </span>
@@ -55,10 +58,10 @@ const ContactUs = () => {
       {/* Main Content */}
       <div className="container mx-auto px-6 py-16">
         {/* Section Heading directly in the body */}
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4 text-center">
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-200 mb-4 text-center">
           Get in Touch
         </h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-12 text-center">
+        <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-12 text-center">
           We're here to help with any questions you might have. Our team is just
           a message away.
         </p>
@@ -66,7 +69,7 @@ const ContactUs = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Contact Info Cards */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-xl overflow-hidden transform transition duration-300 hover:shadow-2xl hover:-translate-y-1">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden transform transition duration-300 hover:shadow-2xl hover:-translate-y-1">
               <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6">
                 <h3 className="text-2xl font-bold text-white">
                   Contact Information
@@ -79,43 +82,45 @@ const ContactUs = () => {
               <div className="p-6">
                 {/* Contact Items with enhanced styling */}
                 <div className="flex items-start mb-6 group">
-                  <div className="bg-indigo-100 p-3 rounded-full text-indigo-600 mr-4 transition group-hover:bg-indigo-600 group-hover:text-white">
+                  <div className="bg-indigo-100 dark:bg-indigo-200 p-3 rounded-full text-indigo-600 dark:text-indigo-800 mr-4 transition group-hover:bg-indigo-600 group-hover:text-white">
                     <FontAwesomeIcon
                       icon={faMapMarkerAlt}
                       className="text-xl"
                     />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-800">
+                    <h4 className="font-semibold text-gray-800 dark:text-gray-200">
                       Our Location
                     </h4>
-                    <p className="text-gray-600 mt-1">
+                    <p className="text-gray-600 dark:text-gray-400 mt-1">
                       123 Creative Street, Innovation City, 56789
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start mb-6 group">
-                  <div className="bg-indigo-100 p-3 rounded-full text-indigo-600 mr-4 transition group-hover:bg-indigo-600 group-hover:text-white">
+                  <div className="bg-indigo-100 dark:bg-indigo-200 p-3 rounded-full text-indigo-600 dark:text-indigo-800 mr-4 transition group-hover:bg-indigo-600 group-hover:text-white">
                     <FontAwesomeIcon icon={faPhone} className="text-xl" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-800">
+                    <h4 className="font-semibold text-gray-800 dark:text-gray-200">
                       Phone Number
                     </h4>
-                    <p className="text-gray-600 mt-1">+1 234 567 8900</p>
+                    <p className="text-gray-600 dark:text-gray-400 mt-1">
+                      +1 234 567 8900
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex items-start mb-8 group">
-                  <div className="bg-indigo-100 p-3 rounded-full text-indigo-600 mr-4 transition group-hover:bg-indigo-600 group-hover:text-white">
+                  <div className="bg-indigo-100 dark:bg-indigo-200 p-3 rounded-full text-indigo-600 dark:text-indigo-800 mr-4 transition group-hover:bg-indigo-600 group-hover:text-white">
                     <FontAwesomeIcon icon={faEnvelope} className="text-xl" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-800">
+                    <h4 className="font-semibold text-gray-800 dark:text-gray-200">
                       Email Address
                     </h4>
-                    <p className="text-gray-600 mt-1">
+                    <p className="text-gray-600 dark:text-gray-400 mt-1">
                       contact@creativeworld.com
                     </p>
                   </div>
@@ -123,31 +128,31 @@ const ContactUs = () => {
 
                 {/* Social Media Links with enhanced styling */}
                 <div className="border-t pt-6">
-                  <h4 className="font-semibold text-gray-800 mb-4">
+                  <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-4">
                     Connect With Us
                   </h4>
                   <div className="flex space-x-4">
                     <a
                       href="#"
-                      className="bg-indigo-100 p-3 rounded-full text-indigo-600 transition hover:bg-indigo-600 hover:text-white"
+                      className="bg-indigo-100 dark:bg-indigo-200 p-3 rounded-full text-indigo-600 dark:text-indigo-800 transition hover:bg-indigo-600 hover:text-white"
                     >
                       <FontAwesomeIcon icon={faFacebook} />
                     </a>
                     <a
                       href="#"
-                      className="bg-indigo-100 p-3 rounded-full text-indigo-600 transition hover:bg-indigo-600 hover:text-white"
+                      className="bg-indigo-100 dark:bg-indigo-200 p-3 rounded-full text-indigo-600 dark:text-indigo-800 transition hover:bg-indigo-600 hover:text-white"
                     >
                       <FontAwesomeIcon icon={faTwitter} />
                     </a>
                     <a
                       href="#"
-                      className="bg-indigo-100 p-3 rounded-full text-indigo-600 transition hover:bg-indigo-600 hover:text-white"
+                      className="bg-indigo-100 dark:bg-indigo-200 p-3 rounded-full text-indigo-600 dark:text-indigo-800 transition hover:bg-indigo-600 hover:text-white"
                     >
                       <FontAwesomeIcon icon={faLinkedin} />
                     </a>
                     <a
                       href="#"
-                      className="bg-indigo-100 p-3 rounded-full text-indigo-600 transition hover:bg-indigo-600 hover:text-white"
+                      className="bg-indigo-100 dark:bg-indigo-200 p-3 rounded-full text-indigo-600 dark:text-indigo-800 transition hover:bg-indigo-600 hover:text-white"
                     >
                       <FontAwesomeIcon icon={faInstagram} />
                     </a>
@@ -159,14 +164,14 @@ const ContactUs = () => {
 
           {/* Contact Form */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-xl shadow-xl p-8">
-              <h3 className="text-2xl font-bold text-gray-800 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8">
+              <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">
                 Send Us a Message
               </h3>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-gray-700 font-medium mb-2">
+                    <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
                       Full Name
                     </label>
                     <input
@@ -175,13 +180,13 @@ const ContactUs = () => {
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="John Doe"
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
+                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-gray-700 font-medium mb-2">
+                    <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
                       Email Address
                     </label>
                     <input
@@ -190,14 +195,14 @@ const ContactUs = () => {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="johndoe@example.com"
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
+                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
                       required
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">
+                  <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
                     Subject
                   </label>
                   <input
@@ -206,13 +211,13 @@ const ContactUs = () => {
                     value={formData.subject}
                     onChange={handleChange}
                     placeholder="How can we help you?"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">
+                  <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
                     Message
                   </label>
                   <textarea
@@ -221,7 +226,7 @@ const ContactUs = () => {
                     onChange={handleChange}
                     placeholder="Write your message here..."
                     rows="5"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
                     required
                   ></textarea>
                 </div>
@@ -239,10 +244,10 @@ const ContactUs = () => {
 
         {/* Google Map with improved styling */}
         <div className="mt-16">
-          <h3 className="text-2xl font-bold text-gray-800 text-center mb-6">
+          <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 text-center mb-6">
             Our Location
           </h3>
-          <div className="bg-white p-2 rounded-xl shadow-xl overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 p-2 rounded-xl shadow-xl overflow-hidden">
             <iframe
               title="Google Map"
               className="w-full h-80 rounded-lg"
