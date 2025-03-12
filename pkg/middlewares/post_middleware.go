@@ -47,6 +47,7 @@ func (middleware *PostMiddleware) ValidatePostPagination(ctx *gin.Context) {
 	limit := ctx.Query("limit")
 	sortBy := ctx.Query("sort_by")
 	filterBy := ctx.Query("filter_by")
+	searchQuery := ctx.Query("search_query")
 
 	if page == "" {
 		nPage = 1
@@ -107,10 +108,11 @@ func (middleware *PostMiddleware) ValidatePostPagination(ctx *gin.Context) {
 	}
 
 	param := &models.GetPostsParam{
-		Page:     nPage,
-		Limit:    nLimit,
-		SortBy:   nSortBy,
-		FilterBy: nFilterBy,
+		Page:        nPage,
+		Limit:       nLimit,
+		SortBy:      nSortBy,
+		FilterBy:    nFilterBy,
+		SearchQuery: searchQuery,
 	}
 
 	ctx.Set("data", param)

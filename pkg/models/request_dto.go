@@ -47,8 +47,9 @@ type DislikPayload struct {
 }
 
 type GetPostsParam struct {
-	Page     int
-	Limit    int
-	SortBy   enum.Sort
-	FilterBy enum.Filter
+	Page        int
+	Limit       int
+	SortBy      enum.Sort
+	FilterBy    enum.Filter
+	SearchQuery string
 }

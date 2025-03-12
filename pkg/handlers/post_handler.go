@@ -52,7 +52,7 @@ func (h *PostHandler) HandleGetAllPosts(ctx *gin.Context) {
 
 	posts, err := h.postService.GetAllPosts(ctx.Request.Context(), params)
 	if err != nil {
-		utils.SendServerErrorResponse(ctx, ErrInternalServer)
+		utils.SendServerErrorResponse(ctx, err)
 		return
 	}
 
