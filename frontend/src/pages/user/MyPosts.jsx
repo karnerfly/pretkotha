@@ -22,21 +22,63 @@ const MyPost = () => {
   const [isItalic, setIsItalic] = useState(false);
   const [textSize, setTextSize] = useState("16px");
   const [category, setCategory] = useState("Horror"); // Default category
+  const [titleError, setTitleError] = useState("");
+  const [descriptionError, setDescriptionError] = useState("");
+  const [editingStoryId, setEditingStoryId] = useState(null);
 
   const handleSendStory = () => {
+    // Validate title
+    if (storyTitle.length < 10 || storyTitle.length > 30) {
+      setTitleError("Title must be between 10 and 30 characters.");
+      return;
+    } else {
+      setTitleError("");
+    }
+
+    // Validate description
+    if (storyDescription.length > 60) {
+      setDescriptionError("Description must be less than 60 characters.");
+      return;
+    } else {
+      setDescriptionError("");
+    }
+
     if (storyTitle.trim() && storyContent.trim()) {
-      const newStory = {
-        id: Date.now(),
-        title: storyTitle,
-        description: storyDescription,
-        content: storyContent,
-        fontStyle,
-        isBold,
-        isItalic,
-        textSize,
-        category,
-      };
-      setStories([...stories, newStory]);
+      if (editingStoryId) {
+        // Update existing story
+        const updatedStories = stories.map((story) =>
+          story.id === editingStoryId
+            ? {
+                ...story,
+                title: storyTitle,
+                description: storyDescription,
+                content: storyContent,
+                fontStyle,
+                isBold,
+                isItalic,
+                textSize,
+                category,
+              }
+            : story
+        );
+        setStories(updatedStories);
+        setEditingStoryId(null);
+      } else {
+        // Create new story
+        const newStory = {
+          id: Date.now(),
+          title: storyTitle,
+          description: storyDescription,
+          content: storyContent,
+          fontStyle,
+          isBold,
+          isItalic,
+          textSize,
+          category,
+        };
+        setStories([...stories, newStory]);
+      }
+      // Reset form
       setStoryTitle("");
       setStoryDescription("");
       setStoryContent("");
@@ -44,19 +86,20 @@ const MyPost = () => {
     }
   };
 
-  const handleEditStory = (id, newTitle, newDescription, newContent, newCategory) => {
-    const updatedStories = stories.map((story) =>
-      story.id === id
-        ? {
-            ...story,
-            title: newTitle,
-            description: newDescription,
-            content: newContent,
-            category: newCategory,
-          }
-        : story
-    );
-    setStories(updatedStories);
+  const handleEditStory = (story) => {
+    // Load story data into the form
+    setStoryTitle(story.title);
+    setStoryDescription(story.description);
+    setStoryContent(story.content);
+    setFontStyle(story.fontStyle || "sans-serif");
+    setIsBold(story.isBold || false);
+    setIsItalic(story.isItalic || false);
+    setTextSize(story.textSize || "16px");
+    setCategory(story.category || "Horror");
+    
+    // Set editing mode
+    setEditingStoryId(story.id);
+    setShowStoryPad(true);
   };
 
   const handleSendDrawing = (e) => {
@@ -70,7 +113,18 @@ const MyPost = () => {
       setShowDrawingPopup(false);
     }
   };
-  
+
+  // Clear form and reset editing state
+  const cancelStoryPad = () => {
+    setStoryTitle("");
+    setStoryDescription("");
+    setStoryContent("");
+    setTitleError("");
+    setDescriptionError("");
+    setEditingStoryId(null);
+    setShowStoryPad(false);
+  };
+
   return (
     <main className="flex-1 ml-0 md:ml-6 transition-all duration-300 dark:text-white text-gray-800 p-6">
       {/* Heading and Subtext */}
@@ -82,7 +136,13 @@ const MyPost = () => {
       {/* Buttons for Send Story and Send Drawing */}
       <div className="flex space-x-4 mb-6">
         <button
-          onClick={() => setShowStoryPad(true)}
+          onClick={() => {
+            setEditingStoryId(null);
+            setStoryTitle("");
+            setStoryDescription("");
+            setStoryContent("");
+            setShowStoryPad(true);
+          }}
           className="px-6 py-3 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
         >
           Send Story
@@ -98,7 +158,7 @@ const MyPost = () => {
       {/* Notification if no posts */}
       {stories.length === 0 && drawings.length === 0 && (
         <div className="rounded-xl shadow-lg p-6 mb-6 dark:bg-gray-800 border dark:border-gray-700 bg-white transition-colors duration-300 text-center">
-          <p className="text-gray-500">Still You Did Not Post Anything 😔</p>
+          <p className="text-gray-500">Still You Did Not Post Anything  😔</p>
         </div>
       )}
 
@@ -106,20 +166,52 @@ const MyPost = () => {
       {showStoryPad && (
         <div className="rounded-xl shadow-lg p-6 mb-6 dark:bg-gray-800 border dark:border-gray-700 bg-white transition-colors duration-300">
           <div className="space-y-4">
-            <input
-              type="text"
-              value={storyTitle}
-              onChange={(e) => setStoryTitle(e.target.value)}
-              className="w-full p-3 rounded-lg dark:bg-gray-700 bg-gray-100 border dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
-              placeholder="Story Title"
-            />
-            <input
-              type="text"
-              value={storyDescription}
-              onChange={(e) => setStoryDescription(e.target.value)}
-              className="w-full p-3 rounded-lg dark:bg-gray-700 bg-gray-100 border dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
-              placeholder="Story Description"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                value={storyTitle}
+                onChange={(e) => {
+                  setStoryTitle(e.target.value);
+                  if (e.target.value.length < 10 || e.target.value.length > 30) {
+                    setTitleError("Title must be between 10 and 30 characters.");
+                  } else {
+                    setTitleError("");
+                  }
+                }}
+                className="w-full p-3 rounded-lg dark:bg-gray-700 bg-gray-100 border dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+                placeholder="Story Title"
+                maxLength={30}
+              />
+              <span className="absolute right-3 top-3 text-xs text-gray-500">
+                {storyTitle.length}/30
+              </span>
+            </div>
+            {titleError && (
+              <p className="text-sm text-red-600">{titleError}</p>
+            )}
+            <div className="relative">
+              <input
+                type="text"
+                value={storyDescription}
+                onChange={(e) => {
+                  setStoryDescription(e.target.value);
+                  if (e.target.value.length > 60) {
+                    setDescriptionError("Description must be less than 60 characters.");
+                  } else {
+                    setDescriptionError("");
+                  }
+                }}
+                className="w-full p-3 rounded-lg dark:bg-gray-700 bg-gray-100 border dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+                placeholder="Story Description"
+                maxLength={60}
+              />
+              <span className="absolute right-3 top-3 text-xs text-gray-500">
+                {storyDescription.length}/60
+              </span>
+            </div>
+            {descriptionError && (
+              <p className="text-sm text-red-600">{descriptionError}</p>
+            )}
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
@@ -178,12 +270,20 @@ const MyPost = () => {
                 fontSize: textSize,
               }}
             ></textarea>
-            <button
-              onClick={handleSendStory}
-              className="px-6 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
-              Send Story
-            </button>
+            <div className="flex space-x-4">
+              <button
+                onClick={handleSendStory}
+                className="px-6 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              >
+                {editingStoryId ? "Update Story" : "Send Story"}
+              </button>
+              <button
+                onClick={cancelStoryPad}
+                className="px-6 py-2 bg-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -217,25 +317,10 @@ const MyPost = () => {
             className="rounded-xl shadow-lg p-6 dark:bg-gray-800 border dark:border-gray-700 bg-white transition-colors duration-300"
           >
             <h3 className="text-xl font-bold mb-2">{story.title}</h3>
-            <p className="text-sm text-gray-500 mb-2">{story.category}</p>
+            <p className="text-sm text-gray-500 mb-2">{story.description}</p>
+            <p className="text-sm text-gray-500 mb-4">{story.category}</p>
             <button
-              onClick={() => {
-                const newTitle = prompt("Edit your story title:", story.title);
-                const newDescription = prompt(
-                  "Edit your story description:",
-                  story.description
-                );
-                const newContent = prompt("Edit your story content:", story.content);
-                const newCategory = prompt("Edit your story category:", story.category);
-                if (
-                  newTitle !== null &&
-                  newDescription !== null &&
-                  newContent !== null &&
-                  newCategory !== null
-                ) {
-                  handleEditStory(story.id, newTitle, newDescription, newContent, newCategory);
-                }
-              }}
+              onClick={() => handleEditStory(story)}
               className="px-4 py-2 bg-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
             >
               <FontAwesomeIcon icon={faEdit} className="mr-2" />

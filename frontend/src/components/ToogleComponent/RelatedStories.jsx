@@ -9,7 +9,7 @@ const RelatedStories = ({ currentStoryId }) => {
 
   return (
     <div className="mt-12">
-      <h2 className="text-2xl font-bold mb-6">You might also like</h2>
+      <h2 className="text-2xl font-bold mb-6 dark:text-white">You might also like</h2>
       {relatedStories.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {relatedStories.map((story) => (
@@ -21,7 +21,7 @@ const RelatedStories = ({ currentStoryId }) => {
           ))}
         </div>
       ) : (
-        <p className="text-gray-500">No related stories found.</p>
+        <p className="text-gray-500 dark:text-gray-400">No related stories found.</p>
       )}
     </div>
   );

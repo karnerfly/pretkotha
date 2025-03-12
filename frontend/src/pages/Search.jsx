@@ -14,16 +14,16 @@ const SearchPage = () => {
   };
 
   return (
-    <div className="bg-gray-50 text-gray-800 min-h-screen">
+    <div className="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
       {/* Breadcrumb Navigation */}
       <div className="container mx-auto px-6 py-4">
-        <nav className="text-gray-600 text-sm flex items-center">
-          <Link to="/" className="hover:text-primary-600 flex items-center">
+        <nav className="text-gray-600 dark:text-gray-400 text-sm flex items-center">
+          <Link to="/" className="hover:text-primary-600 dark:hover:text-primary-400 flex items-center">
             <FontAwesomeIcon icon={faHome} className="mr-1" />
             Home
           </Link>
           <span className="mx-2">/</span>
-          <span className="text-primary-700 font-semibold flex items-center">
+          <span className="text-primary-700 dark:text-primary-500 font-semibold flex items-center">
             <FontAwesomeIcon icon={faSearch} className="mr-1" />
             Search
           </span>
@@ -33,10 +33,10 @@ const SearchPage = () => {
       {/* Main Content */}
       <div className="container mx-auto px-6 py-16">
         {/* Section Heading */}
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4 text-center">
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 mb-4 text-center">
           Search
         </h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-12 text-center">
+        <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-12 text-center">
           Find what you're looking for by entering your search query below.
         </p>
 
@@ -48,7 +48,7 @@ const SearchPage = () => {
               placeholder="Enter your search query..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-6 py-4 pr-16 text-lg text-gray-800 bg-white rounded-xl shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
+              className="w-full px-6 py-4 pr-16 text-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 rounded-xl shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-500 focus:border-transparent transition-all"
             />
             <button
               type="submit"
@@ -66,7 +66,7 @@ const SearchPage = () => {
 
         {/* Section for Future References (Cards) */}
         <div className="mt-16">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">
             Search Results
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -77,7 +77,7 @@ const SearchPage = () => {
               <CardComponent />
               <CardComponent />
             */}
-            <div className="text-center text-gray-600">
+            <div className="text-center text-gray-600 dark:text-gray-400">
               Cards will appear here.
             </div>
           </div>

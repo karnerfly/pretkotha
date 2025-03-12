@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faReply } from "@fortawesome/free-solid-svg-icons";
 
@@ -91,21 +91,21 @@ const CommentsSection = () => {
   };
 
   return (
-    <div className="border-t pt-6">
-      <h3 className="text-xl font-bold mb-4">Comments</h3>
+    <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+      <h3 className="text-xl font-bold mb-4 dark:text-white">Comments</h3>
 
       {/* New Comment Input */}
       <div className="mb-6">
         <textarea
           placeholder="Share your thoughts..."
-          className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+          className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
         ></textarea>
         <div className="flex justify-end mt-2">
           <button
             onClick={handlePostComment}
-            className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
+            className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors dark:bg-primary-700 dark:hover:bg-primary-800"
           >
             Post Comment
           </button>
@@ -140,22 +140,22 @@ const Comment = ({ comment, onLike, onReply, onPostReply }) => {
         className="w-10 h-10 rounded-full"
       />
       <div className="flex-1">
-        <div className="bg-gray-50 p-3 rounded-lg">
-          <p className="font-medium">{comment.name}</p>
-          <p className="text-gray-700">{comment.text}</p>
+        <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+          <p className="font-medium dark:text-white">{comment.name}</p>
+          <p className="text-gray-700 dark:text-gray-300">{comment.text}</p>
         </div>
-        <div className="flex text-sm text-gray-500 mt-1 space-x-4">
+        <div className="flex text-sm text-gray-500 dark:text-gray-400 mt-1 space-x-4">
           <span>{comment.date}</span>
           <button
             onClick={onLike}
-            className="hover:text-red-500 flex items-center space-x-1"
+            className="hover:text-red-500 dark:hover:text-red-400 flex items-center space-x-1"
           >
             <FontAwesomeIcon icon={faHeart} />
             <span>{comment.likes}</span>
           </button>
           <button
             onClick={onReply}
-            className="hover:text-primary-600 flex items-center space-x-1"
+            className="hover:text-primary-600 dark:hover:text-primary-400 flex items-center space-x-1"
           >
             <FontAwesomeIcon icon={faReply} />
             <span>Reply</span>
@@ -167,7 +167,7 @@ const Comment = ({ comment, onLike, onReply, onPostReply }) => {
           <div className="mt-2 ml-8">
             <textarea
               placeholder="Write a reply..."
-              className="w-full p-2 border rounded-lg"
+              className="w-full p-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white"
               value={replyText}
               onChange={(e) => setReplyText(e.target.value)}
             ></textarea>
@@ -177,7 +177,7 @@ const Comment = ({ comment, onLike, onReply, onPostReply }) => {
                   onPostReply(comment.id, replyText);
                   setReplyText("");
                 }}
-                className="bg-primary-600 text-white px-3 py-1 rounded-lg hover:bg-primary-700"
+                className="bg-primary-600 text-white px-3 py-1 rounded-lg hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800"
               >
                 Reply
               </button>
@@ -195,10 +195,10 @@ const Comment = ({ comment, onLike, onReply, onPostReply }) => {
                   alt="User"
                   className="w-8 h-8 rounded-full"
                 />
-                <div className="bg-gray-100 p-2 rounded-lg">
-                  <p className="font-medium text-sm">{reply.name}</p>
-                  <p className="text-gray-700 text-sm">{reply.text}</p>
-                  <span className="text-xs text-gray-500">{reply.date}</span>
+                <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded-lg">
+                  <p className="font-medium text-sm dark:text-white">{reply.name}</p>
+                  <p className="text-gray-700 text-sm dark:text-gray-300">{reply.text}</p>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{reply.date}</span>
                 </div>
               </div>
             ))}

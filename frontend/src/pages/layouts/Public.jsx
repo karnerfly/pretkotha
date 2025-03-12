@@ -12,7 +12,7 @@ function HandlePage(accessByAuthenticatedUser, isAuthenticated) {
     if (accessByAuthenticatedUser) {
       return <Outlet />;
     } else {
-      return <Navigate to="/user/dashboard/posts" />;
+      return <Navigate to="/user/dashboard" />;
     }
   } else {
     return <Outlet />;

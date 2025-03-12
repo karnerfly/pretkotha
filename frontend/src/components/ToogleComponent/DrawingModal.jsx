@@ -10,17 +10,17 @@ const DrawingModal = ({ onClose, drawing }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 animate__animated animate__fadeIn p-4 sm:p-6">
-      <div className="relative w-full max-w-4xl bg-white rounded-lg shadow-lg overflow-hidden flex flex-col lg:flex-row">
+      <div className="relative w-full max-w-4xl bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col lg:flex-row">
         {/* Close Button - Inside for better UX */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-600 hover:text-red-500 transition-all text-2xl p-2"
+          className="absolute top-3 right-3 text-gray-600 dark:text-gray-300 hover:text-red-500 transition-all text-2xl p-2"
         >
           <FontAwesomeIcon icon={faTimes} />
         </button>
 
         {/* Image Section - Fully responsive */}
-        <div className="w-full lg:w-2/3 flex items-center justify-center bg-gray-100">
+        <div className="w-full lg:w-2/3 flex items-center justify-center bg-gray-100 dark:bg-gray-700">
           <img
             src={drawing.image}
             alt={drawing.title}
@@ -32,10 +32,10 @@ const DrawingModal = ({ onClose, drawing }) => {
         <div className="w-full lg:w-1/3 flex flex-col justify-between p-5">
           {/* Title & Description */}
           <div>
-            <h3 className="text-xl font-semibold text-gray-900">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
               {drawing.title}
             </h3>
-            <p className="text-gray-600 text-sm mt-2">{drawing.description}</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">{drawing.description}</p>
           </div>
 
           {/* Artist Info & Actions */}
@@ -45,20 +45,20 @@ const DrawingModal = ({ onClose, drawing }) => {
               <img
                 src={drawing.artistImage || "/api/placeholder/400/250"}
                 alt="Artist"
-                className="w-10 h-10 rounded-full border border-gray-300 mr-3"
+                className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600 mr-3"
               />
-              <span className="text-gray-700 text-sm">
+              <span className="text-gray-700 dark:text-gray-300 text-sm">
                 {drawing.artist || "Unknown Artist"}
               </span>
             </div>
 
             {/* Actions - Like & Share */}
             <div className="flex gap-4">
-              <button className="text-gray-600 hover:text-red-500 transition-colors flex items-center">
+              <button className="text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors flex items-center">
                 <FontAwesomeIcon icon={faHeart} className="mr-1" />
                 <span>{drawing.likes}</span>
               </button>
-              <button className="text-gray-600 hover:text-blue-500 transition-colors flex items-center">
+              <button className="text-gray-600 dark:text-gray-300 hover:text-blue-500 transition-colors flex items-center">
                 <FontAwesomeIcon icon={faShareAlt} className="mr-1" />
                 <span>Share</span>
               </button>

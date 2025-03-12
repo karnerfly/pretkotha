@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { faHome, faUserPlus, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router";
 
 const RegisterForm = () => {
@@ -13,6 +13,13 @@ const RegisterForm = () => {
   const [bio, setBio] = useState("");
   const [countryCode, setCountryCode] = useState("+1");
   const [passwordError, setPasswordError] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const [bioError, setBioError] = useState("");
+
+  // Resend OTP validation
+  const [resendAttempts, setResendAttempts] = useState(0);
+  const [cooldown, setCooldown] = useState(0);
+  const [isCooldownActive, setIsCooldownActive] = useState(false);
 
   // Country codes for dropdown
   const countryCodes = [
@@ -50,15 +57,31 @@ const RegisterForm = () => {
     // Validate password in Step 3
     if (step === 3) {
       const passwordRegex =
-        /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/;
+        /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,16}$/;
       if (!passwordRegex.test(password)) {
         setPasswordError(
-          "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+          "Your password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character."
         );
         return;
       } else {
         setPasswordError("");
       }
+
+      // Validate username in Step 3
+      if (username.length < 4 || username.length > 20) {
+        setUsernameError("Username must be between 4 and 20 characters.");
+        return;
+      } else {
+        setUsernameError("");
+      }
+    }
+
+    // Validate bio in Step 4
+    if (step === 4 && bio.length > 60) {
+      setBioError("Bio must be less than 60 characters.");
+      return;
+    } else {
+      setBioError("");
     }
 
     if (step === 1) {
@@ -89,6 +112,40 @@ const RegisterForm = () => {
   const handleBack = () => {
     setStep(step - 1); // Go back to the previous step
   };
+
+  // Handle Resend OTP button click
+  const handleResendOTP = () => {
+    if (resendAttempts < 3) {
+      setResendAttempts((prev) => prev + 1);
+      setIsCooldownActive(true);
+      setCooldown(10); // Set cooldown to 10 seconds
+      console.log("OTP resent!");
+    } else {
+      alert("Maximum resend attempts reached.");
+    }
+  };
+
+  // Countdown timer for Resend OTP
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setTimeout(() => setCooldown((prev) => prev - 1), 1000);
+      return () => clearTimeout(timer);
+    } else {
+      setIsCooldownActive(false);
+    }
+  }, [cooldown]);
+
+  // Check if username meets criteria
+  const isUsernameValid = username.length >= 4 && username.length <= 20;
+
+  // Check if password meets criteria
+  const isPasswordValid =
+    /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,16}$/.test(
+      password
+    );
+
+  // Check if bio meets criteria
+  const isBioValid = bio.length <= 60;
 
   return (
     <div className="bg-gray-50 text-gray-800 min-h-screen">
@@ -177,10 +234,10 @@ const RegisterForm = () => {
             {/* Step 2: Enter OTP */}
             {step === 2 && (
               <div className="space-y-6">
-                <div>
+                <div className="flex flex-col items-center justify-center">
                   <label
                     htmlFor="otp"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-gray-700 mb-2"
                   >
                     OTP (One-Time Password)
                   </label>
@@ -200,6 +257,19 @@ const RegisterForm = () => {
                     ))}
                   </div>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={handleResendOTP}
+                  disabled={isCooldownActive || resendAttempts >= 3}
+                  className="w-full bg-gray-100 text-indigo-600 py-3 px-6 rounded-lg font-semibold hover:bg-gray-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isCooldownActive
+                    ? `Resend OTP in ${cooldown}s`
+                    : resendAttempts >= 3
+                    ? "Maximum attempts reached"
+                    : "Resend OTP"}
+                </button>
                 <button
                   type="submit"
                   className="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-indigo-700 transition-all"
@@ -219,15 +289,29 @@ const RegisterForm = () => {
                   >
                     Username
                   </label>
-                  <input
-                    type="text"
-                    id="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Choose a username"
-                    className="w-full px-4 py-3 mt-1 text-gray-800 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
-                    required
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      id="username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      placeholder="Choose a username"
+                      className="w-full px-4 py-3 mt-1 text-gray-800 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
+                      required
+                    />
+                    {isUsernameValid && (
+                      <FontAwesomeIcon
+                        icon={faCheckCircle}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500"
+                      />
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {username.length}/20
+                  </p>
+                  {usernameError && (
+                    <p className="text-sm text-red-600 mt-2">{usernameError}</p>
+                  )}
                 </div>
                 <div>
                   <label
@@ -236,15 +320,23 @@ const RegisterForm = () => {
                   >
                     Password
                   </label>
-                  <input
-                    type="password"
-                    id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Create a password"
-                    className="w-full px-4 py-3 mt-1 text-gray-800 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
-                    required
-                  />
+                  <div className="relative">
+                    <input
+                      type="password"
+                      id="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Create a password"
+                      className="w-full px-4 py-3 mt-1 text-gray-800 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
+                      required
+                    />
+                    {isPasswordValid && (
+                      <FontAwesomeIcon
+                        icon={faCheckCircle}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500"
+                      />
+                    )}
+                  </div>
                   {passwordError && (
                     <p className="text-sm text-red-600 mt-2">{passwordError}</p>
                   )}
@@ -298,15 +390,26 @@ const RegisterForm = () => {
                   >
                     Bio
                   </label>
-                  <textarea
-                    id="bio"
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                    placeholder="Tell us a little about yourself"
-                    className="w-full px-4 py-3 mt-1 text-gray-800 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
-                    rows={4}
-                    required
-                  />
+                  <div className="relative">
+                    <textarea
+                      id="bio"
+                      value={bio}
+                      onChange={(e) => setBio(e.target.value)}
+                      placeholder="Tell us a little about yourself"
+                      className="w-full px-4 py-3 mt-1 text-gray-800 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
+                      rows={4}
+                    />
+                    {isBioValid && bio.length > 0 && (
+                      <FontAwesomeIcon
+                        icon={faCheckCircle}
+                        className="absolute right-3 top-4 text-green-500"
+                      />
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-500 mt-1">{bio.length}/60</p>
+                  {bioError && (
+                    <p className="text-sm text-red-600 mt-2">{bioError}</p>
+                  )}
                 </div>
                 <div className="flex space-x-4">
                   <button

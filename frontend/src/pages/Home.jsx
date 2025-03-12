@@ -23,7 +23,7 @@ const Home = () => {
   };
 
   return (
-    <div>
+    <div className="bg-white dark:bg-gray-900">
       {/* Hero Section */}
       <HeroSection />
 
