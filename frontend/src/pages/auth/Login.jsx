@@ -24,7 +24,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="bg-gray-50 text-gray-800 min-h-screen">
+    <div className="bg-gray-50 text-gray-800 min-h-screen pt-16">
       {/* Breadcrumb Navigation */}
       <div className="container mx-auto px-6 py-4">
         <nav className="text-gray-600 text-sm">

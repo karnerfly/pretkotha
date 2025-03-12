@@ -13,7 +13,7 @@ import { Link } from "react-router";
 const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
   return (
     <aside
-      className={`w-64 rounded-xl shadow-lg p-6 transform transition-all duration-300 fixed md:relative z-50 h-screen md:h-auto overflow-y-auto 
+      className={`w-64 rounded-xl shadow-lg p-6 transform transition-all duration-300 fixed md:relative z-40 h-screen md:h-auto overflow-y-auto 
         ${
           isSidebarOpen ? "left-0" : "-left-64"
         } md:left-0 md:block dark:bg-gray-800 border dark:border-gray-700 bg-white`}

@@ -19,7 +19,7 @@ const ForgotPasswordPage = () => {
   };
 
   return (
-    <div className="bg-gray-50 text-gray-800 min-h-screen">
+    <div className="bg-gray-50 text-gray-800 min-h-screen pt-16">
       {/* Breadcrumb Navigation */}
       <div className="container mx-auto px-6 py-4">
         <nav className="text-gray-600 text-sm">
@@ -36,7 +36,7 @@ const ForgotPasswordPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-6 py-16">
+      <div className="container mx-auto px-6 py-16 pt-16">
         {/* Form Container */}
         <div className="max-w-lg mx-auto bg-white rounded-xl shadow-xl p-8">
           {/* Form Heading */}

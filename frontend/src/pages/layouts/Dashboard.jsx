@@ -14,7 +14,7 @@ const Dashboard = () => {
   return (
     <div
       className={
-        "min-h-screen flex flex-col bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-white transition-colors duration-300"
+        "min-h-screen flex flex-col bg-gray-50 pt-16 text-gray-800 dark:bg-gray-900 dark:text-white transition-colors duration-300"
       }
     >
       {/* Header */}
