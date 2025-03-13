@@ -9,10 +9,38 @@ import {
   faBookmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router";
+import { useEffect, useRef } from "react";
 
 const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
+  const sidebarRef = useRef(null);
+  
+  // Handle clicks outside the sidebar
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target) && isSidebarOpen) {
+        toggleSidebar();
+      }
+    };
+
+    // Add event listener
+    document.addEventListener("mousedown", handleClickOutside);
+    
+    // Clean up
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isSidebarOpen, toggleSidebar]);
+  
+  // Handle navigation link clicks - close sidebar
+  const handleLinkClick = () => {
+    if (isSidebarOpen) {
+      toggleSidebar();
+    }
+  };
+
   return (
     <aside
+      ref={sidebarRef}
       className={`w-64 rounded-xl shadow-lg p-6 transform transition-all duration-300 fixed md:relative z-40 h-screen md:h-auto overflow-y-auto 
         ${
           isSidebarOpen ? "left-0" : "-left-64"
@@ -44,6 +72,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
         <Link
           to=""
           className="flex items-center py-3 px-4 rounded-lg dark:text-white hover:dark:bg-gray-700 text-gray-700 hover:bg-indigo-50 transition-colors duration-200 font-medium"
+          onClick={handleLinkClick}
         >
           <FontAwesomeIcon icon={faHome} className="mr-3 text-indigo-500" />
           Home
@@ -53,6 +82,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
         <Link
           to="posts"
           className="flex items-center py-3 px-4 rounded-lg dark:text-white hover:dark:bg-gray-700 text-gray-700 hover:bg-indigo-50 transition-colors duration-200 font-medium"
+          onClick={handleLinkClick}
         >
           <FontAwesomeIcon icon={faBook} className="mr-3 text-indigo-500" />
           My Posts
@@ -62,6 +92,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
         <Link
           to="profile"
           className="flex items-center py-3 px-4 rounded-lg dark:text-white hover:dark:bg-gray-700 text-gray-700 hover:bg-indigo-50 transition-colors duration-200 font-medium"
+          onClick={handleLinkClick}
         >
           <FontAwesomeIcon icon={faUser} className="mr-3 text-indigo-500" />
           Profile
@@ -71,6 +102,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
         <Link
           to="bookmarks"
           className="flex items-center py-3 px-4 rounded-lg dark:text-white hover:dark:bg-gray-700 text-gray-700 hover:bg-indigo-50 transition-colors duration-200 font-medium"
+          onClick={handleLinkClick}
         >
           <FontAwesomeIcon icon={faBookmark} className="mr-3 text-indigo-500" />
           My Bookmarks
@@ -80,13 +112,17 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
         <Link
           to="settings"
           className="flex items-center py-3 px-4 rounded-lg dark:text-white hover:dark:bg-gray-700 text-gray-700 hover:bg-indigo-50 transition-colors duration-200 font-medium"
+          onClick={handleLinkClick}
         >
           <FontAwesomeIcon icon={faCog} className="mr-3 text-indigo-500" />
           Settings
         </Link>
 
         <div className="pt-6 mt-6 border-t border-gray-200">
-          <button className="w-full text-left flex items-center py-3 px-4 rounded-lg dark:text-white hover:dark:bg-gray-700 text-gray-700 hover:bg-indigo-50 transition-colors duration-200 font-medium">
+          <button 
+            className="w-full text-left flex items-center py-3 px-4 rounded-lg dark:text-white hover:dark:bg-gray-700 text-gray-700 hover:bg-indigo-50 transition-colors duration-200 font-medium"
+            onClick={handleLinkClick}
+          >
             <FontAwesomeIcon
               icon={faSignOutAlt}
               className="mr-3 text-indigo-500"
