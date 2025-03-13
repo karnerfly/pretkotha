@@ -148,16 +148,16 @@ const RegisterForm = () => {
   const isBioValid = bio.length <= 60;
 
   return (
-    <div className="bg-gray-50 text-gray-800 min-h-screen pt-16">
+    <div className="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen pt-16">
       {/* Breadcrumb Navigation */}
       <div className="container mx-auto px-6 py-4">
-        <nav className="text-gray-600 text-sm flex items-center">
-          <Link to="/" className="hover:text-primary-600 flex items-center">
+        <nav className="text-gray-600 dark:text-gray-400 text-sm flex items-center">
+          <Link to="/" className="hover:text-primary-600 dark:hover:text-primary-400 flex items-center">
             <FontAwesomeIcon icon={faHome} className="mr-1" />
             Home
           </Link>
           <span className="mx-2">/</span>
-          <span className="text-primary-700 font-semibold flex items-center">
+          <span className="text-primary-700 dark:text-primary-400 font-semibold flex items-center">
             <FontAwesomeIcon icon={faUserPlus} className="mr-1" />
             Register
           </span>
@@ -167,9 +167,9 @@ const RegisterForm = () => {
       {/* Main Content */}
       <div className="container mx-auto px-6 py-16">
         {/* Form Container */}
-        <div className="max-w-lg mx-auto bg-white rounded-xl shadow-xl p-8">
+        <div className="max-w-lg mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8">
           {/* Form Heading */}
-          <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-6 text-center">
             Register
           </h1>
 
@@ -199,7 +199,7 @@ const RegisterForm = () => {
                 <div>
                   <label
                     htmlFor="email"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     Email Address
                   </label>
@@ -209,15 +209,15 @@ const RegisterForm = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
-                    className="w-full px-4 py-3 mt-1 text-gray-800 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 mt-1 text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
                     required
                   />
                 </div>
-                <p className="text-sm text-gray-600 text-center">
+                <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
                   Already have an account?{" "}
                   <Link
                     to="/auth/login"
-                    className="text-indigo-600 hover:underline"
+                    className="text-indigo-600 dark:text-indigo-400 hover:underline"
                   >
                     Login here
                   </Link>
@@ -237,7 +237,7 @@ const RegisterForm = () => {
                 <div className="flex flex-col items-center justify-center">
                   <label
                     htmlFor="otp"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
                   >
                     OTP (One-Time Password)
                   </label>
@@ -250,7 +250,7 @@ const RegisterForm = () => {
                         value={digit}
                         onChange={(e) => handleOtpChange(index, e.target.value)}
                         onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                        className="w-12 h-12 text-center text-gray-800 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
+                        className="w-12 h-12 text-center text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
                         maxLength={1}
                         required
                       />
@@ -262,7 +262,7 @@ const RegisterForm = () => {
                   type="button"
                   onClick={handleResendOTP}
                   disabled={isCooldownActive || resendAttempts >= 3}
-                  className="w-full bg-gray-100 text-indigo-600 py-3 px-6 rounded-lg font-semibold hover:bg-gray-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-gray-100 dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 py-3 px-6 rounded-lg font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isCooldownActive
                     ? `Resend OTP in ${cooldown}s`
@@ -285,7 +285,7 @@ const RegisterForm = () => {
                 <div>
                   <label
                     htmlFor="username"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     Username
                   </label>
@@ -296,7 +296,7 @@ const RegisterForm = () => {
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       placeholder="Choose a username"
-                      className="w-full px-4 py-3 mt-1 text-gray-800 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 mt-1 text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
                       required
                     />
                     {isUsernameValid && (
@@ -306,17 +306,17 @@ const RegisterForm = () => {
                       />
                     )}
                   </div>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                     {username.length}/20
                   </p>
                   {usernameError && (
-                    <p className="text-sm text-red-600 mt-2">{usernameError}</p>
+                    <p className="text-sm text-red-600 dark:text-red-400 mt-2">{usernameError}</p>
                   )}
                 </div>
                 <div>
                   <label
                     htmlFor="password"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     Password
                   </label>
@@ -327,7 +327,7 @@ const RegisterForm = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Create a password"
-                      className="w-full px-4 py-3 mt-1 text-gray-800 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 mt-1 text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
                       required
                     />
                     {isPasswordValid && (
@@ -338,7 +338,7 @@ const RegisterForm = () => {
                     )}
                   </div>
                   {passwordError && (
-                    <p className="text-sm text-red-600 mt-2">{passwordError}</p>
+                    <p className="text-sm text-red-600 dark:text-red-400 mt-2">{passwordError}</p>
                   )}
                 </div>
                 <button
@@ -356,15 +356,15 @@ const RegisterForm = () => {
                 <div>
                   <label
                     htmlFor="phone"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     Phone Number
                   </label>
-                  <div className="flex">
+                  <div className="flex flex-col sm:flex-row">
                     <select
                       value={countryCode}
                       onChange={(e) => setCountryCode(e.target.value)}
-                      className="w-24 px-4 py-3 text-gray-800 bg-gray-50 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
+                      className="w-full sm:w-24 px-4 py-3 text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-t-lg sm:rounded-l-lg sm:rounded-tr-none focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
                     >
                       {countryCodes.map((country) => (
                         <option key={country.code} value={country.code}>
@@ -378,7 +378,7 @@ const RegisterForm = () => {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="Enter your phone number"
-                      className="flex-1 px-4 py-3 text-gray-800 bg-gray-50 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-b-lg sm:rounded-r-lg sm:rounded-bl-none focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
                       required
                     />
                   </div>
@@ -386,7 +386,7 @@ const RegisterForm = () => {
                 <div>
                   <label
                     htmlFor="bio"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     Bio
                   </label>
@@ -396,7 +396,7 @@ const RegisterForm = () => {
                       value={bio}
                       onChange={(e) => setBio(e.target.value)}
                       placeholder="Tell us a little about yourself"
-                      className="w-full px-4 py-3 mt-1 text-gray-800 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 mt-1 text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
                       rows={4}
                     />
                     {isBioValid && bio.length > 0 && (
@@ -406,16 +406,16 @@ const RegisterForm = () => {
                       />
                     )}
                   </div>
-                  <p className="text-sm text-gray-500 mt-1">{bio.length}/60</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{bio.length}/60</p>
                   {bioError && (
-                    <p className="text-sm text-red-600 mt-2">{bioError}</p>
+                    <p className="text-sm text-red-600 dark:text-red-400 mt-2">{bioError}</p>
                   )}
                 </div>
                 <div className="flex space-x-4">
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="w-1/2 bg-gray-300 text-gray-800 py-3 px-6 rounded-lg font-semibold hover:bg-gray-400 transition-all"
+                    className="w-1/2 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 py-3 px-6 rounded-lg font-semibold hover:bg-gray-400 dark:hover:bg-gray-500 transition-all"
                   >
                     Back
                   </button>
