@@ -11,7 +11,7 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import Story from "./pages/Story";
-
+import Pretkotha from "./pages/Pretkotha";
 import DashboardLayout from "./pages/layouts/Dashboard";
 import {
   MyPosts,
@@ -42,6 +42,7 @@ function App() {
           <Route path="newsletter" element={<Newsletter />} />
           <Route path="search" element={<Search />} />
           <Route path="story/:storyId" element={<Story />} />
+          <Route path="pretkotha" element={<Pretkotha />} />
         </Route>
       </Route>
 
