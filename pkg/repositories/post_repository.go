@@ -14,7 +14,7 @@ import (
 type PostRepositoryInterface interface {
 	GetLatestPosts(ctx context.Context, limit int) ([]*models.Post, error)
 	GetPopularPosts(ctx context.Context, limit int) ([]*models.Post, error)
-	GetPosts(ctx context.Context, sort enum.Sort, filter enum.Filter, page, limit int) ([]*models.Post, error)
+	GetPosts(ctx context.Context, sort enum.Sort, filter enum.Filter, searchQuery string, page, limit int) ([]*models.Post, error)
 	GetPostById(ctx context.Context, id string) (*models.Post, error)
 	CreatePost(ctx context.Context, postBy, slug string, req *models.CreatePostPayload) (string, error)
 	IsPostOfUser(ctx context.Context, id, postId string) (bool, error)
@@ -65,7 +65,8 @@ func (r *PostRepository) GetPopularPosts(ctx context.Context, limit int) ([]*mod
 	return posts, nil
 }
 
-func (r *PostRepository) GetPosts(ctx context.Context, sort enum.Sort, filter enum.Filter, page, limit int) ([]*models.Post, error) {
+
+func (r *PostRepository) GetPosts(ctx context.Context, sort enum.Sort, filter enum.Filter, searchQuery string, page, limit int) ([]*models.Post, error) {
 	var orderBy string
 	switch sort {
 	case enum.PostSortNewest:
@@ -81,17 +82,16 @@ func (r *PostRepository) GetPosts(ctx context.Context, sort enum.Sort, filter en
 	var filterBy string
 	switch filter {
 	case enum.PostFilterStory:
-		filterBy = "WHERE p.kind = 'story'"
+		filterBy = "p.kind = 'story'"
 	case enum.PostFilterDrawing:
-		filterBy = "WHERE p.kind = 'drawing'"
+		filterBy = "p.kind = 'drawing'"
 	case enum.PostFilterAll:
-		filterBy = "WHERE 1 = 1"
+		filterBy = "p.kind = 'story' OR p.kind = 'drawing'"
 	default:
 		return nil, fmt.Errorf("invalid filter parameter")
 	}
 
-	query := fmt.Sprintf(`SELECT p.id, p.title, p.slug, p.description, p.thumbnail, p.kind, p.category, p.is_deleted, p.created_at, p.updated_at, COUNT (l.liked_on) as likes FROM posts as p LEFT JOIN likes as l ON p.id = l.liked_on %s AND is_deleted = FALSE GROUP BY p.id %s offset $1 LIMIT $2;`, filterBy, orderBy)
-
+	query := fmt.Sprintf(`SELECT p.id, p.title, p.slug, p.description, p.thumbnail, p.kind, p.category, p.is_deleted, p.created_at, p.updated_at, COUNT(l.liked_on) AS likes FROM posts AS p LEFT JOIN likes AS l ON p.id = l.liked_on WHERE (p.is_deleted = FALSE) AND ($1 = '' OR p.title ILIKE '%%' || $1 || '%%' OR p.description ILIKE '%%' || $1 || '%%') AND (%s) GROUP BY p.id %s OFFSET $2 LIMIT $3;`, filterBy, orderBy)
 	stmt, err := r.client.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, err
@@ -99,7 +99,7 @@ func (r *PostRepository) GetPosts(ctx context.Context, sort enum.Sort, filter en
 	defer stmt.Close()
 
 	offset := (page - 1) * limit
-	rows, err := stmt.QueryContext(ctx, offset, limit)
+	rows, err := stmt.QueryContext(ctx, searchQuery, offset, limit)
 	if err != nil {
 		return nil, err
 	}

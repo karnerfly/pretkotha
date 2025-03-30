@@ -1,12 +1,15 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faHome, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEnvelope,
+  faHome,
+  faArrowLeft,
+} from "@fortawesome/free-solid-svg-icons";
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
   const [showAlert, setShowAlert] = useState(false);
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -16,7 +19,7 @@ const ForgotPasswordPage = () => {
   };
 
   return (
-    <div className="bg-gray-50 text-gray-800 min-h-screen">
+    <div className="bg-gray-50 text-gray-800 min-h-screen pt-16">
       {/* Breadcrumb Navigation */}
       <div className="container mx-auto px-6 py-4">
         <nav className="text-gray-600 text-sm">
@@ -33,7 +36,7 @@ const ForgotPasswordPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-6 py-16">
+      <div className="container mx-auto px-6 py-16 pt-16">
         {/* Form Container */}
         <div className="max-w-lg mx-auto bg-white rounded-xl shadow-xl p-8">
           {/* Form Heading */}
@@ -45,7 +48,10 @@ const ForgotPasswordPage = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Input */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 <FontAwesomeIcon icon={faEnvelope} className="mr-2" />
                 Email Address
               </label>
@@ -73,7 +79,10 @@ const ForgotPasswordPage = () => {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Remember your password?{" "}
-              <Link to="/auth/login" className="text-indigo-600 hover:underline">
+              <Link
+                to="/auth/login"
+                className="text-indigo-600 hover:underline"
+              >
                 <FontAwesomeIcon icon={faArrowLeft} className="mr-1" />
                 Back to Login
               </Link>

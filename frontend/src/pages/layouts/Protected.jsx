@@ -1,13 +1,13 @@
-import React from "react";
-import { Navigate, Outlet } from "react-router";
-import isAuthenticated from "../../api/user";
+import { Navigate, Outlet, useNavigate } from "react-router";
+import { useAuth } from "../../context/AuthContext";
 
-function Protected({ children }) {
-  return (
-    <div>
-      {isAuthenticated ? <Outlet>{children}</Outlet> : <Navigate to="/" />}
-    </div>
-  );
+function Protected() {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) return <Navigate to="/" />;
+
+  return <Outlet />;
 }
 
 export default Protected;

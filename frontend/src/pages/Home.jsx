@@ -23,7 +23,7 @@ const Home = () => {
   };
 
   return (
-    <div>
+    <div className="bg-white dark:bg-gray-900">
       {/* Hero Section */}
       <HeroSection />
 
@@ -42,9 +42,9 @@ const Home = () => {
       />
 
       {/* Content Section */}
-      <ContentSection 
-        filter={filter} 
-        setTotalItem={setTotalItem} 
+      <ContentSection
+        filter={filter}
+        setTotalItem={setTotalItem}
         viewMode={viewMode}
         sortMode={sortMode}
       />

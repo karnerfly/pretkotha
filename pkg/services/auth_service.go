@@ -60,9 +60,9 @@ func (service *AuthService) SendOtp(ctx context.Context, req *models.SendOtpPayl
 	otp := utils.GenerateRandomNumber()
 	key := utils.ConvertToBase64(req.Email)
 
-	sctx, sc := session.GetIdleTimeoutContext(ctx)
-	defer sc()
-	err = service.authSession.Serialize(sctx, key, otp, 1800) // serialize for 30min
+	sessionCtx, sessionCancle := session.GetIdleTimeoutContext(ctx)
+	defer sessionCancle()
+	err = service.authSession.Serialize(sessionCtx, key, otp, 1800) // serialize for 30 min
 	if err != nil {
 		return err
 	}

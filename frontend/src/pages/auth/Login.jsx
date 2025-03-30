@@ -1,7 +1,13 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faLock, faHome, faUserPlus, faSignInAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEnvelope,
+  faLock,
+  faHome,
+  faUserPlus,
+  faSignInAlt,
+} from "@fortawesome/free-solid-svg-icons";
 
 const LoginPage = () => {
   const [email, setEmail] = useState(""); // Email input
@@ -18,7 +24,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="bg-gray-50 text-gray-800 min-h-screen">
+    <div className="bg-gray-50 text-gray-800 min-h-screen pt-16">
       {/* Breadcrumb Navigation */}
       <div className="container mx-auto px-6 py-4">
         <nav className="text-gray-600 text-sm">
@@ -47,7 +53,10 @@ const LoginPage = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Input */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 <FontAwesomeIcon icon={faEnvelope} className="mr-2" />
                 Email Address
               </label>
@@ -64,7 +73,10 @@ const LoginPage = () => {
 
             {/* Password Input */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 <FontAwesomeIcon icon={faLock} className="mr-2" />
                 Password
               </label>
@@ -93,13 +105,19 @@ const LoginPage = () => {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}
-              <Link to="/auth/register" className="text-indigo-600 hover:underline">
+              <Link
+                to="/auth/register"
+                className="text-indigo-600 hover:underline"
+              >
                 <FontAwesomeIcon icon={faUserPlus} className="mr-1" />
                 Register here
               </Link>
             </p>
             <p className="text-sm text-gray-600 mt-2">
-              <Link to="/auth/forgotpassword" className="text-indigo-600 hover:underline">
+              <Link
+                to="/auth/forgotpassword"
+                className="text-indigo-600 hover:underline"
+              >
                 <FontAwesomeIcon icon={faLock} className="mr-1" />
                 Forgot your password?
               </Link>

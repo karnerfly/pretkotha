@@ -52,7 +52,7 @@ func (service *PostService) GetPopularPosts(ctx context.Context, limit int) ([]*
 func (service *PostService) GetAllPosts(ctx context.Context, p *models.GetPostsParam) ([]*models.Post, error) {
 	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
 	defer dbCancle()
-	return service.postRepo.GetPosts(dbCtx, p.SortBy, p.FilterBy, p.Page, p.Limit)
+	return service.postRepo.GetPosts(dbCtx, p.SortBy, p.FilterBy, p.SearchQuery, p.Page, p.Limit)
 }
 
 func (service *PostService) GetPostById(ctx context.Context, id string) (*models.Post, error) {

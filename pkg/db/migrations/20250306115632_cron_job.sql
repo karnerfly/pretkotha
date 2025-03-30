@@ -3,7 +3,7 @@ CREATE OR REPLACE FUNCTION cleanup_unverified_users() RETURNS VOID AS $$
 BEGIN
     DELETE FROM users
     WHERE verified = FALSE
-    AND created_at <= NOW() - INTERVAL '1 hour';
+    AND created_at <= NOW() - INTERVAL '30 minutes';
 END;
 $$ LANGUAGE plpgsql;
 
