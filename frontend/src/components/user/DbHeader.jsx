@@ -9,9 +9,11 @@ import {
   faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router";
+import { useAuth } from "../../context/AuthContext";
 
 const Header = ({ isSidebarOpen, toggleSidebar }) => {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const { logout } = useAuth();
 
   // Toggle user dropdown
   const toggleUserDropdown = () => {
@@ -31,6 +33,10 @@ const Header = ({ isSidebarOpen, toggleSidebar }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showUserDropdown]);
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <header className="shadow-lg dark:bg-gray-800 bg-white transition-colors duration-300">
@@ -108,20 +114,30 @@ const Header = ({ isSidebarOpen, toggleSidebar }) => {
                   to="profile"
                   className="px-4 py-2 text-sm dark:text-gray-200 hover:dark:bg-gray-700 text-gray-700 hover:bg-gray-100 flex items-center"
                 >
-                  <FontAwesomeIcon icon={faUser} className="mr-3 text-indigo-500" />
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    className="mr-3 text-indigo-500"
+                  />
                   Profile
                 </Link>
                 <Link
                   to="settings"
                   className="px-4 py-2 text-sm dark:text-gray-200 hover:dark:bg-gray-700 text-gray-700 hover:bg-gray-100 flex items-center"
                 >
-                  <FontAwesomeIcon icon={faCog} className="mr-3 text-indigo-500" />
+                  <FontAwesomeIcon
+                    icon={faCog}
+                    className="mr-3 text-indigo-500"
+                  />
                   Settings
                 </Link>
                 <button
+                  onClick={handleLogout}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700 flex items-center"
                 >
-                  <FontAwesomeIcon icon={faSignOutAlt} className="mr-3 text-indigo-500" />
+                  <FontAwesomeIcon
+                    icon={faSignOutAlt}
+                    className="mr-3 text-indigo-500"
+                  />
                   Logout
                 </button>
               </div>
