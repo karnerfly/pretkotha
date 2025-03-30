@@ -24,16 +24,16 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="bg-gray-50 text-gray-800 min-h-screen pt-16">
+    <div className="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen pt-16">
       {/* Breadcrumb Navigation */}
       <div className="container mx-auto px-6 py-4">
-        <nav className="text-gray-600 text-sm">
-          <Link to="/" className="hover:text-primary-600">
+        <nav className="text-gray-600 dark:text-gray-400 text-sm">
+          <Link to="/" className="hover:text-primary-600 dark:hover:text-primary-400">
             <FontAwesomeIcon icon={faHome} className="mr-1" />
             Home
           </Link>
           <span className="mx-2">/</span>
-          <span className="text-primary-700 font-semibold">
+          <span className="text-primary-700 dark:text-primary-400 font-semibold">
             <FontAwesomeIcon icon={faSignInAlt} className="mr-1" />
             Login
           </span>
@@ -43,9 +43,9 @@ const LoginPage = () => {
       {/* Main Content */}
       <div className="container mx-auto px-6 py-16">
         {/* Form Container */}
-        <div className="max-w-lg mx-auto bg-white rounded-xl shadow-xl p-8">
+        <div className="max-w-lg mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8">
           {/* Form Heading */}
-          <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-6 text-center">
             Login
           </h1>
 
@@ -55,7 +55,7 @@ const LoginPage = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
                 <FontAwesomeIcon icon={faEnvelope} className="mr-2" />
                 Email Address
@@ -66,7 +66,7 @@ const LoginPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="w-full px-4 py-3 mt-1 text-gray-800 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 mt-1 text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
                 required
               />
             </div>
@@ -75,7 +75,7 @@ const LoginPage = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
                 <FontAwesomeIcon icon={faLock} className="mr-2" />
                 Password
@@ -86,7 +86,7 @@ const LoginPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="w-full px-4 py-3 mt-1 text-gray-800 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 mt-1 text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
                 required
               />
             </div>
@@ -103,20 +103,20 @@ const LoginPage = () => {
 
           {/* Additional Links */}
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Don't have an account?{" "}
               <Link
                 to="/auth/register"
-                className="text-indigo-600 hover:underline"
+                className="text-indigo-600 dark:text-indigo-400 hover:underline"
               >
                 <FontAwesomeIcon icon={faUserPlus} className="mr-1" />
                 Register here
               </Link>
             </p>
-            <p className="text-sm text-gray-600 mt-2">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
               <Link
                 to="/auth/forgotpassword"
-                className="text-indigo-600 hover:underline"
+                className="text-indigo-600 dark:text-indigo-400 hover:underline"
               >
                 <FontAwesomeIcon icon={faLock} className="mr-1" />
                 Forgot your password?

@@ -12,7 +12,7 @@ const SearchBar = () => {
   ];
 
   return (
-    <div className="bg-white shadow-md py-4 sticky top-0 z-20 border-b dark:bg-gray-800 dark:border-gray-700">
+    <div className="bg-white shadow-md py-4 z-20 border-b dark:bg-gray-800 dark:border-gray-700">
       <div className="container mx-auto px-4">
         <div className="relative max-w-xl mx-auto">
           {/* Search Input */}
