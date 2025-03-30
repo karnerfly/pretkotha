@@ -65,6 +65,7 @@ func (r *PostRepository) GetPopularPosts(ctx context.Context, limit int) ([]*mod
 	return posts, nil
 }
 
+
 func (r *PostRepository) GetPosts(ctx context.Context, sort enum.Sort, filter enum.Filter, searchQuery string, page, limit int) ([]*models.Post, error) {
 	var orderBy string
 	switch sort {
@@ -91,7 +92,6 @@ func (r *PostRepository) GetPosts(ctx context.Context, sort enum.Sort, filter en
 	}
 
 	query := fmt.Sprintf(`SELECT p.id, p.title, p.slug, p.description, p.thumbnail, p.kind, p.category, p.is_deleted, p.created_at, p.updated_at, COUNT(l.liked_on) AS likes FROM posts AS p LEFT JOIN likes AS l ON p.id = l.liked_on WHERE (p.is_deleted = FALSE) AND ($1 = '' OR p.title ILIKE '%%' || $1 || '%%' OR p.description ILIKE '%%' || $1 || '%%') AND (%s) GROUP BY p.id %s OFFSET $2 LIMIT $3;`, filterBy, orderBy)
-
 	stmt, err := r.client.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, err
