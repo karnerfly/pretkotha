@@ -8,16 +8,19 @@ import {
   faUserPlus,
   faSignInAlt,
 } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "../../context/AuthContext";
 
 const LoginPage = () => {
   const [email, setEmail] = useState(""); // Email input
   const [password, setPassword] = useState(""); // Password input
   const navigate = useNavigate(); // For navigation
+  const { login } = useAuth();
 
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     // Simulate login logic
+    login();
     console.log("Login details:", { email, password });
     // Redirect to /user/dashboard
     navigate("/user/dashboard");
@@ -28,7 +31,10 @@ const LoginPage = () => {
       {/* Breadcrumb Navigation */}
       <div className="container mx-auto px-6 py-4">
         <nav className="text-gray-600 dark:text-gray-400 text-sm">
-          <Link to="/" className="hover:text-primary-600 dark:hover:text-primary-400">
+          <Link
+            to="/"
+            className="hover:text-primary-600 dark:hover:text-primary-400"
+          >
             <FontAwesomeIcon icon={faHome} className="mr-1" />
             Home
           </Link>
