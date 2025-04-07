@@ -228,8 +228,8 @@ func (r *UserRepo) DeleteUserAvatar(ctx context.Context, id string) (string, err
 	}
 	defer stmt1.Close()
 
-	var avatar_url string
-	err = stmt1.QueryRowContext(ctx, id).Scan(&avatar_url)
+	var oldAvatarUrl sql.NullString
+	err = stmt1.QueryRowContext(ctx, id).Scan(&oldAvatarUrl)
 	if err != nil {
 		return "", err
 	}
@@ -250,7 +250,7 @@ func (r *UserRepo) DeleteUserAvatar(ctx context.Context, id string) (string, err
 		return "", nil
 	}
 
-	return avatar_url, nil
+	return oldAvatarUrl.String, nil
 }
 
 func (r *UserRepo) UpdateUserProfile(ctx context.Context, id string, user *models.UpdateUserPayload) error {

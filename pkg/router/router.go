@@ -18,6 +18,7 @@ import (
 
 func Initialize(router *gin.Engine, client *sql.DB, s session.SessionInterface) {
 	router.Use(gin.Recovery())
+	router.Use(middlewares.CORSMiddleware())
 
 	router.GET("/_health", func(ctx *gin.Context) {
 		utils.SendSuccessResponse(ctx, gin.H{"message": "OK"}, http.StatusOK)

@@ -29,9 +29,8 @@ COMMENT ON EXTENSION pg_cron IS 'Job scheduler for PostgreSQL';
 
 CREATE TYPE public.categories AS ENUM (
     'horror',
-    'biography',
     'thriller',
-    'others'
+    'other'
 );
 
 
@@ -65,7 +64,7 @@ CREATE FUNCTION public.cleanup_unverified_users() RETURNS void
 BEGIN
     DELETE FROM users
     WHERE verified = FALSE
-    AND created_at <= NOW() - INTERVAL '1 hour';
+    AND created_at <= NOW() - INTERVAL '30 minutes';
 END;
 $$;
 
