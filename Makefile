@@ -26,4 +26,4 @@ endif
 
 clean:
 	@dbmate -e DATABASE_URL drop
-	@rm -rf ./bin
+	@$(RM) -r bin

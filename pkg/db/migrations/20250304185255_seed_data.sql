@@ -25,9 +25,9 @@ SELECT id, 'https://example.com/avatar5.png', 'Nature lover', '6677889900', 'use
 INSERT INTO posts (slug, title, description, thumbnail, content, kind, category, post_by)
 SELECT 'my-first-story', 'My First Story', 'A great story', 'https://example.com/thumb1.jpg', 'Once upon a time...', 'story'::post_type, 'horror'::categories, id FROM users WHERE email = 'john@example.com'
 UNION ALL
-SELECT 'amazing-drawing', 'Amazing Drawing', 'A beautiful sketch', 'https://example.com/thumb2.jpg', 'A picture speaks a thousand words.', 'drawing'::post_type, 'others'::categories, id FROM users WHERE email = 'jane@example.com'
+SELECT 'amazing-drawing', 'Amazing Drawing', 'A beautiful sketch', 'https://example.com/thumb2.jpg', 'A picture speaks a thousand words.', 'drawing'::post_type, 'other'::categories, id FROM users WHERE email = 'jane@example.com'
 UNION ALL
-SELECT 'tech-revolution', 'Tech Revolution', 'How AI is changing the world', 'https://example.com/thumb3.jpg', 'Artificial intelligence is evolving rapidly...', 'story'::post_type, 'biography'::categories, id FROM users WHERE email = 'alice@example.com'
+SELECT 'tech-revolution', 'Tech Revolution', 'How AI is changing the world', 'https://example.com/thumb3.jpg', 'Artificial intelligence is evolving rapidly...', 'story'::post_type, 'horror'::categories, id FROM users WHERE email = 'alice@example.com'
 UNION ALL
 SELECT 'wildlife-photography', 'Wildlife Photography', 'Capturing nature', 'https://example.com/thumb4.jpg', 'A journey through the lens in the wild.', 'drawing'::post_type, 'thriller'::categories, id FROM users WHERE email = 'bob@example.com';
 

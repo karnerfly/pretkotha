@@ -21,6 +21,7 @@ type Config struct {
 	From                string
 	StaticServerBaseUrl string
 	RedisUrl            string
+	CorsAllowOrigin     string
 
 	JwtExpiry           int64
 	ServerReadTimeout   int64
@@ -52,6 +53,7 @@ func New() Config {
 		From:                getEnvString("SMTP_FROM", ""),
 		StaticServerBaseUrl: getEnvString("STATIC_SERVER_BASE_URL", ""),
 		RedisUrl:            getEnvString("REDIS_URL", ""),
+		CorsAllowOrigin:     getEnvString("CORS_ALLOW_ORGIN", "*"),
 
 		// time in second
 		JwtExpiry:           getEnvInt64("JWT_EXPIRY", 604800),             // 7 days

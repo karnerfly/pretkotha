@@ -1,18 +1,20 @@
 import React from "react";
-import { Navigate, Route, Routes } from "react-router";
+import { Route, Routes } from "react-router";
 import Base from "./pages/layouts/Base";
 import Public from "./pages/layouts/Public";
 import Protected from "./pages/layouts/Protected";
-import Home from "./pages/Home";
-import About from "./pages/About";
-import ContactUs from "./pages/ContactUs";
-import Faq from "./pages/Faq";
-import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
-import ForgotPassword from "./pages/auth/ForgotPassword";
-import Story from "./pages/Story";
-import Pretkotha from "./pages/Pretkotha";
 import DashboardLayout from "./pages/layouts/Dashboard";
+import {
+  HomePage,
+  AboutPage,
+  ContactUsPage,
+  FaqPage,
+  NewsletterPage,
+  SearchPage,
+  StoryPage,
+  YouTubePretkothaPage,
+} from "./pages";
+import { LoginPage, RegsiterPage, ForgotPasswordPage } from "./pages/auth";
 import {
   MyPosts,
   MyBookmarks,
@@ -20,9 +22,6 @@ import {
   Settings,
   DashboardHome,
 } from "./pages/user";
-
-import Search from "./pages/Search";
-import Newsletter from "./pages/Newsletter";
 
 function App() {
   // <------------------------ layout hierarchy ------------------------>
@@ -35,23 +34,23 @@ function App() {
       {/* public routes for all users */}
       <Route element={<Public />}>
         <Route path="" element={<Base />}>
-          <Route index path="" element={<Home />} />
-          <Route path="about" element={<About />} />
-          <Route path="contact" element={<ContactUs />} />
-          <Route path="faq" element={<Faq />} />
-          <Route path="newsletter" element={<Newsletter />} />
-          <Route path="search" element={<Search />} />
-          <Route path="story/:storyId" element={<Story />} />
-          <Route path="pretkotha" element={<Pretkotha />} />
+          <Route index path="" element={<HomePage />} />
+          <Route path="about" element={<AboutPage />} />
+          <Route path="contact" element={<ContactUsPage />} />
+          <Route path="faq" element={<FaqPage />} />
+          <Route path="newsletter" element={<NewsletterPage />} />
+          <Route path="search" element={<SearchPage />} />
+          <Route path="story/:storyId" element={<StoryPage />} />
+          <Route path="pretkotha" element={<YouTubePretkothaPage />} />
         </Route>
       </Route>
 
-      {/* Public route with Different configuration for Login and Register page */}
+      {/* Public route with different configuration for Login, Register and ForgotPassword page */}
       <Route path="auth" element={<Public accessByAuthenticatedUser={false} />}>
         <Route path="" element={<Base />}>
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
-          <Route path="forgotpassword" element={<ForgotPassword />} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="register" element={<RegsiterPage />} />
+          <Route path="forgotpassword" element={<ForgotPasswordPage />} />
         </Route>
       </Route>
 

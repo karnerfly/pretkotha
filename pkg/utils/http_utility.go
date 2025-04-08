@@ -17,7 +17,7 @@ func SendErrorResponse(c *gin.Context, err string, code int) {
 
 func SendServerErrorResponse(c *gin.Context, err error) {
 	logger.ERROR(err.Error())
-	SendErrorResponse(c, err.Error(), http.StatusInternalServerError)
+	SendErrorResponse(c, "internal server error", http.StatusInternalServerError)
 }
 
 func SendNotFoundResponse(c *gin.Context, err string) {

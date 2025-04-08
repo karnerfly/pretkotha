@@ -5,39 +5,43 @@ const videosData = [
   {
     id: 1,
     title: "Episode 1",
-    description: "সত্যি ভূতের গল্প । প্রেতকথার প্রথম এপিসোড | Pretkotha | Episode 1 | Gourab Tapadar",
+    description:
+      "সত্যি ভূতের গল্প । প্রেতকথার প্রথম এপিসোড | Pretkotha | Episode 1 | Gourab Tapadar",
     thumbnail: "https://img.youtube.com/vi/LQdTpwAAAos/sddefault.jpg",
     link: "https://www.youtube.com/embed/LQdTpwAAAos?si=8KBgdsLYQR0x4zLF",
   },
   {
     id: 2,
     title: "Episode 2",
-    description: "দুটি সত্যি ভৌতিক ঘটনা | @Pretkotha Live Episode 2 | Special Episode | Black Magic ও আলেয়ার ঘটনা",
+    description:
+      "দুটি সত্যি ভৌতিক ঘটনা | @Pretkotha Live Episode 2 | Special Episode | Black Magic ও আলেয়ার ঘটনা",
     thumbnail: "https://i3.ytimg.com/vi/1kO0PYGlOWE/hqdefault.jpg",
     link: "https://www.youtube.com/embed/1kO0PYGlOWE?si=O5artd0VGjTLPVJ3",
   },
   {
     id: 3,
     title: "Episode 3",
-    description: "প্রেতকথা এপিসোড ৩ | Pretkotha with Gourab | Episode 3 | Bengali Horror Story",
+    description:
+      "প্রেতকথা এপিসোড ৩ | Pretkotha with Gourab | Episode 3 | Bengali Horror Story",
     thumbnail: "https://i3.ytimg.com/vi/_Syk-cmUVPs/hqdefault.jpg",
     link: "https://www.youtube.com/embed/_Syk-cmUVPs?si=uofjVhZDUjqWMvSy",
   },
   {
     id: 4,
     title: "Episode 4",
-    description: "সত্যি ভৌতিক ঘটনা | @Pretkotha Live Episode 4 | অভিশপ্ত পুকুরের ঘটনা | True Bengali Horror Story",
+    description:
+      "সত্যি ভৌতিক ঘটনা | @Pretkotha Live Episode 4 | অভিশপ্ত পুকুরের ঘটনা | True Bengali Horror Story",
     thumbnail: "https://i3.ytimg.com/vi/aMTlVhr53VI/hqdefault.jpg",
     link: "https://www.youtube.com/embed/aMTlVhr53VI?si=nOCpGwOcTy36JVWl",
   },
   {
     id: 5,
     title: "Episode 5",
-    description: "ট্রেনে কাঁটা পড়া লাশের ঘটনা | Pretkotha Episode 5 | Gourab Tapadar | Bengali Horror Story",
+    description:
+      "ট্রেনে কাঁটা পড়া লাশের ঘটনা | Pretkotha Episode 5 | Gourab Tapadar | Bengali Horror Story",
     thumbnail: "https://i3.ytimg.com/vi/MLcS78M9Nj8/hqdefault.jpg",
     link: "https://www.youtube.com/embed/MLcS78M9Nj8?si=CFSgeCbuCDe1-jDo",
   },
-  
 ];
 
 const YouTubePretkotha = () => {
@@ -54,7 +58,10 @@ const YouTubePretkotha = () => {
   // Pagination logic
   const indexOfLastVideo = currentPage * videosPerPage;
   const indexOfFirstVideo = indexOfLastVideo - videosPerPage;
-  const currentVideos = filteredVideos.slice(indexOfFirstVideo, indexOfLastVideo);
+  const currentVideos = filteredVideos.slice(
+    indexOfFirstVideo,
+    indexOfLastVideo
+  );
 
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -77,7 +84,8 @@ const YouTubePretkotha = () => {
         <div className="mb-6">
           <h2 className="text-2xl font-bold mb-2">Listen Pretkotha</h2>
           <p className="text-gray-500 dark:text-gray-400">
-            Explore and listen our youtube pretkotha episode directly in our website.
+            Explore and listen our youtube pretkotha episode directly in our
+            website.
           </p>
         </div>
 
@@ -110,7 +118,9 @@ const YouTubePretkotha = () => {
               />
 
               {/* Title */}
-              <h3 className="text-xl font-bold mb-2 dark:text-white">{video.title}</h3>
+              <h3 className="text-xl font-bold mb-2 dark:text-white">
+                {video.title}
+              </h3>
 
               {/* Description */}
               <p className="text-sm text-gray-500 mb-4 dark:text-gray-400">
@@ -130,21 +140,21 @@ const YouTubePretkotha = () => {
 
         {/* Pagination */}
         <div className="flex justify-center mt-6">
-          {Array.from({ length: Math.ceil(filteredVideos.length / videosPerPage) }).map(
-            (_, index) => (
-              <button
-                key={index + 1}
-                onClick={() => paginate(index + 1)}
-                className={`px-4 py-2 mx-1 rounded-lg ${
-                  currentPage === index + 1
-                    ? "bg-indigo-600 text-white"
-                    : "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
-                } hover:bg-indigo-600 hover:text-white transition-colors duration-200`}
-              >
-                {index + 1}
-              </button>
-            )
-          )}
+          {Array.from({
+            length: Math.ceil(filteredVideos.length / videosPerPage),
+          }).map((_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => paginate(index + 1)}
+              className={`px-4 py-2 mx-1 rounded-lg ${
+                currentPage === index + 1
+                  ? "bg-indigo-600 text-white"
+                  : "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+              } hover:bg-indigo-600 hover:text-white transition-colors duration-200`}
+            >
+              {index + 1}
+            </button>
+          ))}
         </div>
       </main>
 

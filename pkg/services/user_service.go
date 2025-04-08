@@ -58,14 +58,14 @@ func (service *UserService) UploadAvatar(ctx context.Context, id, extension stri
 func (service *UserService) DeleteAvatar(ctx context.Context, id string) error {
 	dbCtx, dbCancle := db.GetIdleTimeoutContext(ctx)
 	defer dbCancle()
-	avatar_url, err := service.userRepo.DeleteUserAvatar(dbCtx, id)
+	oldAvatarUrl, err := service.userRepo.DeleteUserAvatar(dbCtx, id)
 	if err != nil {
 		return err
 	}
 
 	prefix := fmt.Sprintf("%s/static/images/", service.config.StaticServerBaseUrl)
-	if avatar_url != "" {
-		path := strings.TrimPrefix(avatar_url, prefix)
+	if oldAvatarUrl != "" {
+		path := strings.TrimPrefix(oldAvatarUrl, prefix)
 		err := service.imgUtility.Remove(path)
 		if err != nil {
 			return err
