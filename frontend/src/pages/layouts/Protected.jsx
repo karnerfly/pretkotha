@@ -1,13 +1,30 @@
-import { Navigate, Outlet, useNavigate } from "react-router";
 import { useAuth } from "../../context/AuthContext";
+import { Navigate, useLocation, Outlet } from "react-router";
 
-function Protected() {
-  const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+const Protected = ({ roles = [] }) => {
+  const { isAuthenticated, role, loading } = useAuth();
+  const location = useLocation();
+  const eurl = encodeURIComponent(location.pathname);
 
-  if (!isAuthenticated) return <Navigate to="/" />;
+  if (loading) {
+    return <div>loading...</div>;
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <Navigate
+        to={`/auth/login?next=${eurl}`}
+        state={{ from: location }}
+        replace
+      />
+    );
+  }
+
+  if (roles.length > 0 && !roles.includes(role)) {
+    return <Navigate to="/" replace />;
+  }
 
   return <Outlet />;
-}
+};
 
 export default Protected;

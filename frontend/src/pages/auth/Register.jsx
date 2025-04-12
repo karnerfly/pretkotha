@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome, faUserPlus, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router";
+import {
+  faHome,
+  faUserPlus,
+  faCheckCircle,
+} from "@fortawesome/free-solid-svg-icons";
 
 const RegisterForm = () => {
   const [step, setStep] = useState(1);
@@ -152,7 +155,10 @@ const RegisterForm = () => {
       {/* Breadcrumb Navigation */}
       <div className="container mx-auto px-6 py-4">
         <nav className="text-gray-600 dark:text-gray-400 text-sm flex items-center">
-          <Link to="/" className="hover:text-primary-600 dark:hover:text-primary-400 flex items-center">
+          <Link
+            to="/"
+            className="hover:text-primary-600 dark:hover:text-primary-400 flex items-center"
+          >
             <FontAwesomeIcon icon={faHome} className="mr-1" />
             Home
           </Link>
@@ -310,7 +316,9 @@ const RegisterForm = () => {
                     {username.length}/20
                   </p>
                   {usernameError && (
-                    <p className="text-sm text-red-600 dark:text-red-400 mt-2">{usernameError}</p>
+                    <p className="text-sm text-red-600 dark:text-red-400 mt-2">
+                      {usernameError}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -338,7 +346,9 @@ const RegisterForm = () => {
                     )}
                   </div>
                   {passwordError && (
-                    <p className="text-sm text-red-600 dark:text-red-400 mt-2">{passwordError}</p>
+                    <p className="text-sm text-red-600 dark:text-red-400 mt-2">
+                      {passwordError}
+                    </p>
                   )}
                 </div>
                 <button
@@ -406,9 +416,13 @@ const RegisterForm = () => {
                       />
                     )}
                   </div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{bio.length}/60</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    {bio.length}/60
+                  </p>
                   {bioError && (
-                    <p className="text-sm text-red-600 dark:text-red-400 mt-2">{bioError}</p>
+                    <p className="text-sm text-red-600 dark:text-red-400 mt-2">
+                      {bioError}
+                    </p>
                   )}
                 </div>
                 <div className="flex space-x-4">

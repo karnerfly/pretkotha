@@ -117,6 +117,31 @@ export async function logout() {
 
 /**
  *
+ * @returns {Promise<{status:number, message:string, data:{authenticated:boolean, role:string?}}>}
+ * @throws {{error:boolean, message:string, status:number}}
+ */
+export async function getMeStats() {
+  try {
+    const resp = await client.get("/users/me/stats");
+    return {
+      status: resp.status,
+      message: resp.statusText,
+      data: {
+        authenticated: resp.data?.authenticated || false,
+        role: resp.data?.role || null,
+      },
+    };
+  } catch (error) {
+    throw {
+      error: true,
+      message: error?.response?.data?.error || "something went wrong",
+      status: error?.status || 500,
+    };
+  }
+}
+
+/**
+ *
  * @returns {Promise<{status:number, message:string, data:any}>}
  * @throws {{error:boolean, message:string, status:number}}
  */

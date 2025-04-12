@@ -9,21 +9,24 @@ import {
   faSignInAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../../context/AuthContext";
+import { login } from "../../api";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState(""); // Email input
-  const [password, setPassword] = useState(""); // Password input
-  const navigate = useNavigate(); // For navigation
-  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const { refreshAuth } = useAuth();
 
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simulate login logic
-    login();
-    console.log("Login details:", { email, password });
-    // Redirect to /user/dashboard
-    navigate("/user/dashboard");
+    login({ email, password })
+      .then((resp) => {
+        refreshAuth();
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
   };
 
   return (

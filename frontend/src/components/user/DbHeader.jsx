@@ -10,10 +10,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router";
 import { useAuth } from "../../context/AuthContext";
+import { logout } from "../../api";
 
 const Header = ({ isSidebarOpen, toggleSidebar }) => {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
-  const { logout } = useAuth();
+  const { refreshAuth } = useAuth();
 
   // Toggle user dropdown
   const toggleUserDropdown = () => {
@@ -35,7 +36,9 @@ const Header = ({ isSidebarOpen, toggleSidebar }) => {
   }, [showUserDropdown]);
 
   const handleLogout = () => {
-    logout();
+    logout().then(() => {
+      refreshAuth();
+    });
   };
 
   return (

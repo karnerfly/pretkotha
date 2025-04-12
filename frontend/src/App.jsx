@@ -55,7 +55,7 @@ function App() {
       </Route>
 
       {/* protected routes for authenticated users */}
-      <Route element={<Protected />}>
+      <Route element={<Protected roles={["admin", "user"]} />}>
         <Route path="" element={<Base />}>
           <Route path="user/dashboard" element={<DashboardLayout />}>
             <Route index element={<DashboardHome />} />

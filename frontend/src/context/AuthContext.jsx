@@ -1,30 +1,57 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
+import { getMeStats } from "../api";
 
 const AuthContext = createContext({
+  loading: true,
   isAuthenticated: false,
-  login: () => {},
-  logout: () => {},
+  role: "",
+  refreshAuth: (callback) => {},
 });
 
 const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    let auth = localStorage.getItem("authState");
-    return auth && auth == "true" ? true : false;
+  const [authState, setAuthState] = useState({
+    loading: true,
+    isAuthenticated: false,
+    role: "",
   });
-  useEffect(() => {}, []);
 
-  const login = () => {
-    setIsAuthenticated(true);
-    localStorage.setItem("authState", true);
-  };
+  const refreshAuth = useCallback(async (callback) => {
+    setAuthState((prev) => ({ ...prev, loading: true }));
+    try {
+      const resp = await getMeStats();
+      setAuthState({
+        loading: false,
+        isAuthenticated: resp.data.authenticated,
+        role: resp.data.role,
+      });
+    } catch (error) {
+      setAuthState({
+        loading: false,
+        isAuthenticated: false,
+        role: "",
+      });
+    }
 
-  const logout = () => {
-    setIsAuthenticated(false);
-    localStorage.setItem("authState", false);
-  };
+    if (callback) callback();
+  }, []);
+
+  useEffect(() => {
+    refreshAuth();
+  }, [refreshAuth]);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        ...authState,
+        refreshAuth,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
