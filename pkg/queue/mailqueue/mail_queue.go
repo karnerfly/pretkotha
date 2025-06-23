@@ -63,9 +63,6 @@ func Shutdown() {
 }
 
 func Enqueue(qt QueueType, payload *MailPayload) error {
-	if queue == nil {
-		return ErrNotInitialize
-	}
 	if qt < 0 || qt >= maxQueueType {
 		return ErrInvalidQueueType
 	}
@@ -79,9 +76,6 @@ func Enqueue(qt QueueType, payload *MailPayload) error {
 }
 
 func RegisterWorker(qt QueueType, fn Worker) error {
-	if queue == nil {
-		return ErrNotInitialize
-	}
 	if qt < 0 || qt >= maxQueueType {
 		return ErrInvalidQueueType
 	}
