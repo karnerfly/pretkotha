@@ -11,7 +11,6 @@ import (
 )
 
 type Mailer interface {
-	Mail(to []string, body []byte) error
 	SendOtpMail(to, otp string) error
 }
 
@@ -42,17 +41,13 @@ func NewMailService(opt Option) *MailService {
 	}
 }
 
-func (s *MailService) Mail(ctx context.Context, to []string, body []byte) error {
+func (s *MailService) mail(ctx context.Context, to []string, body []byte) error {
 	errChan := make(chan error, 1)
 
 	go func() {
 		auth := smtp.PlainAuth("", s.Option.SmtpUsername, s.Option.SmtpPassword, s.Option.SmtpHost)
 		err := smtp.SendMail(s.Option.SmtpServerAddr, auth, s.Option.SmtpUsername, to, body)
-		if err != nil {
-			errChan <- err
-			return
-		}
-		errChan <- nil
+		errChan <- err
 		close(errChan)
 	}()
 
@@ -80,7 +75,7 @@ func (s *MailService) SendOtpMail(ctx context.Context, to, otp string) error {
 		}
 
 		<-after
-		err := s.Mail(ctx, []string{to}, body)
+		err := s.mail(ctx, []string{to}, body)
 		if !errors.Is(err, ErrTimeOut) {
 			return err
 		}
